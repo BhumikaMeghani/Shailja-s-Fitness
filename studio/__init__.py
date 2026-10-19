@@ -1,1 +1,0 @@
-"""Shailja's Fitness application."""

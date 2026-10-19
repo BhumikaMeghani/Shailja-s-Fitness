@@ -1,6 +1,9 @@
-.venv/
-__pycache__/
-*.pyc
-.env
+node_modules/
+.output/
+.vinxi/
+.nitro/
+.tanstack/
 instance/
+.env
 test-results/
+.DS_Store

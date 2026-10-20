@@ -1,60 +1,57 @@
 /**
- * Agreed prototype pricing for the Personalised Yoga Plan
- * (README section 4.1): ₹800 for the first selected goal plus ₹200 for each
- * additional goal. Amounts are kept in paise — the smallest INR currency
- * unit — so they can be carried into a real payment integration unchanged.
+ * Agreed prototype pricing for the Personalised Yoga Plan:
+ * the General wellness plan is the default included for everyone at ₹800,
+ * and every other ticked plan adds ₹200 on top. Amounts are kept in paise —
+ * the smallest INR currency unit — so they can be carried into a real
+ * payment integration unchanged.
  *
  * Pricing depends only on validated goal IDs. It never considers name,
- * email, age or match scores, and the empty selection falls back to the
- * general_wellness one-goal price rather than ₹0.
+ * email, age or match scores, and the empty selection costs only the
+ * default General wellness plan (₹800) rather than ₹0.
  */
 
 import type { GoalId } from './types'
 
-export const FIRST_GOAL_PRICE_PAISE = 80000
-export const ADDITIONAL_GOAL_PRICE_PAISE = 20000
-/** Charged when nothing is selected (README 3.4 empty-selection rule). */
-export const EMPTY_SELECTION_FALLBACK_GOAL: GoalId = 'general_wellness'
+/** The plan everyone gets by default; its checkbox stays locked on. */
+export const DEFAULT_PLAN_ID: GoalId = 'general_wellness'
+export const DEFAULT_PLAN_PRICE_PAISE = 80000
+export const ADD_ON_PLAN_PRICE_PAISE = 20000
+/** Back-compat alias for the default plan ID. */
+export const EMPTY_SELECTION_FALLBACK_GOAL: GoalId = DEFAULT_PLAN_ID
 
 export interface PlanPrice {
-  /** Unique valid goal IDs actually selected by the user (0 when empty). */
-  selectedGoalCount: number
-  /** Count used for pricing; at least 1 because of the fallback rule. */
-  chargedGoalCount: number
-  /** True when the empty-selection fallback was applied. */
-  usedFallback: boolean
-  /** Number of duplicate IDs collapsed before pricing. */
-  duplicatesRemoved: number
+  /** The always-included default plan (general_wellness). */
+  defaultPlanId: GoalId
+  /** Uniquely selected add-on goal IDs, in selection order. */
+  addOnPlanIds: GoalId[]
+  addOnPlanCount: number
+  /** Fixed base price of the default plan. */
   baseAmountPaise: number
-  additionalGoalCount: number
-  additionalAmountPaise: number
+  /** Count of duplicate IDs collapsed before pricing. */
+  duplicatesRemoved: number
+  addOnAmountPaise: number
   totalAmountPaise: number
 }
 
 /**
- * De-duplicates the selection, applies the empty-selection fallback and
- * prices the result. The count (not the score or anything else) drives the
- * amount, mirroring the server-side rule for a future real payment flow.
+ * De-duplicates the selection and prices it: ₹800 for the always-included
+ * General wellness default plan plus ₹200 for each other unique plan.
+ * The ticked plans (not the score or anything else) drive the amount,
+ * mirroring the server-side rule for a future real payment flow.
  */
 export function calculatePlanPrice(selectedGoalIds: GoalId[]): PlanPrice {
   const unique = [...new Set(selectedGoalIds)]
-  const usedFallback = unique.length === 0
-  const charged = usedFallback ? [EMPTY_SELECTION_FALLBACK_GOAL] : unique
-  const chargedGoalCount = charged.length
-
-  const baseAmountPaise = FIRST_GOAL_PRICE_PAISE
-  const additionalGoalCount = Math.max(0, chargedGoalCount - 1)
-  const additionalAmountPaise = additionalGoalCount * ADDITIONAL_GOAL_PRICE_PAISE
+  const addOns = unique.filter(id => id !== DEFAULT_PLAN_ID)
+  const addOnAmountPaise = addOns.length * ADD_ON_PLAN_PRICE_PAISE
 
   return {
-    selectedGoalCount: unique.length,
-    chargedGoalCount,
-    usedFallback,
+    defaultPlanId: DEFAULT_PLAN_ID,
+    addOnPlanIds: addOns,
+    addOnPlanCount: addOns.length,
+    baseAmountPaise: DEFAULT_PLAN_PRICE_PAISE,
     duplicatesRemoved: selectedGoalIds.length - unique.length,
-    baseAmountPaise,
-    additionalGoalCount,
-    additionalAmountPaise,
-    totalAmountPaise: baseAmountPaise + additionalAmountPaise,
+    addOnAmountPaise,
+    totalAmountPaise: DEFAULT_PLAN_PRICE_PAISE + addOnAmountPaise,
   }
 }
 

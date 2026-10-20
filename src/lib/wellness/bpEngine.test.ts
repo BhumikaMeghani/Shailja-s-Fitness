@@ -44,27 +44,39 @@ describe('adult BP and weight engine', () => {
     }
   })
 
-  it('suppresses every emergency symptom at any BP, before all other gates', () => {
+  it('stops the routine for consult symptoms only; every other combination shows poses', () => {
     for (const [systolic, diastolic] of [[118, 76], [125, 78], [135, 85], [150, 95], [88, 58], [185, 100]]) {
       for (const symptom of SYMPTOMS.filter(s => s.emergency)) {
         const result = generate({ systolic, diastolic, symptoms: [symptom.id], exerciseRestricted: true })
         expect(result.status).toBe('emergency')
         expect(result.recommendations).toEqual([])
         expect(result.dietGuidance).toBeNull()
+        expect(result.consultSymptoms).toEqual([symptom.id])
       }
+    }
+    const mixed = generate({ systolic: 118, diastolic: 76, symptoms: ['dizziness', 'blurred_vision'] })
+    expect(mixed.status).toBe('emergency')
+    expect(mixed.consultSymptoms).toEqual(['blurred_vision'])
+    // Non-gating symptoms, including chest pain, still get the route poses.
+    for (const symptom of SYMPTOMS.filter(s => !s.emergency)) {
+      const low = generate({ systolic: 88, diastolic: 58, symptoms: [symptom.id] })
+      expect(low.status).toBe('ok')
+      expect(low.consultSymptoms).toEqual([])
+      expect(low.recommendations).toHaveProperty('length', 3)
+      const high = generate({ systolic: 150, diastolic: 95, symptoms: [symptom.id] })
+      expect(high.status).toBe('ok')
+      expect(high.recommendations).toHaveProperty('length', 3)
     }
   })
 
-  it('suppresses symptomatic low BP and restricted exercise; severe still takes precedence', () => {
-    for (const symptom of SYMPTOMS.filter(s => !s.emergency)) {
-      expect(generate({ systolic: 88, diastolic: 58, symptoms: [symptom.id] }).status).toBe('low_bp_safety')
-    }
+  it('keeps restricted exercise and severe readings gated; consult symptoms take precedence', () => {
     for (const [systolic, diastolic] of [[118, 76], [125, 78], [135, 85], [150, 95], [88, 58]]) {
       expect(generate({ systolic, diastolic, exerciseRestricted: true }).status).toBe('exercise_restricted')
     }
     expect(generate({ systolic: 185, exerciseRestricted: true }).status).toBe('severe')
     expect(generate({ systolic: 185 }).safetyMessage).toContain('at least one minute')
-    expect(immediateBpSafety({ ...base, symptoms: ['chest_pain'], systolic: NaN })).toContain('emergency medical help now')
+    expect(immediateBpSafety({ ...base, symptoms: ['severe_breathlessness'], systolic: NaN })).toContain('Consult your doctor immediately')
+    expect(immediateBpSafety({ ...base, symptoms: ['chest_pain'], systolic: NaN })).toBe('')
   })
 
   it('requires all inputs and rejects malformed/implausible values without guessing', () => {
@@ -120,7 +132,7 @@ describe('adult BP and weight engine', () => {
       expect(validBpCatalog({ ...content, version: 'unknown' }, route)).toBe(false)
       expect(validBpCatalog({ ...content, poses: [...content.poses].reverse() }, route)).toBe(false)
     }
-    const stopped = prepareBpRecommendation({ ...base, symptoms: ['chest_pain'] })
+    const stopped = prepareBpRecommendation({ ...base, symptoms: ['severe_breathlessness'] })
     expect(completeBpRecommendation(stopped, catalog('normal')).recommendations).toEqual([])
     expect(() => completeBpRecommendation(prepareBpRecommendation(base), catalog('high'))).toThrow('unavailable')
   })

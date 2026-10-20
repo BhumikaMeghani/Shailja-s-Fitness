@@ -7,7 +7,9 @@ import {
 } from '~/lib/wellness/engine'
 import { GOAL_LABELS, GOAL_TAGS } from '~/lib/wellness/goals'
 import {
+  ADD_ON_PLAN_PRICE_PAISE,
   calculatePlanPrice,
+  DEFAULT_PLAN_ID,
   formatInr,
   type PlanPrice,
 } from '~/lib/wellness/pricing'
@@ -47,7 +49,8 @@ export default function PersonalizedYogaDialog({ openRequest, onOpenChange }: Pe
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [age, setAge] = useState('')
-  const [selectedGoals, setSelectedGoals] = useState<GoalId[]>([])
+  // General wellness is the locked-in default plan; other goals are add-ons.
+  const [selectedGoals, setSelectedGoals] = useState<GoalId[]>([DEFAULT_PLAN_ID])
   const [stage, setStage] = useState<Stage>('goals-form')
   const [error, setError] = useState('')
   const [result, setResult] = useState<WellnessPlanResult | null>(null)
@@ -63,6 +66,8 @@ export default function PersonalizedYogaDialog({ openRequest, onOpenChange }: Pe
   const planLocked = Boolean(result && isPlan(result) && paymentMode === PAYMENT_MODE && !isPlanUnlocked)
 
   const goalToggled = (id: GoalId) => {
+    // The default plan cannot be unticked — it is included for everyone.
+    if (id === DEFAULT_PLAN_ID) return
     setTouchHasStarted(true)
     setSelectedGoals(current => (current.includes(id) ? current.filter(goalId => goalId !== id) : [...current, id]))
   }
@@ -160,8 +165,9 @@ export default function PersonalizedYogaDialog({ openRequest, onOpenChange }: Pe
               <p>
                 Answer four small questions and we’ll assemble a 7‑day yoga plan plus food do’s and
                 don’ts from our wellness library. Everyday wellness support — never a diagnosis or a
-                treatment plan. Pricing is based on your goals: <strong>₹800</strong> for your first
-                selected goal and <strong>₹200</strong> for each additional goal, updated live below.
+                treatment plan. Pricing: the <strong>General wellness plan (₹800)</strong> is included
+                for everyone, and each additional plan you tick adds <strong>₹200</strong>, updated
+                live below.
               </p>
 
               {/* Manual validation keeps answers athlete-friendly and lets the
@@ -218,23 +224,28 @@ export default function PersonalizedYogaDialog({ openRequest, onOpenChange }: Pe
                 <fieldset className="wellness-goals">
                   <legend>What are you looking for? <span aria-hidden="true">·</span> choose one or more</legend>
                   <div className="goal-grid">
-                    {GOAL_TAGS.map(tag => (
-                      <label key={tag.id} className={`goal-option${selectedGoals.includes(tag.id) ? ' selected' : ''}`}>
-                        <input
-                          type="checkbox"
-                          checked={selectedGoals.includes(tag.id)}
-                          onChange={() => goalToggled(tag.id)}
-                        />
-                        {tag.label}
-                      </label>
-                    ))}
+                    {GOAL_TAGS.map(tag => {
+                      const isDefault = tag.id === DEFAULT_PLAN_ID
+                      return (
+                        <label key={tag.id} className={`goal-option${selectedGoals.includes(tag.id) ? ' selected' : ''}${isDefault ? ' default' : ''}`}>
+                          <input
+                            type="checkbox"
+                            checked={selectedGoals.includes(tag.id)}
+                            disabled={isDefault}
+                            onChange={() => goalToggled(tag.id)}
+                          />
+                          {tag.label}
+                          {isDefault && <span className="goal-default-badge">Default</span>}
+                        </label>
+                      )
+                    })}
                   </div>
                   <small>
                     {touchHasStarted
-                      ? selectedGoals.length
-                        ? `${selectedGoals.length} goal${selectedGoals.length > 1 ? 's' : ''} selected.`
-                        : 'Nothing selected yet. Leave everything unticked and we’ll charge the General wellness plan (₹800).'
-                      : 'You can also leave all options unticked — we’ll start you with the General wellness plan at ₹800.'}
+                      ? (
+                          `${estimate.addOnPlanCount} additional plan${estimate.addOnPlanCount === 1 ? '' : 's'} selected · General wellness stays included by default.`
+                        )
+                      : 'General wellness is included for everyone by default. Tick any other plan to add ₹200 each.'}
                   </small>
                   {/* Live price summary, recalculated as goals are ticked or unticked. */}
                   <PriceSummary price={estimate} ariaLive />
@@ -245,12 +256,12 @@ export default function PersonalizedYogaDialog({ openRequest, onOpenChange }: Pe
                 <div className="order-review" role="note" aria-label="Order review">
                   <h3>Review your order</h3>
                   <p>
-                    {selectedGoals.length
-                      ? `For: ${selectedGoals.map(id => GOAL_LABELS[id]).join(' · ')}.`
-                      : 'For: General wellness (our fallback when no goal is chosen).'}
+                    {estimate.addOnPlanCount
+                      ? `For: General wellness (default plan) + ${estimate.addOnPlanIds.map(id => GOAL_LABELS[id]).join(' · ')}.`
+                      : 'For: General wellness (default plan).'}
                   </p>
                   <p className="order-total">Total {formatInr(estimate.totalAmountPaise)}</p>
-                  <p className="booking-micro">
+                  <p className="order-review-note">
                     Includes your personalised 7‑day yoga plan with instructions, modifications and
                     cautions, plus goal‑related food guidance. Everyday wellness support — a selected
                     goal is not a diagnosis, and no pose or food claim is medical advice.
@@ -323,8 +334,9 @@ export default function PersonalizedYogaDialog({ openRequest, onOpenChange }: Pe
                     <span className="plan-lock-icon" aria-hidden="true">🔒</span>
                     <h3 id="plan-lock-title" tabIndex={-1}>Your personalised plan is ready</h3>
                     <p id="plan-lock-desc">
-                      {planPrice.chargedGoalCount} goal{planPrice.chargedGoalCount > 1 ? 's' : ''} →
-                      {' '}{planPrice.chargedGoalCount > 1 ? `₹800 first goal + ₹200 × ${planPrice.additionalGoalCount} additional` : '₹800 for your first goal'} =
+                      {planPrice.addOnPlanCount
+                        ? `General wellness (default) + ${planPrice.addOnPlanCount} additional plan${planPrice.addOnPlanCount > 1 ? 's' : ''} → ₹800 + ₹200 × ${planPrice.addOnPlanCount} =`
+                        : 'General wellness (default plan) →'}
                       {' '}<strong>{formatInr(planPrice.totalAmountPaise)}</strong>
                     </p>
                     <button ref={unlockButtonRef} className="button" onClick={unlockPlan}>
@@ -444,30 +456,36 @@ export default function PersonalizedYogaDialog({ openRequest, onOpenChange }: Pe
   )
 }
 
-/** Compact live price summary (README 4.3: count + breakdown + total, always visible). */
+/** Compact live price summary: default plan + selected ₹200 plans + total. */
 function PriceSummary({ price, ariaLive = false }: { price: PlanPrice; ariaLive?: boolean }) {
   return (
     <div className="wellness-price" aria-live={ariaLive ? 'polite' : undefined}>
       <h3>Price summary</h3>
       <ul>
         <li>
-          <span>{price.usedFallback ? 'General wellness (default)' : 'First selected goal'}</span>
+          <span>General wellness (default plan)</span>
           <span>{formatInr(price.baseAmountPaise)}</span>
         </li>
+        {price.addOnPlanIds.map(addOnId => (
+          <li key={addOnId}>
+            <span>{GOAL_LABELS[addOnId]}</span>
+            <span>{formatInr(ADD_ON_PLAN_PRICE_PAISE)}</span>
+          </li>
+        ))}
         <li>
-          <span>Additional goals ({price.additionalGoalCount} × ₹200)</span>
-          <span>{formatInr(price.additionalAmountPaise)}</span>
+          <span>Additional plans ({price.addOnPlanCount} × ₹200)</span>
+          <span>{formatInr(price.addOnAmountPaise)}</span>
         </li>
         <li className="wellness-price-total">
           <span>
-            {price.usedFallback
-              ? 'Total · 1 goal (fallback)'
-              : `Total · ${price.selectedGoalCount} goal${price.selectedGoalCount > 1 ? 's' : ''} selected`}
+            Total · General wellness{price.addOnPlanCount
+              ? ` + ${price.addOnPlanCount} additional plan${price.addOnPlanCount > 1 ? 's' : ''}`
+              : ' only'}
           </span>
           <span>{formatInr(price.totalAmountPaise)}</span>
         </li>
       </ul>
-      <small>Updates as you tick or untick goals. This prototype collects no money.</small>
+      <small>Updates as you tick or untick plans. This prototype collects no money.</small>
     </div>
   )
 }

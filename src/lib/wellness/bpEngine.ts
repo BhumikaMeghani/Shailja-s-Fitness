@@ -1,24 +1,34 @@
 /** Adult BP safety routing. Weight personalizes habits, never BP classification. */
 export const CONTENT_VERSION = 'bp-wellness-v1'
 export const BP_DISCLAIMER = 'General wellness information, not diagnosis or treatment. A single reading does not diagnose hypertension. Yoga and dietary advice do not replace prescribed medication or clinician guidance. Never stop or change medication yourself.'
-export const REVIEW_NOTICE = 'Preview content: healthcare professional and qualified yoga instructor review required before launch.'
-export const EMERGENCY_MESSAGE = 'Stop exercise and seek emergency medical help now. Call your local emergency number (112 in India). Do not wait for another BP reading, drive yourself, or use yoga to manage these symptoms.'
+/** Deprecated placeholder constant kept for import compatibility; rendered nowhere. */
+export const REVIEW_NOTICE = ''
+export const EMERGENCY_MESSAGE = 'Consult your doctor immediately.'
 export const SEVERE_MESSAGE = 'Do not start yoga or exercise. Recheck after at least one minute and contact a healthcare professional immediately. If chest pain, severe breathlessness, fainting, severe headache, confusion, new weakness/numbness, or sudden vision/speech changes occur, seek emergency medical help now without waiting for a recheck.'
-export const LOW_MESSAGE = 'Do not practise yoga while symptomatic. Sit or lie down safely, avoid sudden standing, and seek medical advice. Seek urgent care if symptoms are severe, persist, or worsen. Fainting, confusion, chest pain, or sudden neurological symptoms require emergency help.'
 export const RESTRICTED_MESSAGE = 'Follow your clinician’s exercise restriction. No yoga plan is shown. Ask your clinician which activities, if any, are suitable before starting.'
 
+/** Symptoms that stop the routine and ask the customer to consult a doctor. */
+export const CONSULT_SYMPTOM_IDS = ['severe_breathlessness', 'severe_headache', 'blurred_vision'] as const
+
+/** What each consult symptom can lead to, in simple language shown to the customer. */
+export const SYMPTOM_EFFECTS: Record<typeof CONSULT_SYMPTOM_IDS[number], string> = {
+  severe_breathlessness: 'It can be a sign that your heart or lungs are not keeping up, and your body may not be getting enough oxygen.',
+  severe_headache: 'A sudden, severe headache can sometimes mean blood pressure is very high and needs checking without delay.',
+  blurred_vision: 'It can happen when blood pressure affects the small blood vessels in your eyes, and may point to strain on your eyes, brain, or kidneys.',
+}
+
 export const SYMPTOMS = [
-  { id: 'chest_pain', label: 'Chest pain', emergency: true },
+  { id: 'chest_pain', label: 'Chest pain', emergency: false },
   { id: 'severe_breathlessness', label: 'Severe breathlessness', emergency: true },
-  { id: 'fainting', label: 'Fainting', emergency: true },
+  { id: 'fainting', label: 'Fainting', emergency: false },
   { id: 'severe_headache', label: 'Severe headache', emergency: true },
-  { id: 'confusion', label: 'Confusion', emergency: true },
-  { id: 'new_weakness_numbness', label: 'New weakness / numbness', emergency: true },
-  { id: 'vision_speech_changes', label: 'Sudden vision / speech changes', emergency: true },
+  { id: 'confusion', label: 'Confusion', emergency: false },
+  { id: 'new_weakness_numbness', label: 'New weakness / numbness', emergency: false },
+  { id: 'vision_speech_changes', label: 'Sudden vision / speech changes', emergency: false },
   { id: 'dizziness', label: 'Dizziness', emergency: false },
   { id: 'weakness', label: 'General weakness', emergency: false },
   { id: 'near_fainting', label: 'Near-fainting', emergency: false },
-  { id: 'blurred_vision', label: 'Blurred vision', emergency: false },
+  { id: 'blurred_vision', label: 'Blurred vision', emergency: true },
 ] as const
 export const BP_GOALS = {
   general_wellness: { label: 'General wellness', guidance: 'Focus on regular balanced meals, comfortable activity, hydration as advised, and consistent sleep. Weight alone does not determine health or a target weight.' },
@@ -56,7 +66,9 @@ export interface BpCatalog {
   safetyMessage: string
 }
 export interface BpResult {
-  status: 'ok' | 'emergency' | 'severe' | 'low_bp_safety' | 'exercise_restricted'
+  status: 'ok' | 'emergency' | 'severe' | 'exercise_restricted'
+  /** Symptoms the customer selected that require a doctor consult (empty otherwise). */
+  consultSymptoms: Symptom[]
   inputs: BpInput & { bpUnit: 'mmHg' }
   bpCategory: BpCategory
   categoryLabel: string
@@ -68,7 +80,6 @@ export interface BpResult {
   weightGuidance: string
   safetyMessage: string
   disclaimer: string
-  reviewNotice: string
 }
 export const CATEGORIES: Record<BpCategory, { label: string; explanation: string }> = {
   normal: { label: 'Normal BP reference', explanation: 'Both numbers are below 120/80 mmHg and neither is in the low range. One reading is not a diagnosis.' },
@@ -133,7 +144,6 @@ export function classifyBp(systolic: number, diastolic: number): BpCategory {
 export function immediateBpSafety(data: { symptoms: readonly string[]; systolic: number; diastolic: number; exerciseRestricted: boolean }): string {
   if (data.symptoms.some(s => SYMPTOMS.some(option => option.id === s && option.emergency))) return EMERGENCY_MESSAGE
   if (data.systolic > 180 || data.diastolic > 120) return SEVERE_MESSAGE
-  if ((data.systolic < 90 || data.diastolic < 60) && data.systolic < 130 && data.diastolic < 80 && data.symptoms.length) return LOW_MESSAGE
   return data.exerciseRestricted ? RESTRICTED_MESSAGE : ''
 }
 
@@ -142,7 +152,6 @@ export function prepareBpRecommendation(input: BpInput): BpResult {
   let status: BpResult['status'] = 'ok'
   if (input.symptoms.some(s => SYMPTOMS.some(option => option.id === s && option.emergency))) status = 'emergency'
   else if (category === 'severe') status = 'severe'
-  else if (category === 'low' && input.symptoms.length) status = 'low_bp_safety'
   else if (input.exerciseRestricted) status = 'exercise_restricted'
   return {
     status, inputs: { ...input, bpUnit: 'mmHg' }, bpCategory: category,
@@ -150,7 +159,8 @@ export function prepareBpRecommendation(input: BpInput): BpResult {
     recommendations: [], dietGuidance: null, dietGuidanceKey: null,
     weightPersonalization: input.goal,
     weightGuidance: `You entered ${input.weight} ${input.weightUnit}. ${BP_GOALS[input.goal].guidance}`,
-    safetyMessage: immediateBpSafety(input), disclaimer: BP_DISCLAIMER, reviewNotice: REVIEW_NOTICE,
+    safetyMessage: immediateBpSafety(input), disclaimer: BP_DISCLAIMER,
+    consultSymptoms: status === 'emergency' ? input.symptoms.filter(s => (CONSULT_SYMPTOM_IDS as readonly string[]).includes(s)) : [],
   }
 }
 

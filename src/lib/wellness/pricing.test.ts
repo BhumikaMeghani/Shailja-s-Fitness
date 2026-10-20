@@ -1,45 +1,55 @@
 import { describe, expect, it } from 'vitest'
 import type { GoalId } from './types'
-import { ADDITIONAL_GOAL_PRICE_PAISE, calculatePlanPrice, EMPTY_SELECTION_FALLBACK_GOAL, FIRST_GOAL_PRICE_PAISE, formatInr } from './pricing'
+import {
+  ADD_ON_PLAN_PRICE_PAISE,
+  calculatePlanPrice,
+  DEFAULT_PLAN_ID,
+  DEFAULT_PLAN_PRICE_PAISE,
+  formatInr,
+} from './pricing'
 import { GOAL_TAGS } from './goals'
 
 const goals = GOAL_TAGS.map(tag => tag.id) as GoalId[]
 
-/** README 4.2 pricing table: selected goals → expected INR total. */
+/** Pricing table: selected add-on plans → expected INR total. */
 const priceTable: Array<[number, number]> = [
-  [1, 800], [2, 1000], [3, 1200], [4, 1400], [5, 1600],
-  [6, 1800], [8, 2200], [10, 2600], [12, 3000],
+  [0, 800], [1, 1000], [2, 1200], [3, 1400], [4, 1600],
+  [5, 1800], [7, 2200], [9, 2600], [11, 3000],
 ]
 
 describe('agreed pricing rules', () => {
-  it('use ₹800 for the first goal plus ₹200 per additional goal', () => {
-    expect(FIRST_GOAL_PRICE_PAISE).toBe(80000)
-    expect(ADDITIONAL_GOAL_PRICE_PAISE).toBe(20000)
-    for (const [selected, expected] of priceTable) {
-      // + ₹200 × (n − 1), never derived from anything else.
-      expect(80000 + 20000 * (selected - 1)).toBe(expected * 100)
-      const price = calculatePlanPrice(goals.slice(0, selected))
-      expect(price.chargedGoalCount).toBe(selected)
+  it('charges ₹800 for the default General wellness plan plus ₹200 per add-on plan', () => {
+    expect(DEFAULT_PLAN_ID).toBe('general_wellness')
+    expect(DEFAULT_PLAN_PRICE_PAISE).toBe(80000)
+    expect(ADD_ON_PLAN_PRICE_PAISE).toBe(20000)
+    for (const [addOns, expected] of priceTable) {
+      // + ₹200 × add-ons, never derived from anything else.
+      expect(80000 + 20000 * addOns).toBe(expected * 100)
+      const price = calculatePlanPrice(goals.slice(1, 1 + addOns))
+      expect(price.addOnPlanCount).toBe(addOns)
       expect(price.totalAmountPaise).toBe(expected * 100)
-      expect(price.usedFallback).toBe(false)
     }
   })
 
-  it('maps an empty selection to general_wellness at the one-goal price', () => {
+  it('prices an empty selection as the default plan at ₹800', () => {
     const price = calculatePlanPrice([])
-    expect(price.usedFallback).toBe(true)
-    expect(price.chargedGoalCount).toBe(1)
+    expect(price.addOnPlanCount).toBe(0)
+    expect(price.baseAmountPaise).toBe(80000)
     expect(price.totalAmountPaise).toBe(80000)
-    expect(price.additionalGoalCount).toBe(0)
-    expect(EMPTY_SELECTION_FALLBACK_GOAL).toBe('general_wellness')
   })
 
-  it('de-duplicates goal IDs before pricing so repeats cannot change the total', () => {
-    const price = calculatePlanPrice(['better_sleep', 'better_sleep', 'posture_mobility'])
-    expect(price.selectedGoalCount).toBe(2)
-    expect(price.duplicatesRemoved).toBe(1)
-    expect(price.chargedGoalCount).toBe(2)
+  it('never charges the default plan again when it is part of the selection', () => {
+    const price = calculatePlanPrice(['general_wellness', 'better_sleep', 'general_wellness'])
+    expect(price.addOnPlanIds).toEqual(['better_sleep'])
+    expect(price.addOnPlanCount).toBe(1)
     expect(price.totalAmountPaise).toBe(100000)
+  })
+
+  it('de-duplicates add-on IDs before pricing so repeats cannot change the total', () => {
+    const price = calculatePlanPrice(['better_sleep', 'better_sleep', 'posture_mobility'])
+    expect(price.addOnPlanCount).toBe(2)
+    expect(price.duplicatesRemoved).toBe(1)
+    expect(price.totalAmountPaise).toBe(120000)
   })
 
   it('formats whole-paise amounts as INR display values', () => {

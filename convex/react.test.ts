@@ -266,10 +266,9 @@ test('BP API stop screens need no content query; missing/unavailable catalog fai
   await client.bootstrap()
   const input = { systolic: 118, diastolic: 76, weight: 72, weightUnit: 'kg' }
   for (const [patch, expected] of [
-    [{ symptoms: ['chest_pain'] }, 'emergency'],
+    [{ symptoms: ['severe_breathlessness'] }, 'emergency'],
     [{ systolic: 185 }, 'severe'],
     [{ systolic: 125, diastolic: 122 }, 'severe'],
-    [{ systolic: 88, diastolic: 58, symptoms: ['dizziness'] }, 'low_bp_safety'],
     [{ exerciseRestricted: true }, 'exercise_restricted'],
   ] as const) {
     const response = await client.post(wellness, { ...input, ...patch })
@@ -285,4 +284,12 @@ test('BP API stop screens need no content query; missing/unavailable catalog fai
   const failure = await client.post(wellness, input)
   expect(failure.status).toBe(503)
   expect((await failure.json()).error).not.toContain('provider failed')
+  // Non-gating symptoms still route to poses once content is available.
+  await t.mutation(internal.wellness.seedCatalog, {})
+  const nonGating = await client.post(wellness, { ...input, symptoms: ['chest_pain', 'dizziness'] })
+  expect(nonGating.status).toBe(200)
+  const nonGatingBody = await nonGating.json()
+  expect(nonGatingBody.status).toBe('ok')
+  expect(nonGatingBody.recommendations).toHaveLength(3)
+  expect(loadBpCatalog).toHaveBeenLastCalledWith('normal')
 })

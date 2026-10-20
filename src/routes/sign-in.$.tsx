@@ -5,9 +5,8 @@ export const Route = createFileRoute('/sign-in/$')({
   component: SignInPage,
 })
 
-// Catch-all route so Clerk owns every /sign-in/* step (.factor-one and
-// friends). After signing in, visitors land on /bootcamp with their enquiry
-// saved automatically; any other entry defaults to the home page.
+// Clerk preserves redirect_url through sign-in and sign-up, returning visitors
+// to the page that saved their plan, appointment or enquiry.
 function SignInPage() {
   return (
     <main className="auth-page">
@@ -15,11 +14,11 @@ function SignInPage() {
         <img src="/brand.svg" width={40} height={52} alt="" />
         <h1>Welcome back</h1>
         <p className="auth-copy">
-          Sign in to organise a bootcamp at your organisation. Your details
-          stay saved while you are here.
+          Sign in to continue with your yoga plan, appointment or bootcamp enquiry.
+          Your details stay saved while you are here.
         </p>
         <div className="auth-component">
-          <SignIn routing="path" path="/sign-in" fallbackRedirectUrl="/bootcamp" signUpUrl="/sign-up" />
+          <SignIn routing="path" path="/sign-in" fallbackRedirectUrl="/" signUpUrl="/sign-up" />
         </div>
       </div>
     </main>

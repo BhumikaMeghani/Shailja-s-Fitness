@@ -32,6 +32,9 @@ h1,h2,h3,p{margin:0}h1,h2,h3{font-weight:600;line-height:1.12}h1,h2{font-family:
 .anniversary>span{font:400 16px/1.35 var(--serif);letter-spacing:-.2px}
 .anniversary strong{font-weight:600}
 .nav-links{display:flex;gap:30px;margin-left:auto;align-items:center}
+.header-account{display:flex;align-items:center;flex-shrink:0}
+.account-button{border:1px solid var(--pine);border-radius:24px;padding:8px 14px;background:transparent;color:var(--pine);font:inherit;font-size:13px;white-space:nowrap;cursor:pointer}
+.account-button:disabled{opacity:.6;cursor:wait}
 .nav-links nav{display:flex;gap:30px}
 .nav-links a{font-size:13px;font-weight:500;color:var(--pine);position:relative;padding-block:8px}
 .nav-links a:hover{color:var(--green)}
@@ -417,6 +420,11 @@ body:has(dialog[open]){overflow:hidden}
 }
 
 @media(min-width:1600px){.hero{min-height:760px}}
+
+@media(min-width:921px) and (max-width:1200px){
+  .header-divider,.anniversary{display:none}
+  .nav-links nav{gap:18px}
+}
 
 @media(max-width:1100px){
   .wrap{width:calc(100% - 64px)}

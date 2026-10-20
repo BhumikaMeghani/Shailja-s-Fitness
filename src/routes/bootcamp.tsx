@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { useAuth } from '@clerk/tanstack-react-start'
 import SiteHeader from '~/components/SiteHeader'
+import { clerkConfigured, useSiteAuth } from '~/components/SiteAuth'
 import BootcampEnquiryDialog, {
   emptyBootcampForm,
   SUCCESS_MESSAGE,
@@ -10,10 +10,6 @@ import BootcampEnquiryDialog, {
 import { api, loadBootstrap, type BootstrapData } from '~/lib/api'
 
 export const Route = createFileRoute('/bootcamp')({ component: BootcampPage })
-
-// Clerk must be configured client-side; without a publishable key the
-// sign-in gate cannot open and enquiries submit directly instead.
-const clerkConfigured = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY)
 
 // Saved drafts wait here across the Clerk sign-in round-trip.
 const PENDING_KEY = 'pending_bootcamp_enquiry'
@@ -49,16 +45,8 @@ const bootcamps: BootcampRecord[] = [
 ]
 
 function BootcampPage() {
-  // The Clerk hook lives in only one of these branches per bundle, and
-  // clerkConfigured is a build-time constant, so the hook order can never
-  // change within a mounted tree.
-  if (!clerkConfigured) return <BootcampBody signedIn clerkReady />
-  return <ClerkedBootcampBody />
-}
-
-function ClerkedBootcampBody() {
-  const { isLoaded, isSignedIn } = useAuth()
-  return <BootcampBody signedIn={Boolean(isSignedIn)} clerkReady={isLoaded} />
+  const { ready, signedIn } = useSiteAuth()
+  return <BootcampBody signedIn={signedIn} clerkReady={ready} />
 }
 
 interface BodyProps {
@@ -136,15 +124,24 @@ function BootcampBody({ signedIn, clerkReady }: BodyProps) {
   // submitted (then celebrated with the success message) as soon as Clerk
   // hands back to /bootcamp. Signed-in visitors go straight through.
   const handleSubmit = useCallback(() => {
+    if (!clerkReady) {
+      setError('Sign-in is still loading. Please try again in a moment.')
+      return
+    }
     if (clerkConfigured && !signedIn) {
-      sessionStorage.setItem(PENDING_KEY, JSON.stringify(form))
+      try {
+        sessionStorage.setItem(PENDING_KEY, JSON.stringify(form))
+      } catch {
+        setError('Please allow session storage so your enquiry can resume after sign-in.')
+        return
+      }
       dialogRef.current?.close()
       showToast('Please sign in first — your enquiry is saved and submits automatically afterwards.')
       void navigate({ href: '/sign-in?redirect_url=/bootcamp' })
       return
     }
     submitEnquiry(form)
-  }, [form, navigate, showToast, signedIn, submitEnquiry])
+  }, [clerkReady, form, navigate, showToast, signedIn, submitEnquiry])
 
   const openDialog = useCallback(() => {
     requestAnimationFrame(() => dialogRef.current?.showModal())

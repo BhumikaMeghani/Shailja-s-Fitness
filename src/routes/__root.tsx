@@ -5,6 +5,7 @@ import {
   createRootRoute,
 } from '@tanstack/react-router'
 import { ClerkProvider } from '@clerk/tanstack-react-start'
+import { SiteAuthProvider } from '~/components/SiteAuth'
 import styles from '~/styles.css?url'
 import bpWellnessStyles from '~/bp-wellness.css?url'
 
@@ -40,7 +41,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {clerkPublishableKey ? <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">{children}</ClerkProvider> : children}
+        {clerkPublishableKey
+          ? <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up"><SiteAuthProvider>{children}</SiteAuthProvider></ClerkProvider>
+          : <SiteAuthProvider>{children}</SiteAuthProvider>}
         <Scripts />
       </body>
     </html>

@@ -13,6 +13,10 @@ export default defineConfig({
         extends: true,
         test: { name: "wellness-engine", environment: "node", include: ["src/lib/wellness/*.test.ts"] },
       },
+      {
+        extends: true,
+        test: { name: "auth-ui", environment: "jsdom", include: ["src/components/*.test.tsx"] },
+      },
     ],
   },
 });

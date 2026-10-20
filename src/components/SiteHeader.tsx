@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useRouterState } from '@tanstack/react-router'
+import { UserButton } from '@clerk/tanstack-react-start'
+import { clerkConfigured, signInToContinue, useSiteAuth } from '~/components/SiteAuth'
 import Lotus from '~/components/Lotus'
 
 interface SiteHeaderProps {
@@ -22,6 +24,7 @@ const anchors: AnchorLink[] = [
 ]
 
 export default function SiteHeader({ onBook }: SiteHeaderProps) {
+  const { ready, signedIn } = useSiteAuth()
   const [menuOpen, setMenuOpen] = useState(false)
   const [activeHash, setActiveHash] = useState('')
   const linksRef = useRef<HTMLDivElement>(null)
@@ -101,6 +104,13 @@ export default function SiteHeader({ onBook }: SiteHeaderProps) {
               </Link>
             ))}
           </nav>
+          {clerkConfigured && (
+            <div className="header-account">
+              {ready && signedIn
+                ? <UserButton userProfileMode="modal" />
+                : <button className="account-button" disabled={!ready} onClick={() => { closeMenu(); signInToContinue() }}>Sign in / Sign up</button>}
+            </div>
+          )}
           <button className="button small" onClick={() => { closeMenu(); onBook() }}>Book an Appointment</button>
         </div>
       </div>

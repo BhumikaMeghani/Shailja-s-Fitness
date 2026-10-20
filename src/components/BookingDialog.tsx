@@ -7,6 +7,9 @@ import {
   type BookingResult,
 } from '~/lib/api'
 import classIcons from '~/lib/icons'
+import { signInToContinue, useSiteAuth } from '~/components/SiteAuth'
+
+const PENDING_BOOKING_KEY = 'pending_appointment'
 
 interface Selection {
   service: string | null
@@ -43,6 +46,7 @@ const escapeHTML = (value: unknown) =>
   String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char] as string))
 
 export default function BookingDialog({ data, onDataRefreshed, openRequest, onOpenChange, onCloseChat, onToast }: BookingDialogProps) {
+  const { ready: authReady, signedIn } = useSiteAuth()
   const dialogRef = useRef<HTMLDialogElement>(null)
   const returnFocusRef = useRef<HTMLElement | null>(null)
   const requestVersionRef = useRef(0)
@@ -98,11 +102,33 @@ export default function BookingDialog({ data, onDataRefreshed, openRequest, onOp
 
   // Handle external open requests (header buttons, program cards, chatbot).
   useEffect(() => {
+    if (!authReady) return
     if (openRequest) {
+      if (!signedIn) {
+        try {
+          sessionStorage.setItem(PENDING_BOOKING_KEY, JSON.stringify(openRequest))
+        } catch {
+          onToast('Please allow session storage so your appointment can resume after sign-in.')
+          return
+        }
+        signInToContinue()
+        return
+      }
       void open(openRequest.service ?? null, openRequest.preferences ?? null)
+      return
+    }
+    const pending = sessionStorage.getItem(PENDING_BOOKING_KEY)
+    if (pending && signedIn) {
+      sessionStorage.removeItem(PENDING_BOOKING_KEY)
+      try {
+        const request = JSON.parse(pending) as NonNullable<BookingDialogProps['openRequest']>
+        void open(request.service ?? null, request.preferences ?? null)
+      } catch {
+        onToast('Please choose your appointment again.')
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [openRequest])
+  }, [openRequest, authReady, signedIn])
 
   const close = () => {
     dialogRef.current?.close()

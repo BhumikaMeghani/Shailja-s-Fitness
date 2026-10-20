@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
+import { signInToContinue, useSiteAuth } from '~/components/SiteAuth'
 import {
   MATCHING_RULES,
   SAFETY_RULES,
@@ -41,8 +42,10 @@ const FOOD_GROUPS = [
  * page refresh simply returns the plan to its locked state.
  */
 const PAYMENT_MODE = 'demo' as const
+const PENDING_PLAN_KEY = 'pending_yoga_plan'
 
 export default function PersonalizedYogaDialog({ openRequest, onOpenChange }: PersonalizedYogaDialogProps) {
+  const { ready, signedIn } = useSiteAuth()
   const dialogRef = useRef<HTMLDialogElement>(null)
   const returnFocusRef = useRef<HTMLElement | null>(null)
 
@@ -91,6 +94,32 @@ export default function PersonalizedYogaDialog({ openRequest, onOpenChange }: Pe
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openRequest])
 
+  // The full-page Clerk flow (including OAuth) may remount this component.
+  useEffect(() => {
+    if (!ready) return
+    const pending = sessionStorage.getItem(PENDING_PLAN_KEY)
+    if (!pending) return
+    sessionStorage.removeItem(PENDING_PLAN_KEY)
+    try {
+      const draft = JSON.parse(pending) as { name: string; email: string; age: string; goals: GoalId[] }
+      setName(draft.name)
+      setEmail(draft.email)
+      setAge(draft.age)
+      setSelectedGoals(draft.goals)
+      open()
+      if (signedIn) {
+        const planResult = generateWellnessPlan(draft)
+        setResult(planResult)
+        setPaymentMode(isPlan(planResult) ? PAYMENT_MODE : null)
+        setIsPlanUnlocked(false)
+        setStage('result')
+      }
+    } catch {
+      setError('Please check your answers and generate your plan again.')
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, signedIn])
+
   // The lock overlay must clearly carry the next action for keyboard users.
   useEffect(() => {
     if (stage === 'result' && planLocked) unlockButtonRef.current?.focus()
@@ -113,6 +142,14 @@ export default function PersonalizedYogaDialog({ openRequest, onOpenChange }: Pe
         age,
         goals: selectedGoals,
       })
+      if (!ready) return setError('Sign-in is still loading. Please try again in a moment.')
+      if (!signedIn) {
+        sessionStorage.setItem(PENDING_PLAN_KEY, JSON.stringify({
+          name: trimmedName, email: trimmedEmail, age, goals: selectedGoals,
+        }))
+        signInToContinue()
+        return
+      }
       setResult(planResult)
       // A fresh plan is always locked again: only its own demo-payment
       // action unlocks it (README 4.5). Safety deferrals are never priced.

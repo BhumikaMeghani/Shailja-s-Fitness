@@ -8,12 +8,12 @@ interface SiteHeaderProps {
 
 interface AnchorLink {
   label: string
-  to: '/' | '/programs' | '/centers' | '/contact' | '/wall-of-art'
+  to: '/' | '/bootcamp' | '/programs' | '/centers' | '/contact' | '/wall-of-art'
   hash?: string
 }
 
 const anchors: AnchorLink[] = [
-  { label: 'Bootcamp', to: '/', hash: '#bootcamp' },
+  { label: 'Bootcamp', to: '/bootcamp' },
   { label: 'Programs', to: '/programs' },
   { label: 'Centers', to: '/centers' },
   { label: 'About Us', to: '/', hash: '#about' },

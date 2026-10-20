@@ -13,6 +13,7 @@
     "start": "bun .output/server/index.mjs"
   },
   "dependencies": {
+    "@clerk/tanstack-react-start": "^1.7.3",
     "@tanstack/react-router": "^1.170.45",
     "@tanstack/react-start": "^1.169.3",
     "convex": "^1.47.0",

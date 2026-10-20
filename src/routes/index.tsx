@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import SiteHeader from '~/components/SiteHeader'
 import ChatWidget from '~/components/ChatWidget'
 import BookingDialog from '~/components/BookingDialog'
@@ -149,8 +149,8 @@ function LandingPage() {
             <article id="bootcamp">
               <span>01 / BOOTCAMP</span>
               <h3>A fresh kind of energy.</h3>
-              <p>Bootcamp formats and upcoming sessions are not yet published.</p>
-              <a href="#contact" className="text-link">Ask the studio ↗</a>
+              <p>Bootcamps conducted at institutes and companies around the city.</p>
+              <Link to="/bootcamp" className="text-link">See our bootcamps ↗</Link>
             </article>
             <article id="institutions">
               <span>02 / INSTITUTIONS</span>

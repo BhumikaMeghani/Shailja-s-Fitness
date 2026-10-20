@@ -3,23 +3,22 @@ import { defineConfig } from 'vite'
 import viteReact from '@vitejs/plugin-react'
 import { nitro } from 'nitro/vite'
 
-// Security headers mirror the Flask configuration. Script sources include
-// inline scripts because SSR hydration embeds an inline serialization payload,
-// plus Razorpay Checkout. API responses are marked no-store.
+/* Clerk adds its Frontend API (+clerk.accounts.dev), clerk.com asset
+ * endpoints, and the telemetry collector to the base sources. */
 const securityHeaders = {
   'X-Content-Type-Options': 'nosniff',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'X-Frame-Options': 'DENY',
   'Content-Security-Policy': [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' https://*.razorpay.com",
+    "script-src 'self' 'unsafe-inline' https://*.razorpay.com https://*.clerk.accounts.dev https://*.clerk.com",
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data:",
-    "frame-src https://*.razorpay.com https://www.google.com https://maps.google.com",
-    "connect-src 'self' https://*.razorpay.com",
+    "img-src 'self' data: https://img.clerk.com https://*.clerk.accounts.dev",
+    "frame-src https://*.razorpay.com https://www.google.com https://maps.google.com https://*.clerk.accounts.dev",
+    "connect-src 'self' https://*.razorpay.com https://*.clerk.accounts.dev https://*.clerk.com https://clerk.telemetry.com",
     "object-src 'none'",
     "base-uri 'self'",
-    "form-action 'self'",
+    "form-action 'self' https://*.clerk.accounts.dev",
     "frame-ancestors 'none'",
   ].join('; '),
 }

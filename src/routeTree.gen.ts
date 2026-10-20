@@ -10,13 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BootcampRouteImport } from './routes/bootcamp'
 import { Route as CentersRouteImport } from './routes/centers'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ProgramsRouteImport } from './routes/programs'
 import { Route as WallOfArtRouteImport } from './routes/wall-of-art'
 import { Route as ApiAvailabilityRouteImport } from './routes/api/availability'
+import { Route as ApiBootcampsRouteImport } from './routes/api/bootcamps'
 import { Route as ApiBootstrapRouteImport } from './routes/api/bootstrap'
 import { Route as ApiContactRouteImport } from './routes/api/contact'
+import { Route as SignInSplatRouteImport } from './routes/sign-in.$'
+import { Route as SignUpSplatRouteImport } from './routes/sign-up.$'
 import { Route as ApiAuthActionRouteImport } from './routes/api/auth.$action'
 import { Route as ApiBookingsBookingIdRouteImport } from './routes/api/bookings.$bookingId'
 import { Route as ApiBookingsDemoRouteImport } from './routes/api/bookings.demo'
@@ -28,6 +32,11 @@ import { Route as ApiWellnessRecommendRouteImport } from './routes/api/wellness.
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BootcampRoute = BootcampRouteImport.update({
+  id: '/bootcamp',
+  path: '/bootcamp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CentersRoute = CentersRouteImport.update({
@@ -55,6 +64,11 @@ const ApiAvailabilityRoute = ApiAvailabilityRouteImport.update({
   path: '/api/availability',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiBootcampsRoute = ApiBootcampsRouteImport.update({
+  id: '/api/bootcamps',
+  path: '/api/bootcamps',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiBootstrapRoute = ApiBootstrapRouteImport.update({
   id: '/api/bootstrap',
   path: '/api/bootstrap',
@@ -63,6 +77,16 @@ const ApiBootstrapRoute = ApiBootstrapRouteImport.update({
 const ApiContactRoute = ApiContactRouteImport.update({
   id: '/api/contact',
   path: '/api/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignInSplatRoute = SignInSplatRouteImport.update({
+  id: '/sign-in/$',
+  path: '/sign-in/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignUpSplatRoute = SignUpSplatRouteImport.update({
+  id: '/sign-up/$',
+  path: '/sign-up/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthActionRoute = ApiAuthActionRouteImport.update({
@@ -103,13 +127,17 @@ const ApiWellnessRecommendRoute = ApiWellnessRecommendRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/bootcamp': typeof BootcampRoute
   '/centers': typeof CentersRoute
   '/contact': typeof ContactRoute
   '/programs': typeof ProgramsRoute
   '/wall-of-art': typeof WallOfArtRoute
   '/api/availability': typeof ApiAvailabilityRoute
+  '/api/bootcamps': typeof ApiBootcampsRoute
   '/api/bootstrap': typeof ApiBootstrapRoute
   '/api/contact': typeof ApiContactRoute
+  '/sign-in/$': typeof SignInSplatRoute
+  '/sign-up/$': typeof SignUpSplatRoute
   '/api/auth/$action': typeof ApiAuthActionRoute
   '/api/bookings/$bookingId': typeof ApiBookingsBookingIdRoute
   '/api/bookings/demo': typeof ApiBookingsDemoRoute
@@ -120,13 +148,17 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/bootcamp': typeof BootcampRoute
   '/centers': typeof CentersRoute
   '/contact': typeof ContactRoute
   '/programs': typeof ProgramsRoute
   '/wall-of-art': typeof WallOfArtRoute
   '/api/availability': typeof ApiAvailabilityRoute
+  '/api/bootcamps': typeof ApiBootcampsRoute
   '/api/bootstrap': typeof ApiBootstrapRoute
   '/api/contact': typeof ApiContactRoute
+  '/sign-in/$': typeof SignInSplatRoute
+  '/sign-up/$': typeof SignUpSplatRoute
   '/api/auth/$action': typeof ApiAuthActionRoute
   '/api/bookings/$bookingId': typeof ApiBookingsBookingIdRoute
   '/api/bookings/demo': typeof ApiBookingsDemoRoute
@@ -138,13 +170,17 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/bootcamp': typeof BootcampRoute
   '/centers': typeof CentersRoute
   '/contact': typeof ContactRoute
   '/programs': typeof ProgramsRoute
   '/wall-of-art': typeof WallOfArtRoute
   '/api/availability': typeof ApiAvailabilityRoute
+  '/api/bootcamps': typeof ApiBootcampsRoute
   '/api/bootstrap': typeof ApiBootstrapRoute
   '/api/contact': typeof ApiContactRoute
+  '/sign-in/$': typeof SignInSplatRoute
+  '/sign-up/$': typeof SignUpSplatRoute
   '/api/auth/$action': typeof ApiAuthActionRoute
   '/api/bookings/$bookingId': typeof ApiBookingsBookingIdRoute
   '/api/bookings/demo': typeof ApiBookingsDemoRoute
@@ -157,13 +193,17 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/bootcamp'
     | '/centers'
     | '/contact'
     | '/programs'
     | '/wall-of-art'
     | '/api/availability'
+    | '/api/bootcamps'
     | '/api/bootstrap'
     | '/api/contact'
+    | '/sign-in/$'
+    | '/sign-up/$'
     | '/api/auth/$action'
     | '/api/bookings/$bookingId'
     | '/api/bookings/demo'
@@ -174,13 +214,17 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/bootcamp'
     | '/centers'
     | '/contact'
     | '/programs'
     | '/wall-of-art'
     | '/api/availability'
+    | '/api/bootcamps'
     | '/api/bootstrap'
     | '/api/contact'
+    | '/sign-in/$'
+    | '/sign-up/$'
     | '/api/auth/$action'
     | '/api/bookings/$bookingId'
     | '/api/bookings/demo'
@@ -191,13 +235,17 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/bootcamp'
     | '/centers'
     | '/contact'
     | '/programs'
     | '/wall-of-art'
     | '/api/availability'
+    | '/api/bootcamps'
     | '/api/bootstrap'
     | '/api/contact'
+    | '/sign-in/$'
+    | '/sign-up/$'
     | '/api/auth/$action'
     | '/api/bookings/$bookingId'
     | '/api/bookings/demo'
@@ -209,13 +257,17 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BootcampRoute: typeof BootcampRoute
   CentersRoute: typeof CentersRoute
   ContactRoute: typeof ContactRoute
   ProgramsRoute: typeof ProgramsRoute
   WallOfArtRoute: typeof WallOfArtRoute
   ApiAvailabilityRoute: typeof ApiAvailabilityRoute
+  ApiBootcampsRoute: typeof ApiBootcampsRoute
   ApiBootstrapRoute: typeof ApiBootstrapRoute
   ApiContactRoute: typeof ApiContactRoute
+  SignInSplatRoute: typeof SignInSplatRoute
+  SignUpSplatRoute: typeof SignUpSplatRoute
   ApiAuthActionRoute: typeof ApiAuthActionRoute
   ApiBookingsBookingIdRoute: typeof ApiBookingsBookingIdRoute
   ApiBookingsDemoRoute: typeof ApiBookingsDemoRoute
@@ -232,6 +284,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bootcamp': {
+      id: '/bootcamp'
+      path: '/bootcamp'
+      fullPath: '/bootcamp'
+      preLoaderRoute: typeof BootcampRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/centers': {
@@ -269,6 +328,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAvailabilityRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/bootcamps': {
+      id: '/api/bootcamps'
+      path: '/api/bootcamps'
+      fullPath: '/api/bootcamps'
+      preLoaderRoute: typeof ApiBootcampsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/bootstrap': {
       id: '/api/bootstrap'
       path: '/api/bootstrap'
@@ -281,6 +347,20 @@ declare module '@tanstack/react-router' {
       path: '/api/contact'
       fullPath: '/api/contact'
       preLoaderRoute: typeof ApiContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sign-in/$': {
+      id: '/sign-in/$'
+      path: '/sign-in/$'
+      fullPath: '/sign-in/$'
+      preLoaderRoute: typeof SignInSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sign-up/$': {
+      id: '/sign-up/$'
+      path: '/sign-up/$'
+      fullPath: '/sign-up/$'
+      preLoaderRoute: typeof SignUpSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/auth/$action': {
@@ -337,13 +417,17 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BootcampRoute: BootcampRoute,
   CentersRoute: CentersRoute,
   ContactRoute: ContactRoute,
   ProgramsRoute: ProgramsRoute,
   WallOfArtRoute: WallOfArtRoute,
   ApiAvailabilityRoute: ApiAvailabilityRoute,
+  ApiBootcampsRoute: ApiBootcampsRoute,
   ApiBootstrapRoute: ApiBootstrapRoute,
   ApiContactRoute: ApiContactRoute,
+  SignInSplatRoute: SignInSplatRoute,
+  SignUpSplatRoute: SignUpSplatRoute,
   ApiAuthActionRoute: ApiAuthActionRoute,
   ApiBookingsBookingIdRoute: ApiBookingsBookingIdRoute,
   ApiBookingsDemoRoute: ApiBookingsDemoRoute,
@@ -357,10 +441,11 @@ export const routeTree = rootRouteImport
   ._addFileTypes<FileRouteTypes>()
 
 import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
+import type { startInstance } from './start.ts'
 declare module '@tanstack/react-start' {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
   }
 }

@@ -4,8 +4,13 @@ import {
   Scripts,
   createRootRoute,
 } from '@tanstack/react-router'
+import { ClerkProvider } from '@clerk/tanstack-react-start'
 import styles from '~/styles.css?url'
 import bpWellnessStyles from '~/bp-wellness.css?url'
+
+// Clerk renders only when configured; without a publishable key the site
+// runs exactly as before and no auth context is mounted.
+const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined
 
 export const Route = createRootRoute({
   head: () => ({
@@ -35,7 +40,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {children}
+        {clerkPublishableKey ? <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">{children}</ClerkProvider> : children}
         <Scripts />
       </body>
     </html>

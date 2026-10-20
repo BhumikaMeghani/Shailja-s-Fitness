@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as bootcamps from "../bootcamps.js";
 import type * as migrate from "../migrate.js";
 import type * as studio from "../studio.js";
 import type * as wellness from "../wellness.js";
@@ -20,6 +21,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  bootcamps: typeof bootcamps;
   migrate: typeof migrate;
   studio: typeof studio;
   wellness: typeof wellness;

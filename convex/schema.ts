@@ -28,6 +28,19 @@ export const queryFromUser = v.object({
   name: v.string(), address: v.string(), email: v.union(v.string(), v.null()),
   mobile: v.string(), message: v.string(), created: v.number(),
 });
+// Bootcamp-page enquiries from organisations. Convex table names must be
+// lowercase snake_case, so the requested "BootCamps_Booking" table is stored
+// as bootcamps_booking.
+export const bootcampBooking = v.object({
+  user_id: v.string(),
+  organisation: v.string(), contact_person: v.string(), email: v.string(),
+  contact_number: v.string(), organisation_category: v.string(),
+  bootcamp_type: v.string(), purpose: v.union(v.string(), v.null()),
+  participants: v.string(), preferred_date: v.union(v.string(), v.null()),
+  preferred_duration: v.union(v.string(), v.null()), preferred_mode: v.string(),
+  city_venue: v.union(v.string(), v.null()),
+  additional_requirements: v.union(v.string(), v.null()), created: v.number(),
+});
 
 export default defineSchema({
   users: defineTable(user).index("by_logical_id", ["id"]).index("by_email", ["email"]),
@@ -40,6 +53,8 @@ export default defineSchema({
     .index("by_payment_id", ["payment_id"]),
   webhook_events: defineTable(webhookEvent).index("by_logical_id", ["id"]),
   query_from_user: defineTable(queryFromUser).index("by_created", ["created"]),
+  bootcamps_booking: defineTable(bootcampBooking)
+    .index("by_created", ["created"]).index("by_user_id", ["user_id"]),
   wellness_catalog: defineTable(wellnessCatalog)
     .index("by_version_and_route", ["version", "route"]),
   migrations: defineTable({ digest: v.string(), counts: v.record(v.string(), v.number()) })

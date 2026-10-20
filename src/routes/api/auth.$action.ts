@@ -1,8 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { queryOne, run, rollback, type UserRow } from '~/server/db'
+import { api, read, write } from '~/server/db'
+import { randomBytes } from 'node:crypto'
 import { hashPassword, verifyWerkzeugHash, sha256Hex } from '~/server/password'
 import { newSession, sessionCookieHeader } from '~/server/session'
-import { fail, limited, clientIp, hashEmail, protectedWrite } from '~/server/http'
+import { fail, limited, clientIp, hashEmail, protectedWrite, apiHandler } from '~/server/http'
 
 // A real password hash for unknown accounts avoids an obvious timing discrepancy.
 let DUMMY_HASH: string | null = null
@@ -14,7 +15,7 @@ function dummyHash(): string {
 export const Route = createFileRoute('/api/auth/$action')({
   server: {
     handlers: {
-      POST: async ({ request, params }) => {
+      POST: apiHandler(async ({ request, params }) => {
         const action = params.action
         if (!['register', 'login', 'logout'].includes(action)) {
           return fail('Unknown authentication action.', 404)
@@ -24,7 +25,7 @@ export const Route = createFileRoute('/api/auth/$action')({
         const { body } = guard.ctx
 
         if (action === 'logout') {
-          const fresh = newSession(null, request)
+          const fresh = await newSession(null, request)
           return Response.json({ csrf: fresh.csrf, user: null }, { headers: { 'Set-Cookie': sessionCookieHeader(fresh.token) } })
         }
 
@@ -35,7 +36,7 @@ export const Route = createFileRoute('/api/auth/$action')({
         }
         const email = emailRaw.trim().toLowerCase()
         // Rate-limit IP and normalized account independently, including successful attempts.
-        if (limited(`ip:${clientIp(request)}`, 30) || limited(`email:${hashEmail(email)}`, 10)) {
+        if (await limited(`ip:${clientIp(request)}`, 30) || await limited(`email:${hashEmail(email)}`, 10)) {
           return fail('Too many attempts. Please try again in 15 minutes.', 429)
         }
         if (email.length > 254 || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
@@ -45,32 +46,29 @@ export const Route = createFileRoute('/api/auth/$action')({
           return fail('Use a password between 12 and 128 characters.')
         }
 
-        let userId: number
+        let userId: string
         if (action === 'register') {
-          try {
-            const result = run(
-              'INSERT INTO users(email,password_hash) VALUES(?,?)',
-              email, hashPassword(passwordRaw),
-            )
-            userId = Number(result.lastInsertRowid)
-          } catch {
-            rollback()
+          const id = await write(api.studio.register, {
+            id: randomBytes(16).toString('hex'), email, password_hash: hashPassword(passwordRaw),
+          })
+          if (!id) {
             return fail('Unable to create this account. Try signing in instead.', 409)
           }
+          userId = id
         } else {
-          const row = queryOne<UserRow>('SELECT * FROM users WHERE email=?', email)
+          const row = await read(api.studio.getUser, { field: 'email', value: email })
           const valid = verifyWerkzeugHash(row ? row.password_hash : dummyHash(), passwordRaw)
           if (!row || !valid) {
             return fail('Email or password is incorrect.', 401)
           }
           userId = row.id
         }
-        const fresh = newSession(userId, request)
+        const fresh = await newSession(userId, request)
         return Response.json(
           { user: { email }, csrf: fresh.csrf },
           { headers: { 'Set-Cookie': sessionCookieHeader(fresh.token) } },
         )
-      },
+      }),
     },
   },
 })

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" fill="none">
+  <title>Tadasana — Mountain Pose</title>
+  <rect width="480" height="300" fill="#f4f1e7"/><circle cx="240" cy="142" r="110" fill="#e5ebdf"/>
+  <rect x="120" y="265" width="240" height="10" rx="5" fill="#b5c6ac"/>
+  <g stroke-linecap="round" stroke-linejoin="round">
+    <path d="M222 164 224 214 215 260M255 164 253 214 263 260" stroke="#164f49" stroke-width="18"/>
+    <path d="M217 95 204 138 202 177M261 95 275 138 277 177" stroke="#b87855" stroke-width="12"/>
+    <path d="M221 90 256 90 261 166 216 166Z" fill="#29877c"/>
+    <path d="M239 75V89" stroke="#b87855" stroke-width="14"/>
+    <circle cx="239" cy="57" r="21" fill="#c78b65"/>
+    <path d="M219 53Q219 28 241 33Q262 35 258 51" fill="#3f4032"/>
+    <path d="M213 262H227M254 262H270" stroke="#b87855" stroke-width="10"/>
+  </g>
+</svg>

@@ -5,20 +5,22 @@ import {
   createRootRoute,
 } from '@tanstack/react-router'
 import styles from '~/styles.css?url'
+import bpWellnessStyles from '~/bp-wellness.css?url'
 
 export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { name: 'theme-color', content: '#16877F' },
+      { name: 'theme-color', content: '#efe6da' },
       {
         name: 'description',
-        content: 'Make space for yourself at Shailja’s Fitness. Explore yoga, movement and wellness, and discover your next step.',
+        content: 'Find your balance, build your strength, feel your best at Shailja’s Fitness. Yoga, Zumba, dance, fitness and weight loss — celebrating 7+ years of wellness.',
       },
     ],
     links: [
       { rel: 'stylesheet', href: styles },
+      { rel: 'stylesheet', href: bpWellnessStyles },
       { rel: 'icon', href: '/brand.svg', type: 'image/svg+xml' },
     ],
     title: 'Shailja’s Fitness — A little stronger. A little more you.',

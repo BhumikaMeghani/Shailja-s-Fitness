@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" fill="none">
+  <title>Supported Tadasana beside a sturdy chair</title>
+  <rect width="480" height="300" fill="#f4f1e7"/><circle cx="230" cy="142" r="110" fill="#e5ebdf"/>
+  <rect x="100" y="265" width="290" height="10" rx="5" fill="#b5c6ac"/>
+  <g stroke-linecap="round" stroke-linejoin="round">
+    <path d="M320 147V260M320 194H372V260M329 163H363" stroke="#917740" stroke-width="8"/>
+    <path d="M202 164 204 214 195 260M235 164 233 214 243 260" stroke="#164f49" stroke-width="18"/>
+    <path d="M197 95 184 138 182 177M241 95 273 137 318 147" stroke="#b87855" stroke-width="12"/>
+    <path d="M201 90 236 90 241 166 196 166Z" fill="#29877c"/>
+    <path d="M219 75V89" stroke="#b87855" stroke-width="14"/><circle cx="219" cy="57" r="21" fill="#c78b65"/>
+    <path d="M199 53Q199 28 221 33Q242 35 238 51" fill="#3f4032"/>
+    <path d="M193 262H207M234 262H250" stroke="#b87855" stroke-width="10"/>
+  </g>
+</svg>

@@ -10,18 +10,44 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CentersRouteImport } from './routes/centers'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ProgramsRouteImport } from './routes/programs'
+import { Route as WallOfArtRouteImport } from './routes/wall-of-art'
 import { Route as ApiAvailabilityRouteImport } from './routes/api/availability'
 import { Route as ApiBootstrapRouteImport } from './routes/api/bootstrap'
+import { Route as ApiContactRouteImport } from './routes/api/contact'
 import { Route as ApiAuthActionRouteImport } from './routes/api/auth.$action'
 import { Route as ApiBookingsBookingIdRouteImport } from './routes/api/bookings.$bookingId'
 import { Route as ApiBookingsDemoRouteImport } from './routes/api/bookings.demo'
 import { Route as ApiPaymentsOrderRouteImport } from './routes/api/payments.order'
 import { Route as ApiPaymentsVerifyRouteImport } from './routes/api/payments.verify'
 import { Route as ApiPaymentsWebhookRouteImport } from './routes/api/payments.webhook'
+import { Route as ApiWellnessRecommendRouteImport } from './routes/api/wellness.recommend'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CentersRoute = CentersRouteImport.update({
+  id: '/centers',
+  path: '/centers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgramsRoute = ProgramsRouteImport.update({
+  id: '/programs',
+  path: '/programs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WallOfArtRoute = WallOfArtRouteImport.update({
+  id: '/wall-of-art',
+  path: '/wall-of-art',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAvailabilityRoute = ApiAvailabilityRouteImport.update({
@@ -32,6 +58,11 @@ const ApiAvailabilityRoute = ApiAvailabilityRouteImport.update({
 const ApiBootstrapRoute = ApiBootstrapRouteImport.update({
   id: '/api/bootstrap',
   path: '/api/bootstrap',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiContactRoute = ApiContactRouteImport.update({
+  id: '/api/contact',
+  path: '/api/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthActionRoute = ApiAuthActionRouteImport.update({
@@ -64,87 +95,134 @@ const ApiPaymentsWebhookRoute = ApiPaymentsWebhookRouteImport.update({
   path: '/api/payments/webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiWellnessRecommendRoute = ApiWellnessRecommendRouteImport.update({
+  id: '/api/wellness/recommend',
+  path: '/api/wellness/recommend',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/centers': typeof CentersRoute
+  '/contact': typeof ContactRoute
+  '/programs': typeof ProgramsRoute
+  '/wall-of-art': typeof WallOfArtRoute
   '/api/availability': typeof ApiAvailabilityRoute
   '/api/bootstrap': typeof ApiBootstrapRoute
+  '/api/contact': typeof ApiContactRoute
   '/api/auth/$action': typeof ApiAuthActionRoute
   '/api/bookings/$bookingId': typeof ApiBookingsBookingIdRoute
   '/api/bookings/demo': typeof ApiBookingsDemoRoute
   '/api/payments/order': typeof ApiPaymentsOrderRoute
   '/api/payments/verify': typeof ApiPaymentsVerifyRoute
   '/api/payments/webhook': typeof ApiPaymentsWebhookRoute
+  '/api/wellness/recommend': typeof ApiWellnessRecommendRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/centers': typeof CentersRoute
+  '/contact': typeof ContactRoute
+  '/programs': typeof ProgramsRoute
+  '/wall-of-art': typeof WallOfArtRoute
   '/api/availability': typeof ApiAvailabilityRoute
   '/api/bootstrap': typeof ApiBootstrapRoute
+  '/api/contact': typeof ApiContactRoute
   '/api/auth/$action': typeof ApiAuthActionRoute
   '/api/bookings/$bookingId': typeof ApiBookingsBookingIdRoute
   '/api/bookings/demo': typeof ApiBookingsDemoRoute
   '/api/payments/order': typeof ApiPaymentsOrderRoute
   '/api/payments/verify': typeof ApiPaymentsVerifyRoute
   '/api/payments/webhook': typeof ApiPaymentsWebhookRoute
+  '/api/wellness/recommend': typeof ApiWellnessRecommendRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/centers': typeof CentersRoute
+  '/contact': typeof ContactRoute
+  '/programs': typeof ProgramsRoute
+  '/wall-of-art': typeof WallOfArtRoute
   '/api/availability': typeof ApiAvailabilityRoute
   '/api/bootstrap': typeof ApiBootstrapRoute
+  '/api/contact': typeof ApiContactRoute
   '/api/auth/$action': typeof ApiAuthActionRoute
   '/api/bookings/$bookingId': typeof ApiBookingsBookingIdRoute
   '/api/bookings/demo': typeof ApiBookingsDemoRoute
   '/api/payments/order': typeof ApiPaymentsOrderRoute
   '/api/payments/verify': typeof ApiPaymentsVerifyRoute
   '/api/payments/webhook': typeof ApiPaymentsWebhookRoute
+  '/api/wellness/recommend': typeof ApiWellnessRecommendRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/centers'
+    | '/contact'
+    | '/programs'
+    | '/wall-of-art'
     | '/api/availability'
     | '/api/bootstrap'
+    | '/api/contact'
     | '/api/auth/$action'
     | '/api/bookings/$bookingId'
     | '/api/bookings/demo'
     | '/api/payments/order'
     | '/api/payments/verify'
     | '/api/payments/webhook'
+    | '/api/wellness/recommend'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/centers'
+    | '/contact'
+    | '/programs'
+    | '/wall-of-art'
     | '/api/availability'
     | '/api/bootstrap'
+    | '/api/contact'
     | '/api/auth/$action'
     | '/api/bookings/$bookingId'
     | '/api/bookings/demo'
     | '/api/payments/order'
     | '/api/payments/verify'
     | '/api/payments/webhook'
+    | '/api/wellness/recommend'
   id:
     | '__root__'
     | '/'
+    | '/centers'
+    | '/contact'
+    | '/programs'
+    | '/wall-of-art'
     | '/api/availability'
     | '/api/bootstrap'
+    | '/api/contact'
     | '/api/auth/$action'
     | '/api/bookings/$bookingId'
     | '/api/bookings/demo'
     | '/api/payments/order'
     | '/api/payments/verify'
     | '/api/payments/webhook'
+    | '/api/wellness/recommend'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CentersRoute: typeof CentersRoute
+  ContactRoute: typeof ContactRoute
+  ProgramsRoute: typeof ProgramsRoute
+  WallOfArtRoute: typeof WallOfArtRoute
   ApiAvailabilityRoute: typeof ApiAvailabilityRoute
   ApiBootstrapRoute: typeof ApiBootstrapRoute
+  ApiContactRoute: typeof ApiContactRoute
   ApiAuthActionRoute: typeof ApiAuthActionRoute
   ApiBookingsBookingIdRoute: typeof ApiBookingsBookingIdRoute
   ApiBookingsDemoRoute: typeof ApiBookingsDemoRoute
   ApiPaymentsOrderRoute: typeof ApiPaymentsOrderRoute
   ApiPaymentsVerifyRoute: typeof ApiPaymentsVerifyRoute
   ApiPaymentsWebhookRoute: typeof ApiPaymentsWebhookRoute
+  ApiWellnessRecommendRoute: typeof ApiWellnessRecommendRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -154,6 +232,34 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/centers': {
+      id: '/centers'
+      path: '/centers'
+      fullPath: '/centers'
+      preLoaderRoute: typeof CentersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/programs': {
+      id: '/programs'
+      path: '/programs'
+      fullPath: '/programs'
+      preLoaderRoute: typeof ProgramsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wall-of-art': {
+      id: '/wall-of-art'
+      path: '/wall-of-art'
+      fullPath: '/wall-of-art'
+      preLoaderRoute: typeof WallOfArtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/availability': {
@@ -168,6 +274,13 @@ declare module '@tanstack/react-router' {
       path: '/api/bootstrap'
       fullPath: '/api/bootstrap'
       preLoaderRoute: typeof ApiBootstrapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/contact': {
+      id: '/api/contact'
+      path: '/api/contact'
+      fullPath: '/api/contact'
+      preLoaderRoute: typeof ApiContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/auth/$action': {
@@ -212,19 +325,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPaymentsWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/wellness/recommend': {
+      id: '/api/wellness/recommend'
+      path: '/api/wellness/recommend'
+      fullPath: '/api/wellness/recommend'
+      preLoaderRoute: typeof ApiWellnessRecommendRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CentersRoute: CentersRoute,
+  ContactRoute: ContactRoute,
+  ProgramsRoute: ProgramsRoute,
+  WallOfArtRoute: WallOfArtRoute,
   ApiAvailabilityRoute: ApiAvailabilityRoute,
   ApiBootstrapRoute: ApiBootstrapRoute,
+  ApiContactRoute: ApiContactRoute,
   ApiAuthActionRoute: ApiAuthActionRoute,
   ApiBookingsBookingIdRoute: ApiBookingsBookingIdRoute,
   ApiBookingsDemoRoute: ApiBookingsDemoRoute,
   ApiPaymentsOrderRoute: ApiPaymentsOrderRoute,
   ApiPaymentsVerifyRoute: ApiPaymentsVerifyRoute,
   ApiPaymentsWebhookRoute: ApiPaymentsWebhookRoute,
+  ApiWellnessRecommendRoute: ApiWellnessRecommendRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" fill="none">
+  <title>Cat–Cow on hands and knees, gentle rounded-back phase</title>
+  <rect width="480" height="300" fill="#f4f1e7"/><circle cx="240" cy="142" r="110" fill="#e5ebdf"/>
+  <rect x="65" y="248" width="350" height="12" rx="6" fill="#b5c6ac"/>
+  <g stroke-linecap="round" stroke-linejoin="round">
+    <path d="M194 150 193 239 174 242M213 155 218 241 201 244" stroke="#b87855" stroke-width="12"/>
+    <path d="M296 151 315 237 366 239M278 160 292 243 342 245" stroke="#164f49" stroke-width="17"/>
+    <path d="M190 151Q235 87 294 137L299 166Q241 128 205 174Z" fill="#29877c"/>
+    <path d="M192 155 170 163" stroke="#b87855" stroke-width="14"/>
+    <circle cx="153" cy="170" r="20" fill="#c78b65"/>
+    <path d="M134 171Q127 145 153 148Q172 148 172 163" fill="#3f4032"/>
+    <path d="M214 99Q249 80 277 98" stroke="#c5ae6a" stroke-width="3" stroke-dasharray="5 7"/>
+  </g>
+</svg>

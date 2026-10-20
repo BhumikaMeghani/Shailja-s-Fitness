@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" fill="none">
+  <title>Supported Reclining Bound Angle, viewed from above</title>
+  <rect width="480" height="300" fill="#f4f1e7"/><rect x="100" y="28" width="280" height="246" rx="30" fill="#e5ebdf"/>
+  <rect x="204" y="36" width="72" height="45" rx="15" fill="#d3bb7f"/>
+  <rect x="149" y="188" width="55" height="37" rx="14" fill="#d3bb7f"/><rect x="276" y="188" width="55" height="37" rx="14" fill="#d3bb7f"/>
+  <g stroke-linecap="round" stroke-linejoin="round">
+    <path d="M225 165 180 207 235 244M255 165 300 207 245 244" stroke="#164f49" stroke-width="18"/>
+    <path d="M218 98 189 127 168 155M262 98 291 127 312 155" stroke="#b87855" stroke-width="12"/>
+    <path d="M220 91H260L264 169H216Z" fill="#29877c"/>
+    <path d="M240 76V90" stroke="#b87855" stroke-width="14"/><circle cx="240" cy="60" r="20" fill="#c78b65"/>
+    <path d="M220 55Q221 33 242 37Q262 37 259 54" fill="#3f4032"/>
+    <path d="M235 242 240 255 245 242" stroke="#b87855" stroke-width="9"/>
+  </g>
+</svg>

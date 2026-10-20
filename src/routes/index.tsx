@@ -3,6 +3,9 @@ import { createFileRoute } from '@tanstack/react-router'
 import SiteHeader from '~/components/SiteHeader'
 import ChatWidget from '~/components/ChatWidget'
 import BookingDialog from '~/components/BookingDialog'
+import BpWellnessSection from '~/components/BpWellnessSection'
+import PersonalizedYogaDialog from '~/components/PersonalizedYogaDialog'
+import Lotus from '~/components/Lotus'
 import { loadBootstrap, type BootstrapData } from '~/lib/api'
 
 interface ChatRequest {
@@ -25,6 +28,8 @@ function LandingPage() {
   const [chatRequest, setChatRequest] = useState<ChatRequest | null>(null)
   const [bookingOpen, setBookingOpen] = useState(false)
   const [bookingRequest, setBookingRequest] = useState<BookingRequest | null>(null)
+  const [yogaOpen, setYogaOpen] = useState(false)
+  const [yogaRequest, setYogaRequest] = useState<{ seq: number } | null>(null)
   const [toastMessage, setToastMessage] = useState('')
   const [toastVisible, setToastVisible] = useState(false)
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(null)
@@ -52,10 +57,12 @@ function LandingPage() {
     setBookingOpen(true)
   }, [])
 
-  const openProgram = useCallback((program: string) => {
+  // Hero entry point for the Personalised Yoga Plan journey (README section 2):
+  // questionnaire → live goal-based pricing → locked preview → demo payment.
+  const openWellnessPlan = useCallback(() => {
     seq.current += 1
-    setBookingOpen(false)
-    setChatRequest({ key: 'programInfo', detail: program, seq: seq.current })
+    setYogaRequest({ seq: seq.current })
+    setYogaOpen(true)
   }, [])
 
   const openContactChat = useCallback(() => {
@@ -75,25 +82,21 @@ function LandingPage() {
 
       <main id="main">
         <section className="hero">
+          <img
+            className="hero-bg"
+            src="/images/hero-om.jpg"
+            alt="A woman meditating on a terrace at golden hour, an Om mandala glowing beside her"
+            fetchPriority="high"
+            width={1671}
+            height={941}
+          />
           <div className="hero-copy">
-            <div className="eyebrow"><span className="little-line"></span> YOUR WELLNESS, YOUR WAY</div>
-            <h1>Find your balance.<br />Build your strength.<br /><em>Feel your best.</em></h1>
-            <p>Discover a healthier, stronger, more balanced you through yoga, fitness, dance, and personalized wellness sessions.</p>
+            <div className="eyebrow">YOGA · ZUMBA · DANCE · FITNESS · WEIGHT LOSS</div>
+            <h1>Find Your Balance.<br />Build Your Strength.<br /><span className="keep-line">Feel Your Best. <Lotus className="hero-lotus" /></span></h1>
             <div className="hero-actions">
-              <button className="button" onClick={openBooking}>Book an Appointment <span aria-hidden="true">↗</span></button>
-              <a className="text-link" href="#programs">Explore Our Programs <span aria-hidden="true">→</span></a>
-            </div>
-            <div className="hero-note">
-              <span aria-hidden="true">☼</span>
-              <span>A little movement. A little mindfulness.<br /><strong>A little more you.</strong></span>
+              <button className="button" onClick={openWellnessPlan}>Create Your Personalized Yoga <span aria-hidden="true">→</span></button>
             </div>
           </div>
-          <div className="hero-visual">
-            <img className="hero-image" src="/images/hero.jpg" alt="Woman practising a reaching yoga lunge outdoors against a peaceful sunset" fetchPriority="high" width={1200} height={1500} />
-            <div className="photo-label"><span className="pulse-dot"></span> MAKE SPACE FOR YOURSELF</div>
-            <div className="image-caption"><span>01 / THE ART OF SHOWING UP</span><span aria-hidden="true">↙</span></div>
-          </div>
-          <span className="hero-bottom-note">BREATHE IN POSSIBILITY. BREATHE OUT LIMITS.</span>
         </section>
 
         <div className="movement-strip" aria-label="Our areas of movement">
@@ -101,48 +104,7 @@ function LandingPage() {
           <span>Balance from within</span><i>✧</i><span>Wellness for you</span>
         </div>
 
-        <section className="section wrap" id="programs">
-          <div className="section-heading">
-            <div>
-              <div className="eyebrow">FIND WHAT MOVES YOU</div>
-              <h2>Many ways to move.<br /><em>One beautiful beginning.</em></h2>
-            </div>
-            <p>From a quiet breath to an energizing beat, explore a practice that feels like you.</p>
-          </div>
-          <div className="program-grid">
-            <article className="program-card featured">
-              <div className="program-image">
-                <img src="/images/yoga.jpg" alt="A quiet seated meditation beside the water at sunset" loading="lazy" width={800} height={1000} />
-                <span>01</span>
-              </div>
-              <div className="program-info">
-                <div><h3>Yoga</h3><p>Find your flow, one breath at a time.</p></div>
-                <button className="round-link" aria-label="Explore Yoga" onClick={() => openProgram('Yoga')}>↗</button>
-              </div>
-            </article>
-            <article className="program-card">
-              <div className="program-image">
-                <img src="/images/dance.jpg" alt="A group warming up together in a bright fitness studio" loading="lazy" width={800} height={1000} />
-                <span>02</span>
-              </div>
-              <div className="program-info">
-                <div><h3>Zumba &amp; Dance</h3><p>More rhythm. More joy. More you.</p></div>
-                <button className="round-link" aria-label="Explore Zumba and Dance" onClick={() => openProgram('Zumba and Dance')}>↗</button>
-              </div>
-            </article>
-            <article className="program-card">
-              <div className="program-image">
-                <img src="/images/fitness.jpg" alt="Strength and fitness equipment ready for a workout" loading="lazy" width={800} height={1000} />
-                <span>03</span>
-              </div>
-              <div className="program-info">
-                <div><h3>Fitness &amp; Weight Loss</h3><p>Build a routine you can grow with.</p></div>
-                <button className="round-link" aria-label="Explore Fitness and Weight Loss" onClick={() => openProgram('Fitness and Weight Loss')}>↗</button>
-              </div>
-            </article>
-          </div>
-          <p className="section-footnote">A first look at the categories in our branding. Specific programs and availability are to be confirmed with the studio.</p>
-        </section>
+        <BpWellnessSection />
 
         <section className="why-section">
           <div className="wrap why-layout">
@@ -253,8 +215,10 @@ function LandingPage() {
           </a>
           <p>Mindful movement.<br />Meaningful beginnings.</p>
           <div>
-            <a href="#programs">Programs</a>
+            <a href="#programs">Wellness Tool</a>
+            <a href="/centers">Centers</a>
             <a href="#about">About Us</a>
+            <a href="/wall-of-art">Wall of Art</a>
             <a href="#wall-of-love">Wall of Love</a>
             <a href="#contact">Contact</a>
           </div>
@@ -290,6 +254,8 @@ function LandingPage() {
         onCloseChat={() => setChatOpen(false)}
         onToast={showToast}
       />
+
+      <PersonalizedYogaDialog openRequest={yogaOpen ? yogaRequest : null} onOpenChange={setYogaOpen} />
 
       <div className="toast" role="status" hidden={!toastVisible}>{toastMessage}</div>
     </>

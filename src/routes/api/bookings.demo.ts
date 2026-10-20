@@ -1,11 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { fail, protectedWrite } from '~/server/http'
+import { fail, protectedWrite, apiHandler, domainFailure } from '~/server/http'
 import { reserve, development } from '~/server/booking'
 
 export const Route = createFileRoute('/api/bookings/demo')({
   server: {
     handlers: {
-      POST: async ({ request }) => {
+      POST: apiHandler(async ({ request }) => {
         const guard = await protectedWrite(request)
         if (!guard.ok) return guard.response
         const { body, session } = guard.ctx
@@ -16,9 +16,9 @@ export const Route = createFileRoute('/api/bookings/demo')({
 
         let record
         try {
-          record = reserve(body, session.user_id, 'demo')
+          record = (await reserve(body, session.user_id, 'demo')).record
         } catch (error) {
-          return fail(error instanceof Error ? error.message : 'Booking failed.', 409)
+          return domainFailure(error, 'Booking failed.')
         }
         if (record.status !== 'demo') {
           return fail('A test payment already exists for this slot. Check its status.', 409)
@@ -28,7 +28,7 @@ export const Route = createFileRoute('/api/bookings/demo')({
           status: 'demo',
           message: 'Demo reservation only. Not a real appointment. No payment taken.',
         })
-      },
+      }),
     },
   },
 })

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" fill="none">
+  <title>Supported Shavasana with pillows under the head and knees</title>
+  <rect width="480" height="300" fill="#f4f1e7"/><circle cx="240" cy="142" r="110" fill="#e5ebdf"/>
+  <rect x="55" y="239" width="370" height="12" rx="6" fill="#b5c6ac"/>
+  <rect x="75" y="212" width="80" height="26" rx="12" fill="#d3bb7f"/>
+  <path d="M287 238Q304 189 337 238Z" fill="#d3bb7f"/>
+  <g stroke-linecap="round" stroke-linejoin="round">
+    <path d="M265 214 314 201 387 231M266 224 315 214 380 236" stroke="#164f49" stroke-width="15"/>
+    <path d="M151 205Q205 192 267 207L271 229H151Z" fill="#29877c"/>
+    <path d="M171 216 203 232 248 234" stroke="#b87855" stroke-width="11"/>
+    <path d="M150 212H135" stroke="#b87855" stroke-width="12"/><circle cx="115" cy="200" r="20" fill="#c78b65"/>
+    <path d="M98 208Q85 192 101 182Q114 173 125 181L113 183" fill="#3f4032"/>
+    <path d="M386 231H402M380 236H395" stroke="#b87855" stroke-width="8"/>
+  </g>
+</svg>

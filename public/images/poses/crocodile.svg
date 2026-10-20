@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" fill="none">
+  <title>Supported Makarasana with forehead resting on the hands</title>
+  <rect width="480" height="300" fill="#f4f1e7"/><circle cx="240" cy="142" r="110" fill="#e5ebdf"/>
+  <rect x="55" y="234" width="370" height="12" rx="6" fill="#b5c6ac"/>
+  <rect x="88" y="212" width="72" height="21" rx="8" fill="#d3bb7f"/>
+  <g stroke-linecap="round" stroke-linejoin="round">
+    <path d="M267 210 325 217 386 225M263 202 326 204 391 214" stroke="#164f49" stroke-width="16"/>
+    <path d="M155 192Q204 182 270 198L275 220 159 217Z" fill="#29877c"/>
+    <path d="M174 202 188 225 117 226 112 217" stroke="#b87855" stroke-width="11"/>
+    <path d="M153 206 143 207" stroke="#b87855" stroke-width="12"/>
+    <circle cx="123" cy="200" r="20" fill="#c78b65"/>
+    <path d="M104 200Q97 176 122 177Q143 176 142 196" fill="#3f4032"/>
+    <path d="M385 225H401M388 214H404" stroke="#b87855" stroke-width="8"/>
+  </g>
+</svg>

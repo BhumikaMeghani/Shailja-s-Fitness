@@ -3,8 +3,9 @@
 A responsive, teal-and-ivory landing page with a button-driven wellness assistant,
 email/password accounts, an appointment preview and a server-side Razorpay **TEST**
 integration — same design and behaviour as the original Flask version, rebuilt on
-**TanStack Start + React + TypeScript**, powered by **Bun** with SQLite kept as the
-backend database (`bun:sqlite`, zero extra dependencies).
+**TanStack Start + React + TypeScript**, powered by **Bun** with **Convex cloud**
+as the database. The React frontend is preserved; accounts, sessions, rate limits,
+bookings and payment/webhook records are stored transactionally in Convex.
 
 ## Run locally
 
@@ -12,16 +13,25 @@ Install [Bun](https://bun.sh) 1.2+, then from the project root:
 
 ```sh
 bun install
+# Separate terminal, while developing Convex functions:
+bun run dev:convex
+# Website terminal:
 bun run dev
 ```
 
-Open **http://localhost:3000**. The SQLite database is created automatically under
-`instance/` and is excluded from Git.
+Open **http://localhost:3000**. `bun run dev` reads the configured cloud URL from
+`.env.local` and captures the development server key from the signed-in Convex CLI
+if it is not already in your process environment. Secrets are never printed or
+written into source files. There is no SQLite connection or fallback in the app.
 
-No `.env` is needed to explore the page and finish a no-payment demo. To configure
-the application, copy `.env.example` to `.env` and fill values locally. Process
-environment variables take precedence. Never commit `.env` or paste secrets into
-chat, source files, or browser code.
+The cloud deployment must have `STUDIO_SERVER_KEY` configured; production servers
+must receive its matching `CONVEX_SERVER_KEY` through their private environment.
+`.env.example` lists other settings. Process environment takes precedence over
+`.env`, then `.env.local`; the development launcher uses the URL selected by
+the Convex CLI to avoid a stale manually exported URL. Never expose private
+keys using a `VITE_` prefix. An unavailable database returns HTTP 503.
+
+See [CONVEX_SETUP.md](CONVEX_SETUP.md) for migration, verification and deployment.
 
 ## Production build
 
@@ -42,7 +52,7 @@ automatically when `APP_ENV` is anything other than `development`.
 | `static/brand.svg`, `static/images/` | `public/brand.svg`, `public/images/` |
 | `studio/config.py` | `src/server/env.ts` |
 | `studio/development_data.py` | `src/server/slots.ts` |
-| `studio/schema.sql` | `src/server/db.ts` (same schema, `bun:sqlite`) |
+| `studio/schema.sql` | `convex/schema.ts`; server-to-server transport in `src/server/db.ts` |
 | Werkzeug scrypt password hashes | `src/server/password.ts` — the exact `scrypt:32768:8:1` format, so **existing accounts keep signing in** |
 | Flask session/CSRF cookie handling | `src/server/session.ts` (same `studio_session` cookie, hashed tokens, per-session CSRF) |
 | Flask routes | File routes in `src/routes/api/` (`bootstrap`, `auth/$action`, `availability`, `bookings/demo`, `bookings/$bookingId`, `payments/order`, `payments/verify`, `payments/webhook`) |
@@ -54,11 +64,12 @@ and scrollspy logic were ported one-for-one into `src/components/BookingDialog.t
 
 ## Configuration
 
-See `.env.example`. The variables are unchanged from the Flask version
-(`APP_ENV`, `DEVELOPMENT_AVAILABILITY`, `SECRET_KEY`, `DATABASE`, per-class
+See `.env.example`. Database settings are now `CONVEX_URL` (or locally
+`VITE_CONVEX_URL`) and private `CONVEX_SERVER_KEY`. Other variables remain
+`APP_ENV`, `DEVELOPMENT_AVAILABILITY`, `SECRET_KEY`, per-class
 `*_TEST_PRICE_PAISE` / `*_DURATION_MINUTES` / `*_TEST_TAX_PAISE`,
 `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` / `RAZORPAY_WEBHOOK_SECRET`,
-`STUDIO_EMAIL` / `STUDIO_PHONE` / `STUDIO_ADDRESS`).
+`STUDIO_EMAIL` / `STUDIO_PHONE` / `STUDIO_ADDRESS`.
 
 Generate a deployment secret with `bun -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"`.
 Session tokens are opaque, random and hashed in the database; no authentication
@@ -95,8 +106,8 @@ reconciliation required if order creation times out).
 - Publish privacy/terms before collecting real customer information. There is
   no email verification, password recovery, transactional email or production
   booking confirmation.
-- SQLite suits this small single-instance preview; add migrations, backups and
-  reconciliation before real operations.
+- Use a production Convex deployment, backups, monitoring and reconciliation
+  before real operations. The current cloud target is a development deployment.
 
 ## Files
 
@@ -107,8 +118,12 @@ reconciliation required if order creation times out).
 - `src/components/ChatWidget.tsx` — widget presentation, persistent in-memory
   conversation; `src/lib/knowledge.ts` — verified business knowledge and the
   button-driven decision tree (no AI service; fully deterministic).
-- `src/server/` — env config, SQLite schema, sessions/CSRF, scrypt password
-  hashes, slot logic, booking reservation, Razorpay client.
+- `src/server/` — env config, Convex transport, sessions/CSRF, compatible scrypt
+  hashes, slot validation and Razorpay client.
+- `convex/` — validated tables, indexed reads, atomic reservations, payment and
+  webhook confirmation, and empty-target migration.
+- `scripts/migrate-sqlite.mjs` — read-only, one-time legacy importer; SQLite
+  is used only by this cutover command, never by the running website.
 - `public/images/` — locally served illustrative Unsplash photography (not
   photos of Shailja’s studio, staff or customers) plus the originally supplied
   reference photographs in `public/images/logo.jpeg` and

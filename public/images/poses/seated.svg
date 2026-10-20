@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" fill="none">
+  <title>Sukhasana seated on a cushion with relaxed shoulders</title>
+  <rect width="480" height="300" fill="#f4f1e7"/><circle cx="240" cy="142" r="110" fill="#e5ebdf"/>
+  <rect x="95" y="256" width="290" height="12" rx="6" fill="#b5c6ac"/>
+  <rect x="181" y="231" width="118" height="25" rx="12" fill="#d3bb7f"/>
+  <g stroke-linecap="round" stroke-linejoin="round">
+    <path d="M221 188 170 233Q162 250 206 245L270 237M258 188 309 233Q317 250 273 245L210 237" stroke="#164f49" stroke-width="19"/>
+    <path d="M218 108 200 157 182 207M261 108 280 157 299 207" stroke="#b87855" stroke-width="12"/>
+    <path d="M222 101H256L265 189H214Z" fill="#29877c"/>
+    <path d="M239 86V100" stroke="#b87855" stroke-width="14"/><circle cx="239" cy="67" r="21" fill="#c78b65"/>
+    <path d="M219 62Q216 37 241 41Q263 41 259 60" fill="#3f4032"/>
+    <path d="M181 208 192 214M299 208 288 214" stroke="#b87855" stroke-width="10"/>
+  </g>
+</svg>

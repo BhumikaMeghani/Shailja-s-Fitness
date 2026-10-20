@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" fill="none">
+  <title>Side-lying rest with head, arm and knee pillows</title>
+  <rect width="480" height="300" fill="#f4f1e7"/><circle cx="240" cy="142" r="110" fill="#e5ebdf"/>
+  <rect x="55" y="245" width="370" height="12" rx="6" fill="#b5c6ac"/>
+  <rect x="82" y="211" width="80" height="33" rx="13" fill="#d3bb7f"/>
+  <g stroke-linecap="round" stroke-linejoin="round">
+    <path d="M266 208 326 235 285 240 359 240" stroke="#164f49" stroke-width="18"/>
+    <rect x="285" y="216" width="55" height="16" rx="7" fill="#d3bb7f"/>
+    <path d="M266 194 329 215 300 228" stroke="#205f56" stroke-width="18"/>
+    <path d="M155 190Q204 177 270 191L276 219 156 219Z" fill="#29877c"/>
+    <rect x="180" y="218" width="79" height="25" rx="10" fill="#d3bb7f"/>
+    <path d="M176 199 198 223 243 223M154 213 170 234 183 232" stroke="#b87855" stroke-width="12"/>
+    <path d="M157 204H145" stroke="#b87855" stroke-width="12"/><circle cx="124" cy="198" r="20" fill="#c78b65"/>
+    <path d="M105 198Q99 174 123 175Q144 175 143 193" fill="#3f4032"/>
+  </g>
+</svg>

@@ -62,9 +62,12 @@ export default function ChatWidget({ data, open, navigateRequest, onOpenChange, 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigateRequest])
 
+  const wasOpenRef = useRef(false)
+
   useEffect(() => {
     if (open) document.getElementById('chat-close')?.focus()
-    else launcherRef.current?.focus()
+    else if (wasOpenRef.current) launcherRef.current?.focus()
+    wasOpenRef.current = open
   }, [open])
 
   const onKeyDown = (event: React.KeyboardEvent) => {
@@ -102,9 +105,16 @@ export default function ChatWidget({ data, open, navigateRequest, onOpenChange, 
         aria-controls="chat-panel"
         hidden={open}
       >
-        <span className="chat-symbol" aria-hidden="true">✧</span>
-        <span>Let’s talk wellness<small>Your next step, made simple</small></span>
-        <span aria-hidden="true">↗</span>
+        <span className="chat-avatar" aria-hidden="true">✧</span>
+        <span>
+          <strong>Hi! Welcome to Shailja’s Fitness</strong>
+          <small>How can we help you today?</small>
+        </span>
+        <span aria-hidden="true">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2.5 7.5 6 4l3.5 3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
       </button>
       <aside id="chat-panel" className="chat-panel" aria-label="Shailja’s Fitness wellness assistant" hidden={!open} onKeyDown={onKeyDown}>
         <header className="chat-header">

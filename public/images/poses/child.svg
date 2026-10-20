@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" fill="none">
+  <title>Modified Child’s Pose with torso on a bolster</title>
+  <rect width="480" height="300" fill="#f4f1e7"/><circle cx="240" cy="142" r="110" fill="#e5ebdf"/>
+  <rect x="65" y="248" width="350" height="12" rx="6" fill="#b5c6ac"/>
+  <rect x="112" y="207" width="155" height="40" rx="18" fill="#d3bb7f"/>
+  <g stroke-linecap="round" stroke-linejoin="round">
+    <path d="M293 193 323 235 273 239 333 240" stroke="#164f49" stroke-width="22"/>
+    <path d="M290 181Q232 176 169 202L181 222Q245 209 305 206Z" fill="#29877c"/>
+    <path d="M180 214 210 234 273 234" stroke="#b87855" stroke-width="12"/>
+    <circle cx="147" cy="208" r="21" fill="#c78b65"/>
+    <path d="M127 208Q122 182 148 185Q169 184 168 204" fill="#3f4032"/>
+    <path d="M165 211 178 210" stroke="#b87855" stroke-width="13"/>
+  </g>
+</svg>

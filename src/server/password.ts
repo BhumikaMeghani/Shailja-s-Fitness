@@ -10,26 +10,28 @@ const SCRYPT = { N: 32768, r: 8, p: 1, keylen: 64 } as const
 const MAXMEM = 176 * SCRYPT.N * SCRYPT.r
 
 export function hashPassword(password: string): string {
-  const salt = randomBytes(16)
+  const salt = randomBytes(16).toString('hex')
   const key = scryptSync(password, salt, SCRYPT.keylen, {
     N: SCRYPT.N,
     r: SCRYPT.r,
     p: SCRYPT.p,
     maxmem: MAXMEM,
   })
-  return `scrypt:${SCRYPT.N}:${SCRYPT.r}:${SCRYPT.p}$${salt.toString('base64')}$${key.toString('hex')}`
+  return `scrypt:${SCRYPT.N}:${SCRYPT.r}:${SCRYPT.p}$${salt}$${key.toString('hex')}`
 }
 
 export function verifyWerkzeugHash(stored: string, password: string): boolean {
-  const [method, salt64, checksum] = stored.split('$', 3)
-  if (!salt64 || !checksum || !method.startsWith('scrypt:')) return false
+  const [method, salt, checksum] = stored.split('$', 3)
+  if (!salt || !/^[0-9a-f]{128}$/i.test(checksum || '') || !method.startsWith('scrypt:')) return false
   const [, n, r, p] = method.split(':')
-  const salt = Buffer.from(salt64, 'base64')
-  const key = scryptSync(password, salt, SCRYPT.keylen, {
-    N: Number(n), r: Number(r), p: Number(p),
-    maxmem: MAXMEM,
+  if (Number(n) !== SCRYPT.N || Number(r) !== SCRYPT.r || Number(p) !== SCRYPT.p) return false
+  const derive = (bytes: string | Buffer) => scryptSync(password, bytes, SCRYPT.keylen, {
+    N: SCRYPT.N, r: SCRYPT.r, p: SCRYPT.p, maxmem: MAXMEM,
   })
-  return safeEquals(Buffer.from(checksum, 'hex'), key)
+  const expected = Buffer.from(checksum, 'hex')
+  // Werkzeug uses the literal salt; the initial Bun port decoded it instead.
+  // Keep that fallback so accounts created by either implementation still work.
+  return safeEquals(expected, derive(salt)) || safeEquals(expected, derive(Buffer.from(salt, 'base64')))
 }
 
 export function safeEquals(a: Buffer | string, b: Buffer | string): boolean {

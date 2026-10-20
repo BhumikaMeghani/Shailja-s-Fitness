@@ -15,7 +15,7 @@ const securityHeaders = {
     "script-src 'self' 'unsafe-inline' https://*.razorpay.com",
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data:",
-    "frame-src https://*.razorpay.com",
+    "frame-src https://*.razorpay.com https://www.google.com https://maps.google.com",
     "connect-src 'self' https://*.razorpay.com",
     "object-src 'none'",
     "base-uri 'self'",

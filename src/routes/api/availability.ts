@@ -1,12 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { services } from '~/server/env'
-import { fail } from '~/server/http'
+import { fail, apiHandler } from '~/server/http'
 import { development, availabilitySlots } from '~/server/booking'
 
 export const Route = createFileRoute('/api/availability')({
   server: {
     handlers: {
-      GET: ({ request }) => {
+      GET: apiHandler(async ({ request }) => {
         const url = new URL(request.url)
         const service = url.searchParams.get('service') || ''
         if (!services().some(s => s.id === service)) {
@@ -19,8 +19,8 @@ export const Route = createFileRoute('/api/availability')({
         if (!development()) {
           return Response.json({ slots: [], development: false, message: 'Real studio availability is not connected yet.' })
         }
-        return Response.json({ slots: availabilitySlots(service, day), development: true })
-      },
+        return Response.json({ slots: await availabilitySlots(service, day), development: true })
+      }),
     },
   },
 })

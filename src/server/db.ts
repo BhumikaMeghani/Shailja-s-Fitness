@@ -1,95 +1,61 @@
 /**
- * SQLite access via Bun's built-in bun:sqlite, same schema as the Flask app.
- * A single synchronous connection is appropriate for this small preview.
+ * Server-to-server Convex access. Browsers use the existing cookie/CSRF API.
+ * CONVEX_SERVER_KEY must never be exposed as a VITE_ variable.
  */
-import { Database } from 'bun:sqlite'
+import { ConvexHttpClient } from 'convex/browser'
+import { ConvexError, type Infer } from 'convex/values'
+import type { FunctionArgs, FunctionReference, FunctionReturnType } from 'convex/server'
+import { api } from '../../convex/_generated/api'
+import { booking, session, user } from '../../convex/schema'
 import { env } from './env'
-import { mkdirSync } from 'node:fs'
-import { dirname, join } from 'node:path'
 
-export const schema = `
-PRAGMA foreign_keys = ON;
-CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY, email TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL
-);
-CREATE TABLE IF NOT EXISTS sessions (
-    token_hash TEXT PRIMARY KEY, user_id INTEGER REFERENCES users(id),
-    csrf TEXT NOT NULL, expires INTEGER NOT NULL
-);
-CREATE TABLE IF NOT EXISTS attempts (
-    bucket TEXT NOT NULL, created INTEGER NOT NULL
-);
-CREATE INDEX IF NOT EXISTS attempt_lookup ON attempts(bucket, created);
-CREATE TABLE IF NOT EXISTS bookings (
-    id TEXT PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users(id),
-    service TEXT NOT NULL, starts_at TEXT NOT NULL,
-    status TEXT NOT NULL CHECK(status IN ('demo','held','pending','confirmed','expired')),
-    amount INTEGER, duration INTEGER, currency TEXT NOT NULL DEFAULT 'INR',
-    expires INTEGER, order_id TEXT UNIQUE, payment_id TEXT UNIQUE,
-    created INTEGER NOT NULL
-);
-CREATE UNIQUE INDEX IF NOT EXISTS occupied_slot ON bookings(starts_at)
-    WHERE status IN ('demo','held','pending','confirmed');
-CREATE TABLE IF NOT EXISTS webhook_events (
-    id TEXT PRIMARY KEY, created INTEGER NOT NULL
-);`
+export type UserRow = Infer<typeof user>
+export type SessionRow = Infer<typeof session>
+export type BookingRow = Infer<typeof booking>
 
-mkdirSync(dirname(env.DATABASE), { recursive: true })
-
-export const db = new Database(env.DATABASE)
-db.exec('PRAGMA foreign_keys = ON')
-db.exec(schema)
-
-export interface UserRow {
-  id: number
-  email: string
-  password_hash: string
+export class DatabaseUnavailable extends Error {
+  constructor() {
+    super('The service is temporarily unavailable. Please try again shortly.')
+  }
 }
 
-export interface SessionRow {
-  token_hash: string
-  user_id: number | null
-  csrf: string
-  expires: number
+let client: ConvexHttpClient | undefined
+function database(): ConvexHttpClient {
+  if (!env.CONVEX_URL || env.CONVEX_SERVER_KEY.length < 32) throw new DatabaseUnavailable()
+  const url = new URL(env.CONVEX_URL)
+  if (url.protocol !== 'https:' &&
+      !(url.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(url.hostname))) {
+    throw new DatabaseUnavailable()
+  }
+  return client ??= new ConvexHttpClient(env.CONVEX_URL)
 }
 
-export interface BookingRow {
-  id: string
-  user_id: number
-  service: string
-  starts_at: string
-  status: string
-  amount: number | null
-  duration: number | null
-  currency: string
-  expires: number | null
-  order_id: string | null
-  payment_id: string | null
-  created: number
+type ServerFunction = FunctionReference<'query' | 'mutation', 'public'>
+type PrivateArgs<F extends ServerFunction> = Omit<FunctionArgs<F>, 'server_key'>
+
+async function call<F extends ServerFunction>(
+  kind: 'query' | 'mutation', fn: F, args: PrivateArgs<F>,
+): Promise<FunctionReturnType<F>> {
+  try {
+    const params = { ...args, server_key: env.CONVEX_SERVER_KEY } as FunctionArgs<F>
+    return kind === 'query'
+      ? await database().query(fn as FunctionReference<'query'>, params)
+      : await database().mutation(fn as FunctionReference<'mutation'>, params)
+  } catch (error) {
+    if (error instanceof ConvexError && typeof error.data === 'string' && error.data !== 'Unauthorized') {
+      throw new Error(error.data)
+    }
+    // Never expose traces, credentials or request arguments to browsers.
+    throw new DatabaseUnavailable()
+  }
 }
 
-export type SqlValue = string | number | bigint | boolean | null | Uint8Array
-
-export function query<T>(sql: string, ...params: SqlValue[]): T[] {
-  return db.query(sql).all(...params) as T[]
+export function read<F extends FunctionReference<'query', 'public'>>(fn: F, args: PrivateArgs<F>) {
+  return call('query', fn, args)
 }
 
-export function queryOne<T>(sql: string, ...params: SqlValue[]): T | null {
-  return (db.query(sql).get(...params) as T) ?? null
+export function write<F extends FunctionReference<'mutation', 'public'>>(fn: F, args: PrivateArgs<F>) {
+  return call('mutation', fn, args)
 }
 
-export function run(sql: string, ...params: SqlValue[]): { changes: number; lastInsertRowid: number | bigint } {
-  return db.query(sql).run(...params) as { changes: number; lastInsertRowid: number | bigint }
-}
-
-export function beginImmediate(): void {
-  db.exec('BEGIN IMMEDIATE')
-}
-
-export function commit(): void {
-  if (db.inTransaction) db.exec('COMMIT')
-}
-
-export function rollback(): void {
-  if (db.inTransaction) db.exec('ROLLBACK')
-}
+export { api }

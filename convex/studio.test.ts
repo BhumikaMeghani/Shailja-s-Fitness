@@ -1,0 +1,95 @@
+/// <reference types="vite/client" />
+import { convexTest } from "convex-test";
+import { beforeEach, afterEach, expect, test, vi } from "vitest";
+import { api } from "./_generated/api";
+import schema from "./schema";
+
+const modules = import.meta.glob("./**/*.ts");
+const server_key = "test-only-server-key-not-for-production-123456";
+const migration_key = "test-only-migration-key-not-for-production-123456";
+const user = { id: "1", email: "legacy@example.com", password_hash: "scrypt:preserved" };
+const record = {
+  id: "legacy-booking", user_id: "1", service: "online", starts_at: "2030-01-01T07:00:00+05:30",
+  status: "pending" as const, amount: 12000, duration: 45, currency: "INR" as const,
+  expires: null, order_id: "order_legacy", payment_id: null, created: 100,
+};
+const source = {
+  migration_key, digest: "snapshot-1", users: [user],
+  sessions: [{ token_hash: "hash", user_id: "1", csrf: "csrf", expires: 9999999999 }],
+  attempts: [{ bucket: "legacy", created: Math.floor(Date.now() / 1000) }],
+  bookings: [record], webhook_events: [{ id: "event-legacy", created: 100 }],
+};
+
+beforeEach(() => {
+  vi.stubEnv("STUDIO_SERVER_KEY", server_key);
+  vi.stubEnv("STUDIO_MIGRATION_KEY", migration_key);
+});
+afterEach(() => vi.unstubAllEnvs());
+
+test("all public operations reject missing or incorrect server credentials", async () => {
+  const t = convexTest(schema, modules);
+  await expect(t.query(api.studio.getUser, { server_key: "bad", field: "id", value: "1" }))
+    .rejects.toThrow("Unauthorized");
+  await expect(t.mutation(api.studio.register, { server_key: "bad", ...user }))
+    .rejects.toThrow("Unauthorized");
+  await expect(t.mutation(api.migrate.importSqlite, { ...source, migration_key: "bad" }))
+    .rejects.toThrow("Unauthorized");
+});
+
+test("migration preserves every legacy field, is idempotent, and refuses a different source", async () => {
+  const t = convexTest(schema, modules);
+  const expected = { users: 1, sessions: 1, attempts: 1, bookings: 1, webhook_events: 1 };
+  expect(await t.mutation(api.migrate.importSqlite, source)).toEqual(expected);
+  expect(await t.mutation(api.migrate.importSqlite, source)).toEqual(expected);
+  expect(await t.query(api.studio.getUser, { server_key, field: "id", value: "1" })).toEqual(user);
+  expect(await t.query(api.studio.getBooking, { server_key, id: record.id, user_id: "1" })).toEqual(record);
+  expect(await t.query(api.studio.getSession, { server_key, token_hash: "hash", now: 200 }))
+    .toEqual(source.sessions[0]);
+  expect(await t.mutation(api.studio.limited, { server_key, bucket: "legacy", maximum: 1, window: 900 }))
+    .toBe(true);
+  await expect(t.mutation(api.migrate.importSqlite, { ...source, digest: "different" }))
+    .rejects.toThrow("empty target");
+  expect(await t.run(async ctx => (await ctx.db.query("users").collect()).length)).toBe(1);
+});
+
+test("migration rejects broken foreign keys and duplicate active slots atomically", async () => {
+  const t = convexTest(schema, modules);
+  await expect(t.mutation(api.migrate.importSqlite, { ...source, users: [] }))
+    .rejects.toThrow("integrity");
+  await expect(t.mutation(api.migrate.importSqlite, {
+    ...source, bookings: [record, { ...record, id: "duplicate", order_id: "different" }],
+  })).rejects.toThrow("integrity");
+  expect(await t.run(ctx => ctx.db.query("users").first())).toBeNull();
+});
+
+test("expired holds release but pending orders never release; other accounts cannot read", async () => {
+  const t = convexTest(schema, modules);
+  await t.mutation(api.studio.register, { server_key, ...user });
+  const expired = { ...record, status: "held" as const, order_id: null, expires: 1 };
+  await t.run(ctx => ctx.db.insert("bookings", expired));
+  expect(await t.query(api.studio.taken, { server_key, slots: [record.starts_at], now: 200 })).toEqual([]);
+  await t.mutation(api.studio.reserve, { server_key, record: { ...record, id: "replacement" } });
+  expect(await t.query(api.studio.taken, { server_key, slots: [record.starts_at], now: 9999999999 }))
+    .toEqual([record.starts_at]);
+  expect(await t.query(api.studio.getBooking, { server_key, id: "replacement", user_id: "other" }))
+    .toBeNull();
+});
+
+test("webhook receipt and confirmation commit atomically and payment IDs cannot be reused", async () => {
+  const t = convexTest(schema, modules);
+  await t.mutation(api.migrate.importSqlite, source);
+  const payment = { id: "pay_1", order_id: record.order_id, amount: 12000, currency: "INR", status: "captured" };
+  expect(await t.mutation(api.studio.webhook, { server_key, event_id: "new", payment })).toBe(true);
+  expect(await t.mutation(api.studio.webhook, { server_key, event_id: "new", payment })).toBe(true);
+  await expect(t.mutation(api.studio.webhook, {
+    server_key, event_id: "bad", payment: { ...payment, id: "pay_different" },
+  })).rejects.toThrow("different payment");
+  expect(await t.run(ctx => ctx.db.query("webhook_events")
+    .withIndex("by_logical_id", q => q.eq("id", "bad")).unique())).toBeNull();
+  await t.run(ctx => ctx.db.insert("bookings", {
+    ...record, id: "second", starts_at: "different", order_id: "order_second",
+  }));
+  await expect(t.mutation(api.studio.confirmPayment, {
+    server_key, id: "second", payment: { ...payment, order_id: "order_second" },
+  })).rejects.toThrow("another booking");
+});

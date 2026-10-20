@@ -2,12 +2,32 @@
  * API helpers: JSON responses, security headers, CSRF write protection,
  * and rate limiting ported from the Flask implementation.
  */
-import { beginImmediate, commit, rollback, run, queryOne, type SessionRow } from './db'
+import { api, write, DatabaseUnavailable, type SessionRow } from './db'
 import { safeEquals, sha256Hex } from './password'
 import { currentSession } from './session'
 
 export function fail(message: string, status = 400): Response {
   return Response.json({ error: message }, { status, headers: { 'Cache-Control': 'no-store' } })
+}
+
+/** One transport/configuration error boundary shared by every API route. */
+export function apiHandler(handler: (ctx: {
+  request: Request; params: Record<string, string>
+}) => Response | Promise<Response>) {
+  return async (ctx: { request: Request; params: Record<string, string> }): Promise<Response> => {
+    try {
+      return await handler(ctx)
+    } catch (error) {
+      if (error instanceof DatabaseUnavailable) return fail(error.message, 503)
+      console.error('API request failed:', error instanceof Error ? error.name : 'unknown')
+      return fail('The request could not be completed. Please try again.', 500)
+    }
+  }
+}
+
+export function domainFailure(error: unknown, fallback: string, status = 409): Response {
+  if (error instanceof DatabaseUnavailable) return fail(error.message, 503)
+  return fail(error instanceof Error ? error.message : fallback, status)
 }
 
 export function withCookie(response: Response, setCookieHeader: string): Response {
@@ -27,7 +47,7 @@ export interface WriteContext {
  * header, and a JSON object body are required, mirroring the Flask guards.
  */
 export async function protectedWrite(request: Request): Promise<{ ok: true; ctx: WriteContext } | { ok: false; response: Response }> {
-  const session = currentSession(request)
+  const session = await currentSession(request)
   if (!session || !safeEquals(request.headers.get('x-csrf-token') || '', session.csrf)) {
     return { ok: false, response: fail('Your session expired. Refresh the page and try again.', 403) }
   }
@@ -52,26 +72,8 @@ export async function protectedWrite(request: Request): Promise<{ ok: true; ctx:
 }
 
 /** Rate-limit IP and normalized account independently, including successful attempts. */
-export function limited(bucket: string, maximum = 10, window = 900): boolean {
-  const now = Math.floor(Date.now() / 1000)
-  beginImmediate()
-  try {
-    run('DELETE FROM attempts WHERE created<?', now - 86_400)
-    const row = queryOne<{ c: number }>(
-      'SELECT COUNT(*) AS c FROM attempts WHERE bucket=? AND created>?',
-      bucket, now - window,
-    )
-    if ((row?.c ?? 0) >= maximum) {
-      commit()
-      return true
-    }
-    run('INSERT INTO attempts VALUES(?,?)', bucket, now)
-    commit()
-    return false
-  } catch (error) {
-    rollback()
-    throw error
-  }
+export function limited(bucket: string, maximum = 10, window = 900): Promise<boolean> {
+  return write(api.studio.limited, { bucket, maximum, window })
 }
 
 export function clientIp(request: Request): string {

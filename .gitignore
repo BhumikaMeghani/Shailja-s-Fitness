@@ -7,3 +7,5 @@ instance/
 .env
 test-results/
 .DS_Store
+
+.env.local

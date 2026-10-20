@@ -1,0 +1,92 @@
+{
+  "routeSafety": {
+    "normal": "Move gently and breathe normally. Stop if dizzy, breathless, or uncomfortable. These poses do not guarantee any change in BP or weight.",
+    "low": "Only practise if you feel well. Avoid sudden standing and balance poses; make transitions slowly. These resting poses are for comfort, not treatment for low BP.",
+    "high": "Use gentle movements only. Ask a healthcare professional and qualified yoga instructor before starting a new routine, especially with known hypertension. Avoid inversions/head-down poses, strenuous flows, hot yoga, forceful breathing, and breath retention. Yoga is not a replacement for medical treatment."
+  },
+  "poses": {
+    "normal": [
+      {
+        "id": "normal_tadasana", "name": "Tadasana", "displayName": "Mountain Pose",
+        "benefits": "Encourages upright posture, body awareness, and steady breathing. A simple starting point for a gentle routine.",
+        "steps": ["Stand with feet hip-width apart, knees relaxed, arms by your sides.", "Distribute weight evenly across both feet and lengthen through the crown of the head.", "Relax shoulders and breathe normally without holding your breath.", "Stay for 20–30 seconds, then relax. Use a wall/chair for balance if needed."],
+        "safetyNote": "If standing causes dizziness or unsteadiness, sit down and skip this pose.",
+        "image": {"src": "/images/poses/tadasana.svg", "alt": "Illustration of a person demonstrating Tadasana (Mountain Pose).", "fallback": "/images/poses/fallback.svg", "license": "Original project illustration; CC0-1.0"}
+      },
+      {
+        "id": "normal_cat_cow", "name": "Marjaryasana–Bitilasana", "displayName": "Cat–Cow",
+        "benefits": "Gently moves the spine and may help reduce back stiffness. Move slowly with easy, natural breathing.",
+        "steps": ["Start on hands and knees, wrists under shoulders and knees under hips; pad the knees.", "Inhale gently, lift the chest slightly, and make a small comfortable back arch (Cow).", "Exhale gently, round the back, and let the head move down comfortably (Cat).", "Repeat slowly 5–8 times without forcing the neck or holding the breath."],
+        "safetyNote": "Use a chair-supported alternative if kneeling or wrist pressure is uncomfortable.",
+        "image": {"src": "/images/poses/cat-cow.svg", "alt": "Illustration of a person demonstrating Cat–Cow yoga on hands and knees.", "fallback": "/images/poses/fallback.svg", "license": "Original project illustration; CC0-1.0"}
+      },
+      {
+        "id": "normal_balasana", "name": "Balasana", "displayName": "Modified Child’s Pose",
+        "benefits": "A resting posture that can encourage relaxation. Gentle hip and back comfort is possible when the position is comfortable.",
+        "steps": ["Kneel on a mat with knees comfortably apart; use padding if helpful.", "Move hips toward heels only as far as comfortable.", "Rest the torso on a bolster or folded pillow; place arms comfortably.", "Breathe normally for 20–30 seconds, then return upright slowly."],
+        "safetyNote": "Skip or modify if it causes knee, hip, or breathing discomfort.",
+        "image": {"src": "/images/poses/child.svg", "alt": "Illustration of a person demonstrating a supported Child’s Pose.", "fallback": "/images/poses/fallback.svg", "license": "Original project illustration; CC0-1.0"}
+      }
+    ],
+    "low": [
+      {
+        "id": "low_supta_baddha_konasana", "name": "Supta Baddha Konasana", "displayName": "Supported Reclining Bound Angle",
+        "benefits": "A supported floor posture that can be restful and avoids prolonged standing. It is not a treatment for low BP.",
+        "steps": ["Lie on a mat with knees bent and feet on the floor.", "Bring soles together only if comfortable, allowing knees to open outward.", "Support each thigh with pillows/blocks; keep head and back supported.", "Breathe normally for 30–60 seconds, then bring knees together and roll to one side before sitting up slowly."],
+        "safetyNote": "Stop if uncomfortable, breathless, or symptomatic; rise slowly.",
+        "image": {"src": "/images/poses/bound-angle.svg", "alt": "Illustration of a person demonstrating supported reclining bound-angle pose with pillows under the thighs.", "fallback": "/images/poses/fallback.svg", "license": "Original project illustration; CC0-1.0"}
+      },
+      {
+        "id": "low_makarasana", "name": "Makarasana", "displayName": "Supported Crocodile Pose",
+        "benefits": "A prone resting posture that may encourage relaxation. It must not restrict breathing.",
+        "steps": ["Lie on the stomach only if this position is comfortable and suitable.", "Place forearms in front and rest forehead on hands or a low cushion.", "Relax the legs and breathe naturally.", "Rest for 20–30 seconds, then roll to the side and rise slowly."],
+        "safetyNote": "Skip if lying on the stomach affects breathing or is unsuitable during pregnancy or for your condition. Side-lying rest is an alternative.",
+        "image": {"src": "/images/poses/crocodile.svg", "alt": "Illustration of a person resting on their stomach in supported Makarasana (Crocodile Pose).", "fallback": "/images/poses/fallback.svg", "license": "Original project illustration; CC0-1.0"}
+      },
+      {
+        "id": "low_supported_side_lying_rest", "name": "Supported Side-Lying Rest", "displayName": "Side-Lying Rest (no Sanskrit name)",
+        "benefits": "A gentle, supported resting option that avoids standing and does not require an inversion. It is for comfort, not a treatment for low BP.",
+        "steps": ["Lie on one side on a mat or bed.", "Place a pillow under the head and another between the knees if comfortable.", "Support the upper arm with a pillow and relax the shoulders.", "Breathe normally for 1–2 minutes; sit up slowly only when comfortable."],
+        "safetyNote": "If symptoms persist or recur, seek medical assessment rather than relying on a pose.",
+        "image": {"src": "/images/poses/side-rest.svg", "alt": "Illustration of a person resting on their side with head, arm, and knee pillow support.", "fallback": "/images/poses/fallback.svg", "license": "Original project illustration; CC0-1.0"}
+      }
+    ],
+    "high": [
+      {
+        "id": "high_sukhasana", "name": "Sukhasana", "displayName": "Easy Seated Pose · Natural Breathing",
+        "benefits": "A simple seated posture for quiet breathing and relaxation. It avoids strenuous movement when done comfortably.",
+        "steps": ["Sit on a cushion or firm chair with the back comfortably tall and feet supported.", "Relax shoulders and rest hands on thighs.", "Breathe gently and naturally; do not force deep breaths or hold the breath.", "Continue for 1–3 minutes, stopping if dizzy, breathless, or uncomfortable."],
+        "safetyNote": "Do not add breath retention, forceful pranayama, or prolonged straining.",
+        "image": {"src": "/images/poses/seated.svg", "alt": "Illustration of a person sitting comfortably in Sukhasana on a cushion.", "fallback": "/images/poses/fallback.svg", "license": "Original project illustration; CC0-1.0"}
+      },
+      {
+        "id": "high_supported_tadasana", "name": "Tadasana", "displayName": "Supported Mountain Pose",
+        "benefits": "A low-intensity standing posture for posture awareness. Offers gentle movement if standing is safe.",
+        "steps": ["Stand near a wall or sturdy chair, feet about hip-width apart.", "Keep knees soft, shoulders relaxed, and gaze forward.", "Breathe normally while gently lengthening the spine; do not strain.", "Stay for 15–30 seconds, then sit or rest."],
+        "safetyNote": "Skip if balance is poor or standing causes symptoms.",
+        "image": {"src": "/images/poses/supported-mountain.svg", "alt": "Illustration of a person demonstrating supported Tadasana beside a sturdy chair.", "fallback": "/images/poses/fallback.svg", "license": "Original project illustration; CC0-1.0"}
+      },
+      {
+        "id": "high_shavasana", "name": "Shavasana", "displayName": "Supported Corpse Pose",
+        "benefits": "A restful position that may support relaxation and stress management. It does not independently treat hypertension.",
+        "steps": ["Lie on your back with a pillow under the head and, if helpful, under the knees.", "Let arms rest comfortably beside the body.", "Keep breathing quiet and natural; do not hold the breath.", "Rest for 2–5 minutes, then bend knees, roll to one side, and sit up slowly."],
+        "safetyNote": "Use a side-lying or reclined-chair alternative if lying flat causes discomfort or breathlessness.",
+        "image": {"src": "/images/poses/corpse.svg", "alt": "Illustration of a person resting on their back in supported Shavasana with head and knee pillows.", "fallback": "/images/poses/fallback.svg", "license": "Original project illustration; CC0-1.0"}
+      }
+    ]
+  },
+  "diet": {
+    "normal": {
+      "do": ["Eat varied vegetables, fruit, pulses/beans, whole grains, nuts/seeds, and suitable protein sources.", "Prefer minimally processed foods and home-cooked meals.", "Drink water regularly unless a clinician has advised fluid restriction.", "Build sustainable habits and avoid crash dieting."],
+      "dont": ["Make ultra-processed snacks, sugary drinks, and high-salt packaged foods everyday staples.", "Overdo added salt, pickles, papad, instant noodles, salty namkeen, and packaged sauces.", "Treat supplements or detox drinks as substitutes for balanced eating.", "Follow extreme calorie restriction based only on weight."]
+    },
+    "low": {
+      "do": ["Drink fluids regularly if you have not been told to restrict them.", "Eat regular, balanced meals; smaller meals may suit some people who feel unwell after eating.", "Rise slowly from bed or a chair and pause before walking.", "Record BP readings and symptoms and discuss recurring low readings with a clinician.", "Ask a clinician whether salt, fluid, or medication adjustments are appropriate for your cause of low BP."],
+      "dont": ["Deliberately increase salt without medical advice.", "Assume dehydration is the only cause.", "Do strenuous exercise or continue a pose while dizzy.", "Stop prescribed medicines or change doses yourself.", "Use caffeine or supplements as a self-treatment plan without advice."]
+    },
+    "high": {
+      "do": ["Prefer a DASH-style or similar heart-healthy pattern: vegetables, fruit, whole grains, pulses, nuts, and suitable lean/plant proteins.", "Choose fresh or minimally processed foods more often.", "Reduce sodium by checking labels and using less added salt; flavour food with herbs, spices, lemon, or garlic.", "Choose water instead of sugary drinks most often.", "Ask a clinician/dietitian about potassium-rich foods or salt substitutes if you have kidney disease or take medicines that affect potassium.", "Keep a BP log and follow clinician advice about medication, activity, and follow-up."],
+      "dont": ["Make salty packaged foods, instant noodles, salty namkeen, pickles, papad, processed meats, and high-sodium sauces daily staples.", "Overdo sugary drinks, sweets, and frequent heavily fried foods.", "Use tobacco; discuss alcohol with a clinician and avoid it if advised.", "Use licorice-root products or “BP-lowering” supplements without checking with a clinician/pharmacist.", "Stop medication or rely on yoga/diet alone for diagnosed hypertension."]
+    }
+  }
+}

@@ -7,8 +7,9 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 function loadEnvironment(): void {
-  const path = join(process.cwd(), '.env')
-  try {
+  for (const name of ['.env', '.env.local']) {
+    const path = join(process.cwd(), name)
+    try {
     const text = readFileSync(path, 'utf-8')
     for (const line of text.split('\n')) {
       const trimmed = line.trim()
@@ -17,8 +18,9 @@ function loadEnvironment(): void {
       const value = rest.join('=').replace(/^["']|["']$/g, '')
       if (process.env[key.trim()] === undefined) process.env[key.trim()] = value
     }
-  } catch {
-    // No .env file is fine; defaults apply.
+    } catch {
+      // Missing optional files are fine; process environment wins.
+    }
   }
 }
 
@@ -26,7 +28,8 @@ loadEnvironment()
 
 export const env = {
   APP_ENV: process.env.APP_ENV || 'development',
-  DATABASE: process.env.DATABASE || join(process.cwd(), 'instance', 'studio.sqlite3'),
+  CONVEX_URL: process.env.CONVEX_URL || process.env.VITE_CONVEX_URL || '',
+  CONVEX_SERVER_KEY: process.env.CONVEX_SERVER_KEY || '',
   SECRET_KEY: process.env.SECRET_KEY || '',
 
   RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || '',
@@ -38,6 +41,14 @@ export const env = {
   STUDIO_EMAIL: process.env.STUDIO_EMAIL || '',
   STUDIO_PHONE: process.env.STUDIO_PHONE || '',
   STUDIO_ADDRESS: process.env.STUDIO_ADDRESS || '',
+
+  // Gmail SMTP delivery for contact queries. SMTP_USER is the sending Gmail
+  // account; SMTP_APP_PASSWORD is an App Password, never the login password.
+  SMTP_HOST: process.env.SMTP_HOST || 'smtp.gmail.com',
+  SMTP_PORT: Number.parseInt(process.env.SMTP_PORT || '465', 10),
+  SMTP_USER: process.env.SMTP_USER || '',
+  SMTP_APP_PASSWORD: process.env.SMTP_APP_PASSWORD || '',
+  CONTACT_NOTIFY_EMAIL: process.env.CONTACT_NOTIFY_EMAIL || '',
 }
 
 export const production = env.APP_ENV !== 'development'

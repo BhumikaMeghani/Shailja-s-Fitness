@@ -8,9 +8,8 @@ export interface Service {
   description: string
   icon: string
   price_paise: number | null
-  duration_minutes: number | null
+  duration_days: number
   currency: string
-  tax_paise: number
 }
 
 export interface BootstrapData {

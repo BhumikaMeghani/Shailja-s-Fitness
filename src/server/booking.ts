@@ -2,6 +2,7 @@
 import { randomBytes } from 'node:crypto'
 import { api, read, write, type BookingRow } from './db'
 import { services, production, env } from './env'
+import { PLAN_DURATION_DAYS, planByName } from '../lib/plans'
 import { sampleSlots } from './slots'
 
 export function development(): boolean {
@@ -25,20 +26,24 @@ export async function reserve(
   const service = services().find(s => s.id === data.service)
   const startsAt = data.starts_at
   if (!service || typeof startsAt !== 'string') throw new Error('Choose a class and an available time.')
+  const plan = typeof data.plan === 'string' ? planByName(data.plan) : null
+  if (typeof data.plan === 'string' && data.plan && !plan) {
+    throw new Error('Choose one of the six yoga plans.')
+  }
   const day = startsAt.slice(0, 10)
   if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) throw new Error('Choose a valid date.')
   if (!sampleSlots(service.id, day).includes(startsAt)) {
     throw new Error('This time is unavailable. Please select another slot.')
   }
-  if (mode === 'held' && (!service.price_paise || !service.duration_minutes)) {
-    throw new Error('Test price and duration must be explicitly configured first.')
+  if (mode === 'held' && !plan) {
+    throw new Error('Choose a yoga plan: paid test bookings are priced by the plan, not the class format.')
   }
   const now = Math.floor(Date.now() / 1000)
   return write(api.studio.reserve, { record: {
     id: randomBytes(16).toString('hex'), user_id: userId, service: service.id,
     starts_at: startsAt, status: mode,
-    amount: service.price_paise ? service.price_paise + service.tax_paise : null,
-    duration: service.duration_minutes, currency: 'INR',
+    amount: plan?.price_paise ?? null,
+    duration: PLAN_DURATION_DAYS, currency: 'INR',
     expires: mode === 'held' ? now + 900 : null, order_id: null, payment_id: null, created: now,
   } })
 }

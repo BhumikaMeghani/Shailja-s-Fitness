@@ -21,6 +21,8 @@ import {
   type WellnessPlan,
   type WellnessPlanResult,
 } from '~/lib/wellness/types'
+import { poseImageFor } from '~/lib/wellness/yogaImages'
+import { downloadPlanDocx, downloadPlanPdf } from '~/lib/wellness/downloadPlan'
 
 interface PersonalizedYogaDialogProps {
   openRequest: { seq: number } | null
@@ -36,10 +38,10 @@ const FOOD_GROUPS = [
 ] as const
 
 /**
- * Prototype payment mode: the plan is generated behind a locked/blurred
- * preview and a clearly labelled demo button unlocks it locally. No payment
- * provider, card/UPI collection or real transaction is involved, and a
- * page refresh simply returns the plan to its locked state.
+ * Prototype payment mode: the plan is generated behind a locked preview and
+ * a clearly labelled demo button unlocks it locally. No payment provider,
+ * card/UPI collection or real transaction is involved, and a page refresh
+ * simply returns the plan to its locked state.
  */
 const PAYMENT_MODE = 'demo' as const
 const PENDING_PLAN_KEY = 'pending_yoga_plan'
@@ -61,6 +63,8 @@ export default function PersonalizedYogaDialog({ openRequest, onOpenChange }: Pe
   const [paymentMode, setPaymentMode] = useState<typeof PAYMENT_MODE | null>(null)
   /** Only the demo-payment action transitions the generated plan to unlocked. */
   const [isPlanUnlocked, setIsPlanUnlocked] = useState(false)
+  /** Tracks an in-flight PDF/Word download so buttons can't double-fire. */
+  const [exporting, setExporting] = useState<'pdf' | 'docx' | null>(null)
   const unlockButtonRef = useRef<HTMLButtonElement>(null)
   const planPrice = useMemo(
     () => (result && isPlan(result) ? calculatePlanPrice(result.selectedGoals) : null),
@@ -165,6 +169,19 @@ export default function PersonalizedYogaDialog({ openRequest, onOpenChange }: Pe
   const unlockPlan = () => {
     if (paymentMode !== PAYMENT_MODE || isPlanUnlocked) return // idempotent; no duplicate orders
     setIsPlanUnlocked(true)
+  }
+
+  const exportPlan = async (type: 'pdf' | 'docx') => {
+    if (!result || !isPlan(result) || exporting) return
+    setExporting(type)
+    try {
+      if (type === 'pdf') await downloadPlanPdf(result, name)
+      else await downloadPlanDocx(result, name)
+    } catch {
+      setError('The download could not be prepared. Please try once more.')
+    } finally {
+      setExporting(null)
+    }
   }
 
   const restart = () => {
@@ -357,13 +374,14 @@ export default function PersonalizedYogaDialog({ openRequest, onOpenChange }: Pe
                 {result.selectedGoals.map(goalId => GOAL_LABELS[goalId]).join(' · ')}
               </p>
 
-              {result.notices.map(notice => (
+              {/* Safety notices stay with the plan itself and appear after the
+                  payment action, so the lock card and its button are seen first. */}
+              {!planLocked && planPrice && result.notices.map(notice => (
                 <div key={notice.id} className={noticeStyle(notice.level)}>
                   <strong>{notice.title}</strong>
                   <p>{notice.message}</p>
                 </div>
               ))}
-              <p className="booking-micro">Demo payment · prototype — no real money is collected.</p>
 
               <div className="plan-stage">
                 {planLocked && (
@@ -377,23 +395,26 @@ export default function PersonalizedYogaDialog({ openRequest, onOpenChange }: Pe
                       {' '}<strong>{formatInr(planPrice.totalAmountPaise)}</strong>
                     </p>
                     <button ref={unlockButtonRef} className="button" onClick={unlockPlan}>
-                      Complete demo payment and unlock plan <span aria-hidden="true">→</span>
+                      Complete Payment and Generate <span aria-hidden="true">→</span>
                     </button>
-                    <small>
-                      Safe prototype step: no card, UPI or bank details are asked and no real
-                      transaction happens — clicking simply unlocks the preview below.
-                    </small>
                   </div>
                 )}
-                <div className="plan-body">
-                  {!planLocked && (
+                {!planLocked && (
+                  <div className="plan-body">
                     <p className="demo-success" role="status">
                       Demo payment successful. Your plan is unlocked.
                     </p>
-                  )}
-                  {/* The paid content is blurred and non-interactive until the demo payment completes. */}
-                  <div className={planLocked ? 'plan-content-lock' : undefined} inert={planLocked || undefined}>
-                    <ol className="plan-days">
+                    <div className="plan-download-row">
+                      <strong>Your plan, to keep:</strong>
+                      <button type="button" className="button secondary" disabled={exporting !== null} onClick={() => exportPlan('pdf')}>
+                        {exporting === 'pdf' ? 'Preparing PDF…' : 'Download PDF'}
+                      </button>
+                      <button type="button" className="button secondary" disabled={exporting !== null} onClick={() => exportPlan('docx')}>
+                        {exporting === 'docx' ? 'Preparing Word…' : 'Download Word (.docx)'}
+                      </button>
+                    </div>
+                    <div>
+                      <ol className="plan-days">
                       {result.days.map(dayPlan => (
                         <li key={dayPlan.day} className={`plan-day${dayPlan.recoveryDay ? ' recovery' : ''}`}>
                           <header className="plan-day-head">
@@ -409,8 +430,18 @@ export default function PersonalizedYogaDialog({ openRequest, onOpenChange }: Pe
                                 <li key={entry.activity.id} className="plan-activity">
                                   <details>
                                     <summary>
-                                      <strong>{entry.activity.name}</strong>
-                                      <span>{entry.activity.purpose} · {entry.activity.durationMinutes} min</span>
+                                      <img
+                                        className="activity-image"
+                                        src={poseImageFor(entry.activity).src}
+                                        alt={poseImageFor(entry.activity).alt}
+                                        width={64}
+                                        height={64}
+                                        loading="lazy"
+                                      />
+                                      <span className="activity-summary-text">
+                                        <strong>{entry.activity.name}</strong>
+                                        <span>{entry.activity.purpose} · {entry.activity.durationMinutes} min</span>
+                                      </span>
                                     </summary>
                                     <dl className="activity-detail">
                                       <dt>Purpose</dt><dd>{entry.activity.purpose}</dd>
@@ -466,15 +497,14 @@ export default function PersonalizedYogaDialog({ openRequest, onOpenChange }: Pe
                         )
                       })}
                     </section>
-                  </div>
+                    </div>
 
-                  {!planLocked && (
                     <div className="result-actions">
                       <button className="button secondary" onClick={restart}>Generate another plan</button>
                       <button className="button" onClick={close}>Back to wellness ↗</button>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
               {!planLocked && (
                 <p className="booking-micro">

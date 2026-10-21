@@ -12,7 +12,6 @@ vi.hoisted(() => {
     APP_ENV: 'development', DEVELOPMENT_AVAILABILITY: 'true',
     RAZORPAY_KEY_ID: 'rzp_test_fixture', RAZORPAY_KEY_SECRET: 'test_secret',
     RAZORPAY_WEBHOOK_SECRET: 'test_webhook',
-    ONLINE_TEST_PRICE_PAISE: '12000', ONLINE_DURATION_MINUTES: '45',
     // Never deliver real email using credentials from the developer's .env.
     SMTP_USER: '', SMTP_APP_PASSWORD: '',
   })
@@ -103,7 +102,7 @@ beforeEach(() => {
 function selection() {
   const day = nowIst()
   do { day.setDate(day.getDate() + 1) } while (day.getDay() === 0)
-  return { service: 'online', starts_at: sampleSlots('online', istDateKey(day))[0] }
+  return { service: 'online', plan: 'Normal Yoga', starts_at: sampleSlots('online', istDateKey(day))[0] }
 }
 
 test('Werkzeug literal salts and legacy Bun base64 salts both verify', () => {
@@ -162,17 +161,17 @@ test('concurrent demo bookings have one winner and status is owner-only', async 
 test('orders return the saved gateway ID, reuse pending orders, and verify captures', async () => {
   const client = new Client()
   await client.register()
-  vi.mocked(razorpay).mockResolvedValueOnce({ id: 'order_fixture', amount: 12000, currency: 'INR' })
+  vi.mocked(razorpay).mockResolvedValueOnce({ id: 'order_fixture', amount: 150000, currency: 'INR' })
   const payload = selection()
   const response = await client.post(order, { ...payload, amount: 1 })
   expect(response.status).toBe(200)
   const result = await response.json()
   expect(result.order_id).toBe('order_fixture')
-  expect(vi.mocked(razorpay).mock.calls[0][2]).toMatchObject({ amount: 12000 })
+  expect(vi.mocked(razorpay).mock.calls[0][2]).toMatchObject({ amount: 150000 })
   expect((await (await client.post(order, payload)).json()).order_id).toBe('order_fixture')
   expect(razorpay).toHaveBeenCalledTimes(1)
   vi.mocked(razorpay).mockResolvedValue({
-    id: 'pay_fixture', order_id: 'order_fixture', amount: 12000, currency: 'INR', status: 'captured',
+    id: 'pay_fixture', order_id: 'order_fixture', amount: 150000, currency: 'INR', status: 'captured',
   })
   const signature = createHmac('sha256', 'test_secret').update('order_fixture|pay_fixture').digest('hex')
   for (let i = 0; i < 2; i++) expect((await (await client.post(verify, {
@@ -184,7 +183,7 @@ test('orders return the saved gateway ID, reuse pending orders, and verify captu
 test('signed duplicate webhooks are atomic and malformed captures are rejected', async () => {
   const client = new Client()
   await client.register()
-  vi.mocked(razorpay).mockResolvedValueOnce({ id: 'order_fixture', amount: 12000, currency: 'INR' })
+  vi.mocked(razorpay).mockResolvedValueOnce({ id: 'order_fixture', amount: 150000, currency: 'INR' })
   expect((await client.post(order, selection())).status).toBe(200)
   const deliver = (event: unknown) => {
     const body = JSON.stringify(event)
@@ -194,7 +193,7 @@ test('signed duplicate webhooks are atomic and malformed captures are rejected',
     }) })
   }
   const event = { event: 'payment.captured', payload: { payment: { entity: {
-    id: 'pay_fixture', order_id: 'order_fixture', amount: 12000, currency: 'INR', status: 'captured',
+    id: 'pay_fixture', order_id: 'order_fixture', amount: 150000, currency: 'INR', status: 'captured',
   } } } }
   expect((await deliver(event)).status).toBe(200)
   expect((await deliver(event)).status).toBe(200)

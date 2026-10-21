@@ -42,6 +42,17 @@ export const bootcampBooking = v.object({
   additional_requirements: v.union(v.string(), v.null()), created: v.number(),
 });
 
+// Trainers-page ("Become a Trainer") training programme enquiries. Convex
+// table names must be lowercase snake_case, so the requested
+// "Trainers_Applying" table is stored as trainers_applying.
+export const trainersApplying = v.object({
+  user_id: v.string(),
+  full_name: v.string(), email: v.string(), contact_number: v.string(),
+  training_programme: v.string(), previous_experience: v.string(),
+  training_duration: v.string(), query_message: v.union(v.string(), v.null()),
+  created: v.number(),
+});
+
 export default defineSchema({
   users: defineTable(user).index("by_logical_id", ["id"]).index("by_email", ["email"]),
   sessions: defineTable(session).index("by_token_hash", ["token_hash"])
@@ -54,6 +65,8 @@ export default defineSchema({
   webhook_events: defineTable(webhookEvent).index("by_logical_id", ["id"]),
   query_from_user: defineTable(queryFromUser).index("by_created", ["created"]),
   bootcamps_booking: defineTable(bootcampBooking)
+    .index("by_created", ["created"]).index("by_user_id", ["user_id"]),
+  trainers_applying: defineTable(trainersApplying)
     .index("by_created", ["created"]).index("by_user_id", ["user_id"]),
   wellness_catalog: defineTable(wellnessCatalog)
     .index("by_version_and_route", ["version", "route"]),

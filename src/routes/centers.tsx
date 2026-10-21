@@ -3,6 +3,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import SiteHeader from '~/components/SiteHeader'
 import BookingDialog from '~/components/BookingDialog'
 import { loadBootstrap, type BootstrapData } from '~/lib/api'
+import SiteFooter from '~/components/SiteFooter'
 
 export const Route = createFileRoute('/centers')({ component: CentersPage })
 
@@ -72,8 +73,6 @@ function CentersPage() {
     setBookingRequest({ seq: seq.current })
   }, [])
 
-  const year = new Date().getFullYear()
-
   return (
     <>
       <a className="skip-link" href="#main">Skip to content</a>
@@ -82,7 +81,6 @@ function CentersPage() {
       <main id="main">
         <section className="centers-hero">
           <div className="wrap">
-            <div className="eyebrow">TWO CENTERS IN INDORE</div>
             <h1>Same practice.<br /><em>Two neighbourhoods.</em></h1>
             <p>
               Both centers run the same personal, assessment-first sessions.
@@ -101,31 +99,11 @@ function CentersPage() {
             <button className="button" onClick={openBooking}>
               Book An Appointment <span aria-hidden="true">→</span>
             </button>
-            <p>Every visit begins with a personal conversation and a tailored intro session.</p>
           </div>
         </section>
       </main>
 
-      <footer>
-        <div className="wrap footer-top">
-          <Link to="/" className="brand footer-brand">
-            <img src="/brand.svg" width={40} height={48} alt="" />
-            <span>Shailja’s <strong>Fitness</strong></span>
-          </Link>
-          <p>Mindful movement.<br />Meaningful beginnings.</p>
-          <div>
-            <Link to="/programs">Programs</Link>
-            <Link to="/centers">Centers</Link>
-            <Link to="/wall-of-art">Wall of Art</Link>
-            <Link to="/">Wall of Love</Link>
-            <Link to="/contact">Contact</Link>
-          </div>
-        </div>
-        <div className="wrap footer-bottom">
-          <span>© {year} Shailja’s Fitness</span>
-          <span>Made for a more balanced you.</span>
-        </div>
-      </footer>
+      <SiteFooter />
 
       <BookingDialog
         data={data}

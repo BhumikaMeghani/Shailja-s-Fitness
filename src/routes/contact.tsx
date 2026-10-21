@@ -3,11 +3,9 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import SiteHeader from '~/components/SiteHeader'
 import BookingDialog from '~/components/BookingDialog'
 import { api, loadBootstrap, type BootstrapData } from '~/lib/api'
+import SiteFooter from '~/components/SiteFooter'
 
 export const Route = createFileRoute('/contact')({ component: ContactPage })
-
-// The studio inbox quoted on the page and prefilled into every mailto link.
-const QUERY_EMAIL = 'bhoomikameghani0110@gmail.com'
 
 const dialCodes = [
   { code: '+91', label: '+91 - India' },
@@ -92,8 +90,6 @@ function ContactPage() {
       setSubmitting(false)
     }
   }, [form, showToast, submitting])
-
-  const year = new Date().getFullYear()
   const phone = data?.contact.phone
 
   return (
@@ -104,12 +100,10 @@ function ContactPage() {
       <main id="main">
         <section className="centers-hero">
           <div className="wrap">
-            <div className="eyebrow">CONTACT US</div>
             <h1>Our Location.<br /><em>We would love to hear from&nbsp;you!</em></h1>
             <p>
               Questions about a program, timings, or the next open slot? Send a
-              message through the form, call, or write directly to {QUERY_EMAIL} —
-              every query reaches the studio the same day.
+              message through the form, call, or write directly to our email.
             </p>
           </div>
         </section>
@@ -184,26 +178,7 @@ function ContactPage() {
         </section>
       </main>
 
-      <footer>
-        <div className="wrap footer-top">
-          <Link to="/" className="brand footer-brand">
-            <img src="/brand.svg" width={40} height={48} alt="" />
-            <span>Shailja’s <strong>Fitness</strong></span>
-          </Link>
-          <p>Mindful movement.<br />Meaningful beginnings.</p>
-          <div>
-            <Link to="/programs">Programs</Link>
-            <Link to="/centers">Centers</Link>
-            <Link to="/wall-of-art">Wall of Art</Link>
-            <Link to="/">Wall of Love</Link>
-            <a href={`mailto:${QUERY_EMAIL}`}>Email us</a>
-          </div>
-        </div>
-        <div className="wrap footer-bottom">
-          <span>© {year} Shailja’s Fitness</span>
-          <span>Made for a more balanced you.</span>
-        </div>
-      </footer>
+      <SiteFooter />
 
       <BookingDialog
         data={data}

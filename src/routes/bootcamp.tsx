@@ -8,6 +8,7 @@ import BootcampEnquiryDialog, {
   type BootcampForm,
 } from '~/components/BootcampEnquiryDialog'
 import { api, loadBootstrap, type BootstrapData } from '~/lib/api'
+import SiteFooter from '~/components/SiteFooter'
 
 export const Route = createFileRoute('/bootcamp')({ component: BootcampPage })
 
@@ -177,8 +178,6 @@ function BootcampBody({ signedIn, clerkReady }: BodyProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clerkReady, signedIn])
 
-  const year = new Date().getFullYear()
-
   return (
     <>
       <a className="skip-link" href="#main">Skip to content</a>
@@ -187,7 +186,6 @@ function BootcampBody({ signedIn, clerkReady }: BodyProps) {
       <main id="main">
         <section className="centers-hero bootcamp-hero">
           <div className="wrap">
-            <div className="eyebrow">BOOTCAMPS</div>
             <h1>Wellness that comes<br /><em>to where people work.</em></h1>
             <p>
               Shailja’s Yoga &amp; Fitness Center has been invited to lead
@@ -201,7 +199,6 @@ function BootcampBody({ signedIn, clerkReady }: BodyProps) {
         <section className="section wrap bootcamp-list" aria-label="Bootcamps conducted">
           <div className="section-heading">
             <div>
-              <div className="eyebrow">WHOM WE’VE VISITED</div>
               <h2>Conducted with care,<br /><em>wherever we were invited.</em></h2>
             </div>
             <p>
@@ -225,31 +222,11 @@ function BootcampBody({ signedIn, clerkReady }: BodyProps) {
             <button className="button" onClick={openDialog}>
               Organize Bootcamp at Your Organization <span aria-hidden="true">→</span>
             </button>
-            <p>Bring a yoga, fitness, or wellness session to your school, college, or company.</p>
           </div>
         </section>
       </main>
 
-      <footer>
-        <div className="wrap footer-top">
-          <Link to="/" className="brand footer-brand">
-            <img src="/brand.svg" width={40} height={48} alt="" />
-            <span>Shailja’s <strong>Fitness</strong></span>
-          </Link>
-          <p>Mindful movement.<br />Meaningful beginnings.</p>
-          <div>
-            <Link to="/programs">Programs</Link>
-            <Link to="/centers">Centers</Link>
-            <Link to="/wall-of-art">Wall of Art</Link>
-            <Link to="/">Wall of Love</Link>
-            <Link to="/contact">Contact</Link>
-          </div>
-        </div>
-        <div className="wrap footer-bottom">
-          <span>© {year} Shailja’s Fitness</span>
-          <span>Made for a more balanced you.</span>
-        </div>
-      </footer>
+      <SiteFooter />
 
       <BootcampEnquiryDialog
         ref={dialogRef}

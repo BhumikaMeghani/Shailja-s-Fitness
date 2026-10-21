@@ -5,6 +5,7 @@
  */
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { PLAN_DURATION_DAYS } from '../lib/plans'
 
 function loadEnvironment(): void {
   for (const name of ['.env', '.env.local']) {
@@ -71,23 +72,14 @@ export interface Service {
   name: string
   description: string
   icon: string
+  /** Class formats have no price of their own; booking prices come from the plan. */
   price_paise: number | null
-  duration_minutes: number | null
+  duration_days: number
   currency: string
-  tax_paise: number
 }
 
-/** Single source for service information. None means not yet supplied, never free. */
-function optionalInt(name: string): number | null {
-  const raw = (process.env[name] || '').trim()
-  if (!raw) return null
-  const value = Number.parseInt(raw, 10)
-  if (Number.isNaN(value) || value <= 0) {
-    throw new Error(`${name} must be a positive integer`)
-  }
-  return value
-}
-
+/** The three class formats offered in the booking dialog. The six yoga plans
+ * (src/lib/plans.ts) add the price; plan does not depend on the format. */
 export function services(): Service[] {
   return [
     ['online', 'Online Live Class', 'A little space for wellness, wherever you are.', 'video'],
@@ -98,9 +90,8 @@ export function services(): Service[] {
     name,
     description,
     icon,
-    price_paise: optionalInt(`${id.toUpperCase()}_TEST_PRICE_PAISE`),
-    duration_minutes: optionalInt(`${id.toUpperCase()}_DURATION_MINUTES`),
+    price_paise: null,
+    duration_days: PLAN_DURATION_DAYS,
     currency: 'INR',
-    tax_paise: optionalInt(`${id.toUpperCase()}_TEST_TAX_PAISE`) || 0,
   }))
 }

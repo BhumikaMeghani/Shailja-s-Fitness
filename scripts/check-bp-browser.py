@@ -35,7 +35,7 @@ def check():
             page.set_viewport_size({"width": width, "height": height})
             page.goto(os.environ.get("BP_SITE_URL", "http://localhost:3000"))
             # Wait for hydration + the page's real anonymous bootstrap, not SSR HTML alone.
-            expect(page.locator("#environment-notice")).to_be_visible(timeout=20000)
+            expect(page.locator("#bp-form")).to_be_visible(timeout=30000)
             expect(page.locator("#bp-form")).to_be_visible()
             assert not page.get_by_text("Many ways to move.", exact=False).count()
             # Hero opens the Personalised Yoga Plan questionnaire (live pricing,
@@ -152,7 +152,7 @@ def check():
         assert not any(key in storage for key in [
             "systolic", "diastolic", "weightunit", "chest_pain", "gradual_weight_management",
         ])
-        expect(page.locator("#environment-notice")).to_be_visible(timeout=20000)
+        expect(page.locator("#bp-form")).to_be_visible(timeout=30000)
         for width, height in [(1440, 1000), (390, 844)]:
             page.set_viewport_size({"width": width, "height": height})
             page.locator(".about-copy .button").click()
@@ -175,7 +175,7 @@ def check():
         # produces a locked/blurred preview, and the demo payment unlocks it.
         page.set_viewport_size({"width": 1440, "height": 1000})
         page.goto(os.environ.get("BP_SITE_URL", "http://localhost:3000"))
-        expect(page.locator("#environment-notice")).to_be_visible(timeout=20000)
+        expect(page.locator("#bp-form")).to_be_visible(timeout=30000)
         page.get_by_role("button", name="Create Your Personalized Yoga").click()
         expect(page.locator(".wellness-shell")).to_be_visible()
         # Empty selection is priced as the general-wellness fallback.
@@ -190,25 +190,29 @@ def check():
         page.locator("#wellness-email").fill("shailja@example.com")
         page.locator("#wellness-age").fill("30")
         page.get_by_role("button", name="Generate plan").click()
-        expect(page.locator(".plan-content-lock")).to_be_visible()
+        # The paid plan is not rendered at all while locked: only the lock card
+        # exists, so nothing can be scrolled up into view before paying.
+        expect(page.locator(".plan-lock-overlay")).to_be_visible()
+        expect(page.locator(".plan-day")).to_have_count(0)
+        expect(page.locator(".plan-activity")).to_have_count(0)
         locked_overlay = page.locator(".plan-lock-overlay")
         expect(locked_overlay).to_be_visible()
         expect(locked_overlay).to_contain_text("Your personalised plan is ready")
         expect(locked_overlay).to_contain_text("₹1,000")
-        expect(locked_overlay).to_contain_text("prototype")  # labelled as a demo/prototype payment
-        page.get_by_role("button", name="Complete demo payment and unlock plan").click()
+        page.get_by_role("button", name="Complete Payment and Generate").click()
         expect(page.locator(".plan-lock-overlay")).to_have_count(0)
-        expect(page.locator(".plan-content-lock")).to_have_count(0)
         expect(page.locator(".demo-success")).to_have_text("Demo payment successful. Your plan is unlocked.")
         expect(page.locator(".plan-day")).to_have_count(7)
+        expect(page.locator(".plan-activity .activity-image").first).to_be_visible()
+        expect(page.get_by_role("button", name="Download PDF")).to_be_visible()
+        expect(page.get_by_role("button", name="Download Word (.docx)")).to_be_visible()
         # Editing answers re-runs safety screening; a deferred plan is never purchasable.
         page.get_by_role("button", name="Generate another plan").click()
         page.locator("#wellness-age").fill("9")
         page.get_by_role("button", name="Generate plan").click()
         expect(page.locator(".wellness-notice.defer").first).to_be_visible()
-        expect(page.get_by_role("button", name="Complete demo payment and unlock plan")).to_have_count(0)
+        expect(page.get_by_role("button", name="Complete Payment and Generate")).to_have_count(0)
         expect(page.locator(".plan-lock-overlay")).to_have_count(0)
-        expect(page.locator(".plan-content-lock")).to_have_count(0)
         page.keyboard.press("Escape")
         expect(page.locator("dialog[open]")).to_have_count(0)
         print("PASS personalised yoga pricing, locked preview, demo payment unlock and safety deferral")

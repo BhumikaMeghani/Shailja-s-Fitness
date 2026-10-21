@@ -11,12 +11,18 @@ const mocks = vi.hoisted(() => ({
   navigate: vi.fn(),
   api: vi.fn(),
   loadBootstrap: vi.fn(),
+  downloadPdf: vi.fn().mockResolvedValue(undefined),
+  downloadDocx: vi.fn().mockResolvedValue(undefined),
 }))
 
 vi.mock('./SiteAuth', () => ({
   clerkConfigured: true,
   useSiteAuth: () => mocks.auth,
   signInToContinue: mocks.signIn,
+}))
+vi.mock('../lib/wellness/downloadPlan', () => ({
+  downloadPlanPdf: mocks.downloadPdf,
+  downloadPlanDocx: mocks.downloadDocx,
 }))
 vi.mock('@clerk/tanstack-react-start', () => ({
   UserButton: ({ userProfileMode }: { userProfileMode: string }) => <button>Profile: {userProfileMode}</button>,
@@ -101,6 +107,79 @@ describe('personalised yoga sign-in gate', () => {
     }))
     renderYoga()
     expect((screen.getByLabelText('Your name') as HTMLInputElement).value).toBe('Aarav')
+    expect(screen.queryByText('Your personalised plan is ready')).toBeNull()
+  })
+})
+
+describe('personalised yoga locked preview, images and export', () => {
+  it('renders only the payment lock card — never the plan content behind it', () => {
+    mocks.auth.signedIn = true
+    renderYoga()
+    fillYoga()
+    expect(screen.getByText('Your personalised plan is ready')).toBeTruthy()
+    // The paid plan is not in the DOM at all, so it cannot leak by scrolling.
+    expect(screen.queryByText('Demo payment successful. Your plan is unlocked.')).toBeNull()
+    expect(screen.queryByText('Food do’s and don’ts')).toBeNull()
+    expect(document.querySelector('.plan-day')).toBeNull()
+    expect(document.querySelector('.plan-activity')).toBeNull()
+    // Renamed payment action; the old prototype disclaimer line is gone.
+    const payButton = screen.getByRole('button', { name: /Complete Payment and Generate/ })
+    expect(screen.getByText('₹800')).toBeTruthy()
+    // Notice bars and the demo-payment micro line no longer precede that button.
+    expect(document.querySelector('.wellness-notice')).toBeNull()
+    expect(screen.queryByText(/Demo payment · prototype/)).toBeNull()
+    void payButton
+    expect(screen.queryByText(/Safe prototype step/)).toBeNull()
+    expect(screen.queryByText(/no card, UPI or bank details/)).toBeNull()
+  })
+
+  it('unlocks via the payment button, showing pose photos and download options', async () => {
+    mocks.auth.signedIn = true
+    renderYoga()
+    fillYoga()
+    fireEvent.click(screen.getByRole('button', { name: /Complete Payment and Generate/ }))
+    await waitFor(() => expect(screen.getByText('Demo payment successful. Your plan is unlocked.')).toBeTruthy())
+    expect(document.querySelectorAll('.plan-day').length).toBe(7)
+    // Safety notices move with the unlocked plan content.
+    expect(document.querySelectorAll('.wellness-notice').length).toBeGreaterThan(0)
+    expect(screen.queryByText(/Demo payment · prototype/)).toBeNull()
+    // Every pose activity carries a local photo thumbnail with real alt text.
+    const poseImages = Array.from(document.querySelectorAll<HTMLImageElement>('.plan-activity .activity-image'))
+    expect(poseImages.length).toBeGreaterThan(0)
+    for (const image of poseImages) {
+      expect(image.getAttribute('src')).toMatch(/^\/yoga-poses\//)
+      expect(image.getAttribute('alt')?.length ?? 0).toBeGreaterThan(0)
+    }
+    expect(screen.getByRole('button', { name: 'Download PDF' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Download Word (.docx)' })).toBeTruthy()
+  })
+
+  it('exports the plan to PDF and Word on click', async () => {
+    mocks.auth.signedIn = true
+    renderYoga()
+    fillYoga()
+    fireEvent.click(screen.getByRole('button', { name: /Complete Payment and Generate/ }))
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Download PDF' })).toBeTruthy())
+    fireEvent.click(screen.getByRole('button', { name: 'Download PDF' }))
+    await waitFor(() => expect(mocks.downloadPdf).toHaveBeenCalledOnce())
+    expect(mocks.downloadPdf.mock.calls[0][0]).toHaveProperty('days')
+    fireEvent.click(screen.getByRole('button', { name: 'Download Word (.docx)' }))
+    await waitFor(() => expect(mocks.downloadDocx).toHaveBeenCalledOnce())
+    expect(mocks.downloadDocx.mock.calls[0][0]).toHaveProperty('food')
+    expect(mocks.downloadDocx.mock.calls[0][1]).toBe('Aarav')
+  })
+
+  it('never offers a payment button or downloads for a safety-deferred plan', () => {
+    mocks.auth.signedIn = true
+    renderYoga()
+    fireEvent.change(screen.getByLabelText('Your name'), { target: { value: 'Aarav' } })
+    fireEvent.change(screen.getByLabelText('Email address'), { target: { value: 'aarav@example.com' } })
+    fireEvent.change(screen.getByLabelText('Age'), { target: { value: '9' } })
+    fireEvent.click(screen.getByRole('button', { name: /Generate plan/ }))
+    expect(screen.getByText('We’re pausing here — with care.')).toBeTruthy()
+    expect(screen.queryByRole('button', { name: /Complete Payment and Generate/ })).toBeNull()
+    expect(screen.queryByRole('button', { name: /Download PDF/ })).toBeNull()
+    expect(screen.queryByRole('button', { name: /Download Word/ })).toBeNull()
     expect(screen.queryByText('Your personalised plan is ready')).toBeNull()
   })
 })

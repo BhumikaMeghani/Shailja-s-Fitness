@@ -85,8 +85,7 @@ export default function BpWellnessSection() {
   return (
     <section className="section wrap bp-wellness" id="programs" aria-labelledby="bp-heading">
       <div className="section-heading">
-        <div><div className="eyebrow">START WHERE YOUR NUMBERS ARE</div><h2 id="bp-heading">Read your heart.<br /><em>Move in rhythm with it.</em></h2></div>
-        <p>Blood pressure guides your gentle yoga route. Weight and your chosen goal inform everyday wellness guidance — never a diagnosis.</p>
+        <div><h2 id="bp-heading">Read your heart.<br /><em>Move in rhythm with it.</em></h2></div>
       </div>
       <div className="bp-layout">
         <form id="bp-form" ref={formRef} className="bp-form" onSubmit={submit} onReset={reset} noValidate>

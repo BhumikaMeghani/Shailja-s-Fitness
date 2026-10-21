@@ -7,7 +7,8 @@ import {
   type BookingResult,
 } from '~/lib/api'
 import classIcons from '~/lib/icons'
-import { signInToContinue, useSiteAuth } from '~/components/SiteAuth'
+import { planByName, rupees, PLAN_DURATION_DAYS } from '~/lib/plans'
+import { clerkConfigured, signInToContinue, useSiteAuth } from '~/components/SiteAuth'
 
 const PENDING_BOOKING_KEY = 'pending_appointment'
 
@@ -20,6 +21,8 @@ interface Selection {
 interface BookingPreferences {
   time?: string
   day?: string
+  /** Which yoga plan the booking is for; the price depends on the plan, not the class format. */
+  plan?: string
 }
 
 interface BookingDialogProps {
@@ -55,6 +58,7 @@ export default function BookingDialog({ data, onDataRefreshed, openRequest, onOp
   const [step, setStep] = useState<'class' | 'calendar' | 'review' | 'auth' | 'payment' | 'result'>('class')
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login')
   const [selection, setSelection] = useState<Selection>({ service: null, date: null, starts_at: null })
+  const [planName, setPlanName] = useState<string | null>(null)
   const [preferences, setPreferences] = useState<BookingPreferences | null>(null)
   const [month, setMonth] = useState<Date | null>(null)
   const [slots, setSlots] = useState<{ starts_at: string; available: boolean }[] | null>(null)
@@ -64,6 +68,7 @@ export default function BookingDialog({ data, onDataRefreshed, openRequest, onOp
   const [result, setResult] = useState<BookingResult | null>(null)
   const [error, setError] = useState('')
   const [authBusy, setAuthBusy] = useState(false)
+  const [sessionBusy, setSessionBusy] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -77,7 +82,7 @@ export default function BookingDialog({ data, onDataRefreshed, openRequest, onOp
     if (dialog) dialog.scrollTop = 0
   }
 
-  const open = async (service?: string | null, prefs?: BookingPreferences | null) => {
+  const open = async (service?: string | null, prefs?: BookingPreferences | null, restores?: Selection | null) => {
     returnFocusRef.current = document.activeElement as HTMLElement | null
     onCloseChat()
     const dialog = dialogRef.current
@@ -94,9 +99,15 @@ export default function BookingDialog({ data, onDataRefreshed, openRequest, onOp
         return
       }
     }
-    if (service && selection.service !== service) {
+    if (restores) {
+      setSelection(restores)
+      goTo('review')
+    } else if (service && selection.service !== service) {
       setSelection({ service, date: null, starts_at: null })
     }
+    // The plan (and with it the price) travels through opening preferences only.
+    const planSelection = prefs?.plan && planByName(prefs.plan) ? prefs.plan : null
+    setPlanName(planSelection)
     if (prefs) setPreferences(prefs)
   }
 
@@ -121,8 +132,17 @@ export default function BookingDialog({ data, onDataRefreshed, openRequest, onOp
     if (pending && signedIn) {
       sessionStorage.removeItem(PENDING_BOOKING_KEY)
       try {
-        const request = JSON.parse(pending) as NonNullable<BookingDialogProps['openRequest']>
-        void open(request.service ?? null, request.preferences ?? null)
+        const request = JSON.parse(pending) as {
+          service?: string | null
+          date?: string | null
+          starts_at?: string | null
+          preferences?: BookingPreferences | null
+        }
+        // A complete pick survives the sign-in round trip; otherwise start at the chosen class.
+        const restores = request.service && request.starts_at
+          ? { service: request.service, date: request.date ?? null, starts_at: request.starts_at }
+          : null
+        void open(request.service ?? null, request.preferences ?? null, restores)
       } catch {
         onToast('Please choose your appointment again.')
       }
@@ -147,31 +167,23 @@ export default function BookingDialog({ data, onDataRefreshed, openRequest, onOp
     </>
   )
 
-  const notice = () => (
-    <div className="dev-callout">
-      {data?.development
-        ? 'DEVELOPMENT PREVIEW · These sample slots are not real studio availability. No real appointment will be made.'
-        : 'Real studio availability is not connected yet. Booking is not currently open.'}
-    </div>
-  )
+  /** Prices are in paise; plans are quoted in whole rupees (₹1,500 style). */
+  const rupees = (paise: number) => `₹${(paise / 100).toLocaleString('en-IN')}`
 
   const summary = () => {
     const current = service()
     if (!current || !selection.starts_at) return null
     const when = new Date(selection.starts_at)
-    const price = current.price_paise
-      ? `${new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(current.price_paise / 100)} · TEST only`
-      : 'To be confirmed · Not payable'
+    const plan = planName ? planByName(planName) : null
+    const price = plan ? rupees(plan.price_paise) : null
     const rows: [string, string][] = [
       ['Class', current.name],
+      ...(plan ? [['Plan', plan.name] as [string, string]] : []),
       ['Date', when.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' })],
       ['Time', when.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' }) + ' · Asia/Kolkata'],
-      ['Duration', current.duration_minutes ? `${current.duration_minutes} minutes · configured preview` : 'To be confirmed'],
-      ['Price', price],
-      ['Taxes / additional charges', current.tax_paise ? `₹${(current.tax_paise / 100).toFixed(2)} · TEST only` : 'None configured'],
-      ...(current.price_paise
-        ? [['Test total', `₹${((current.price_paise + current.tax_paise) / 100).toFixed(2)} · Not a real charge`] as [string, string]]
-        : []),
+      ['Duration', `${PLAN_DURATION_DAYS} days`],
+      ['Price', price ?? 'To be confirmed · Not payable'],
+      ...(price ? [['Total', price] as [string, string]] : []),
     ]
     return (
       <div className="booking-summary">
@@ -220,6 +232,46 @@ export default function BookingDialog({ data, onDataRefreshed, openRequest, onOp
   }, [step, selection.service, selection.date])
 
   // ---- Auth ---------------------------------------------------------------
+  // Clerk owns authentication on the configured site: there is no second
+  // email/password form inside booking. A signed-in Clerk visitor is bridged
+  // into the site's HttpOnly session on demand; anonymous visitors meet the
+  // Clerk sign-in page once, and their selection is restored afterwards.
+  const continueToPayment = async () => {
+    if (data?.user) {
+      goTo('payment')
+      return
+    }
+    if (clerkConfigured) {
+      if (!authReady || !signedIn) {
+        try {
+          sessionStorage.setItem(PENDING_BOOKING_KEY, JSON.stringify({
+            service: selection.service, date: selection.date, starts_at: selection.starts_at,
+          }))
+        } catch {
+          onToast('Please allow session storage so your appointment can resume after sign-in.')
+          return
+        }
+        signInToContinue()
+        return
+      }
+      setSessionBusy(true)
+      setError('')
+      try {
+        const synced = await api<{ user: { email: string }; csrf: string }>('/api/auth/session', {})
+        setCsrf(synced.csrf)
+        if (data) onDataRefreshed({ ...data, user: synced.user, csrf: synced.csrf })
+        goTo('payment')
+      } catch (syncError) {
+        setError(syncError instanceof Error ? syncError.message : 'Connecting your account failed. Please try again.')
+      } finally {
+        setSessionBusy(false)
+      }
+      return
+    }
+    // Unconfigured local preview: the legacy account form keeps that flow usable.
+    goTo('auth')
+  }
+
   const submitAuth = async (event: React.FormEvent) => {
     event.preventDefault()
     if (authBusy) return
@@ -254,7 +306,9 @@ export default function BookingDialog({ data, onDataRefreshed, openRequest, onOp
     busyRef.current = true
     setError('')
     try {
-      const demoResult = await api<BookingResult>('/api/bookings/demo', { service: selection.service, starts_at: selection.starts_at })
+      const demoResult = await api<BookingResult>('/api/bookings/demo', {
+        service: selection.service, starts_at: selection.starts_at, plan: planName,
+      })
       setResult(demoResult)
       goTo('result')
     } catch (demoError) {
@@ -285,7 +339,9 @@ export default function BookingDialog({ data, onDataRefreshed, openRequest, onOp
     setError('')
     try {
       await loadCheckout()
-      const order = await api<BookingResult>('/api/payments/order', { service: selection.service, starts_at: selection.starts_at })
+      const order = await api<BookingResult>('/api/payments/order', {
+        service: selection.service, starts_at: selection.starts_at, plan: planName,
+      })
       const Razorpay = window.Razorpay
       if (!Razorpay || !data.user) throw new Error('Checkout is unavailable. Please try again.')
       const dialog = dialogRef.current
@@ -365,12 +421,14 @@ export default function BookingDialog({ data, onDataRefreshed, openRequest, onOp
   const dayCount = new Date(year, monthIndex + 1, 0).getDate()
   const dateKey = (day: number) => `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
   const currentService = service()
+  const currentPlan = planName ? planByName(planName) : null
   const ready = Boolean(
-    data?.payments_configured && currentService?.price_paise && currentService?.duration_minutes && data?.development,
+    data?.payments_configured && currentPlan && currentService && data?.development,
   )
 
   const startNewBooking = () => {
     setSelection({ service: null, date: null, starts_at: null })
+    setPlanName(null)
     setSlots(null)
     goTo('class')
   }
@@ -396,7 +454,6 @@ export default function BookingDialog({ data, onDataRefreshed, openRequest, onOp
           {step === 'class' && (
             <>
               {heading('Make space for yourself.', 'Choose how you’d like to begin. You can change this later.')}
-              {notice()}
               <div className="class-options">
                 {(data?.services ?? []).map(s => (
                   <button
@@ -419,7 +476,6 @@ export default function BookingDialog({ data, onDataRefreshed, openRequest, onOp
           {step === 'calendar' && currentService && (
             <>
               {heading('A moment that fits.', `${currentService.name} · Choose a date and sample time.`)}
-              {notice()}
               <div className="calendar-header">
                 <button
                   className="icon-button"
@@ -495,10 +551,13 @@ export default function BookingDialog({ data, onDataRefreshed, openRequest, onOp
             <>
               {heading('Your time, thoughtfully chosen.', 'Take a moment to check the details before continuing.')}
               {summary()}
-              {notice()}
               <div className="booking-actions">
                 <button className="back-button" onClick={() => goTo('calendar')}>← Change date or time</button>
-                <button className="button" onClick={() => goTo(data?.user ? 'payment' : 'auth')}>Continue <span>→</span></button>
+                <button
+                  className="button"
+                  disabled={!currentService || !selection.starts_at || sessionBusy}
+                  onClick={() => void continueToPayment()}
+                >{sessionBusy ? 'Connecting your account…' : 'Continue'} <span>→</span></button>
               </div>
             </>
           )}
@@ -564,10 +623,9 @@ export default function BookingDialog({ data, onDataRefreshed, openRequest, onOp
             <>
               {heading('One step closer.', 'This is a preview, not a real studio reservation.')}
               {summary()}
-              {notice()}
               <div className="account-bar">
                 <span>Signed in as {escapeHTML(data.user.email)}</span>
-                <button onClick={signOut}>Sign out</button>
+                {!clerkConfigured && <button onClick={signOut}>Sign out</button>}
               </div>
               <div className="booking-actions">
                 <button className="back-button" onClick={() => goTo('review')}>← Review</button>
@@ -589,7 +647,7 @@ export default function BookingDialog({ data, onDataRefreshed, openRequest, onOp
               <div className="success-icon">{result.status === 'pending' ? '◷' : '✓'}</div>
               {heading(
                 result.status === 'pending' ? 'Awaiting verification.' :
-                  result.status === 'demo' ? 'Your demo is complete.' : 'Test payment verified.',
+                  result.status === 'demo' ? 'You have Successfully Enrolled.' : 'Test payment verified.',
                 escapeHTML(result.message ?? ''),
               )}
               {summary()}

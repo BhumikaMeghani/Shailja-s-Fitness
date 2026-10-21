@@ -13,6 +13,15 @@ import bpWellnessStyles from '~/bp-wellness.css?url'
 // runs exactly as before and no auth context is mounted.
 const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined
 
+// The Clerk instance name is generic ("Something"); brand the sign-in card itself.
+const clerkLocalization = {
+  signIn: {
+    start: {
+      title: 'Sign in to Shailja’s Fitness',
+    },
+  },
+}
+
 export const Route = createRootRoute({
   head: () => ({
     meta: [
@@ -42,7 +51,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {clerkPublishableKey
-          ? <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up"><SiteAuthProvider>{children}</SiteAuthProvider></ClerkProvider>
+          ? <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up" localization={clerkLocalization}><SiteAuthProvider>{children}</SiteAuthProvider></ClerkProvider>
           : <SiteAuthProvider>{children}</SiteAuthProvider>}
         <Scripts />
       </body>

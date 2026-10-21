@@ -11,6 +11,7 @@
 import type * as bootcamps from "../bootcamps.js";
 import type * as migrate from "../migrate.js";
 import type * as studio from "../studio.js";
+import type * as trainers from "../trainers.js";
 import type * as wellness from "../wellness.js";
 import type * as wellnessModel from "../wellnessModel.js";
 
@@ -24,6 +25,7 @@ declare const fullApi: ApiFromModules<{
   bootcamps: typeof bootcamps;
   migrate: typeof migrate;
   studio: typeof studio;
+  trainers: typeof trainers;
   wellness: typeof wellness;
   wellnessModel: typeof wellnessModel;
 }>;

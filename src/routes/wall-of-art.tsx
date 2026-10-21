@@ -3,6 +3,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import SiteHeader from '~/components/SiteHeader'
 import BookingDialog from '~/components/BookingDialog'
 import { loadBootstrap, type BootstrapData } from '~/lib/api'
+import SiteFooter from '~/components/SiteFooter'
 
 export const Route = createFileRoute('/wall-of-art')({
   component: WallOfArtPage,
@@ -189,17 +190,14 @@ function WallOfArtPage() {
     setBookingRequest({ seq: seq.current })
   }, [])
 
-  const year = new Date().getFullYear()
-
   return (
     <>
       <a className="skip-link" href="#main">Skip to content</a>
       <SiteHeader onBook={openBooking} />
 
       <main id="main">
-        <section className="programs-hero wall-hero">
+        <section className="programs-hero">
           <div className="wrap">
-            <div className="eyebrow">WALL OF ART</div>
             <h1>Our studio, framed.<br /><em>Our people, in their words.</em></h1>
           </div>
         </section>
@@ -223,36 +221,11 @@ function WallOfArtPage() {
               <ReviewFrame className="frame-big" reviews={[reviews[1], reviews[3], reviews[0]]} offset={slotOffsets[1]} />
               <ReviewFrame className="frame-bottom" reviews={[reviews[3], reviews[4], reviews[1]]} offset={slotOffsets[2]} />
             </div>
-            <div className="reviews-cta reveal">
-              <button className="button" onClick={openBooking}>
-                Become the next review <span aria-hidden="true">→</span>
-              </button>
-              <p>Scroll and watch — every frame comes around to every review.</p>
-            </div>
           </div>
         </section>
       </main>
 
-      <footer>
-        <div className="wrap footer-top">
-          <Link to="/" className="brand footer-brand">
-            <img src="/brand.svg" width={40} height={48} alt="" />
-            <span>Shailja’s <strong>Fitness</strong></span>
-          </Link>
-          <p>Mindful movement.<br />Meaningful beginnings.</p>
-          <div>
-            <Link to="/programs">Programs</Link>
-            <Link to="/centers">Centers</Link>
-            <Link to="/wall-of-art">Wall of Art</Link>
-            <Link to="/">Wall of Love</Link>
-            <Link to="/contact">Contact</Link>
-          </div>
-        </div>
-        <div className="wrap footer-bottom">
-          <span>© {year} Shailja’s Fitness</span>
-          <span>Made for a more balanced you.</span>
-        </div>
-      </footer>
+      <SiteFooter />
 
       <BookingDialog
         data={data}

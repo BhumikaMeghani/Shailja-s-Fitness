@@ -60,10 +60,6 @@ h1{font-size:clamp(36px,3vw,50px);line-height:1.24;letter-spacing:-.8px;color:va
 .programs-hero h1{font-size:clamp(38px,3.4vw,56px)}
 .programs-hero p{margin-top:22px;max-width:520px;font-size:13.5px;line-height:1.85}
 .programs-hero .eyebrow{margin-bottom:18px}
-.wall-hero{position:relative;overflow:hidden}
-.wall-hero:before{content:'';position:absolute;inset:0;background:url('/images/wall-of-art-bg.jpg') center/cover no-repeat;filter:saturate(.9) brightness(1.06)}
-.wall-hero:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#efe6da42,#efe6da38 60%,#efe6daaa);}
-.wall-hero .wrap{position:relative;z-index:1}
 
 .plans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
 .flip-card{perspective:1500px;outline-offset:8px}
@@ -195,8 +191,6 @@ h1{font-size:clamp(36px,3vw,50px);line-height:1.24;letter-spacing:-.8px;color:va
 .love-placeholder>span:first-child{font:italic 400 80px/0.5 var(--serif);color:var(--gold-soft);display:block;margin-bottom:24px}
 .love-placeholder p{font:600 25px/1.4 var(--serif);color:var(--pine);margin-bottom:14px}
 .love-placeholder small{color:var(--muted);font-size:12px}
-.development-badge{display:table;margin:22px auto 0;padding:4px 10px;font-size:9px;color:#6b5730;background:#eadfc4;border-radius:999px}
-
 /* ---------- Contact ---------- */
 .contact-section{display:grid;grid-template-columns:1fr 1fr;gap:100px;align-items:center}
 .contact-section>div>p{max-width:370px;font-size:13px;margin:24px 0;line-height:1.85}
@@ -210,17 +204,19 @@ h1{font-size:clamp(36px,3vw,50px);line-height:1.24;letter-spacing:-.8px;color:va
 
 /* ---------- Footer ---------- */
 footer{background:#0a332b;color:#dcD8c7}
-.footer-top{display:flex;justify-content:space-between;gap:40px;align-items:center;padding-block:48px}
+.footer-top{display:flex;align-items:center;flex-wrap:wrap;gap:34px 48px;padding-block:48px}
 .footer-brand{color:#ece7d6;display:inline-flex;align-items:center;gap:10px}
 .footer-brand img{width:36px;height:46px;filter:brightness(0) invert(.92)}
 .footer-brand>span{font:600 21px/1.1 var(--serif)}
-.footer-top p{color:#a9b8a9;font-size:12px;font:italic 400 15px/1.7 var(--serif)}
-.footer-top>div{display:flex;gap:26px;font-size:11px;font-weight:500}
-.footer-top>div a:hover{color:var(--gold-soft)}
+.footer-nav{display:flex;flex-wrap:wrap;gap:12px 26px;font-size:11px;font-weight:500}
+.footer-nav a:hover{color:var(--gold-soft)}
+.footer-contact{margin-left:auto;max-width:340px;font-size:12.5px;color:#a9b8a9}
+.footer-contact strong{display:block;color:#e5dfcd;font-size:13px;font-weight:600;letter-spacing:.4px;margin-bottom:4px}
+.footer-contact p{margin:0;line-height:1.75}
+.footer-contact a{color:#dcD8c7;text-decoration:underline}
+.footer-contact a:hover{color:#fff}
 .footer-bottom{border-top:1px solid #ffffff1a;display:flex;justify-content:space-between;gap:30px;padding-block:20px 55px;font-size:10px;color:#93a79a}
 
-.environment-notice{position:fixed;bottom:0;left:0;right:0;z-index:21;background:#efe2c3;border-top:1px solid #d7c996;padding:4px 15px;text-align:center;font-size:8px;letter-spacing:1px;color:#5d4d24}
-.environment-notice span{letter-spacing:.3px}
 
 /* ---------- Chat ---------- */
 .chat-launcher{position:fixed;bottom:40px;left:28px;z-index:30;border:1px solid #0b3d3318;background:#fffdf8;color:var(--ink);box-shadow:0 8px 30px #0b3d3326;display:flex;align-items:center;gap:12px;border-radius:999px;padding:10px 14px 10px 10px;text-align:left;font-size:11px;transition:transform .2s,box-shadow .2s}
@@ -229,7 +225,7 @@ footer{background:#0a332b;color:#dcD8c7}
 .chat-launcher strong{display:block;font-size:12px;font-weight:600;color:var(--pine);line-height:1.35}
 .chat-launcher small{font-size:10.5px;display:block;font-weight:400;color:var(--muted);line-height:1.4}
 .chat-launcher>span:last-child{width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;font-size:13px;display:grid;place-items:center;flex-shrink:0}
-.chat-panel{position:fixed;bottom:38px;left:25px;width:370px;max-width:calc(100vw - 24px);height:min(620px,calc(100dvh - 70px));background:#fffdf8;box-shadow:0 18px 70px #0b3d3333;border:1px solid var(--line);border-radius:18px;z-index:31;display:flex;flex-direction:column;overflow:hidden}
+.chat-panel{position:fixed;bottom:38px;left:25px;width:370px;max-width:calc(100% - 24px);height:min(620px,calc(100dvh - 70px));background:#fffdf8;box-shadow:0 18px 70px #0b3d3333;border:1px solid var(--line);border-radius:18px;z-index:31;display:flex;flex-direction:column;overflow:hidden}
 .chat-header{background:var(--pine-deep);color:#f2ecdd;padding:16px 12px;display:flex;gap:10px;align-items:center;flex-shrink:0}
 .assistant-avatar{border:1px solid #ffffff44;border-radius:50%;height:38px;width:38px;display:grid;place-items:center;font-size:24px;color:var(--gold-soft)}
 .chat-header>div{flex:1;line-height:1.5}
@@ -248,7 +244,7 @@ footer{background:#0a332b;color:#dcD8c7}
 .chat-hint{padding:9px;text-align:center;font-size:9px;background:var(--cream);margin-top:4px;color:var(--muted)}
 
 /* ---------- Booking dialog ---------- */
-dialog{padding:0;border:1px solid var(--line);border-radius:18px;width:650px;max-width:calc(100vw - 24px);max-height:calc(100dvh - 40px);color:var(--ink);background:var(--paper);box-shadow:0 24px 100px #0b3d3344;overscroll-behavior:contain}
+dialog{padding:0;border:1px solid var(--line);border-radius:18px;width:650px;max-width:calc(100% - 24px);max-height:calc(100dvh - 40px);color:var(--ink);background:var(--paper);box-shadow:0 24px 100px #0b3d3344;overscroll-behavior:contain}
 dialog::backdrop{background:#0b3d33ab;backdrop-filter:blur(4px)}
 body:has(dialog[open]){overflow:hidden}
 .booking-header{display:flex;justify-content:space-between;align-items:center;padding:18px 26px;border-bottom:1px solid var(--line)}
@@ -272,7 +268,6 @@ body:has(dialog[open]){overflow:hidden}
 .class-option>span:first-child{width:40px;height:40px;display:grid;place-items:center;border-radius:50%;background:var(--cream);color:var(--green);font-size:20px;flex-shrink:0}
 .class-option>span:nth-child(2){flex:1}
 .class-option svg{width:22px;height:22px;stroke:currentColor;stroke-width:1.5;fill:none}
-.dev-callout{padding:10px 12px;background:#efe2c3;color:#5d4d24;font-size:10px;border-left:2px solid var(--gold);margin:18px 0;border-radius:0 4px 4px 0}
 .calendar-header{display:flex;justify-content:space-between;align-items:center;margin-top:20px}
 .calendar-header strong{font:600 21px var(--serif);color:var(--pine)}
 .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:12px 0 20px;text-align:center}
@@ -316,7 +311,7 @@ body:has(dialog[open]){overflow:hidden}
 .toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:var(--pine-deep);color:#f2ecdd;box-shadow:0 8px 30px #0b3d3340;border-radius:999px;z-index:60;padding:14px 24px;font-size:12px;max-width:calc(100% - 30px);width:max-content}
 
 /* ---------- Personalised yoga & nutrition dialog ---------- */
-.wellness-shell{width:min(860px,calc(100vw - 24px));height:min(720px,calc(100dvh - 40px));max-height:calc(100dvh - 40px);overflow-y:auto}
+.wellness-shell{width:min(860px,calc(100% - 24px));height:min(720px,calc(100dvh - 40px));max-height:calc(100dvh - 40px);overflow-y:auto}
 .wellness-form{margin-top:22px}
 .wellness-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px}
 .wellness-form .field small{font-size:10px;margin-top:6px;display:block}
@@ -351,17 +346,20 @@ body:has(dialog[open]){overflow:hidden}
 .order-review .order-total{font:600 20px var(--serif);color:var(--green);margin:8px 0 4px}
 .order-review .order-review-note{font-size:13.5px;line-height:1.7;color:var(--ink)}
 .order-review .booking-micro{margin-top:6px}
-/* Locked preview and demo payment (README 4.5): blur the paid content, keep
-   the lock overlay sharp above it, and unlock only via the demo button. */
+/* Locked preview and demo payment (README 4.5): while locked, the paid plan
+   is never rendered at all — the lock card is the only content of the stage,
+   so nothing can be scrolled up into view. Unlock only via the demo button. */
 .plan-stage{position:relative;margin-top:16px}
-.plan-content-lock{filter:blur(6px);pointer-events:none;user-select:none}
-.plan-lock-overlay{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:24px;border-radius:12px;background:rgba(253,251,244,0.82);box-shadow:0 10px 40px rgba(11,61,51,0.18)}
+.plan-lock-overlay{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:36px 24px;min-height:min(430px,60vh);border:1px solid var(--line);border-radius:12px;background:var(--cream);box-shadow:0 10px 40px rgba(11,61,51,0.18)}
 .plan-lock-overlay .plan-lock-icon{font-size:28px}
 .plan-lock-overlay h3{font:600 22px var(--serif);color:var(--pine);margin:0}
 .plan-lock-overlay p{font-size:12px;color:var(--ink);margin:0;line-height:1.7;max-width:46ch}
 .plan-lock-overlay small{display:block;font-size:10px;color:var(--muted);max-width:52ch;line-height:1.6}
 .plan-lock-overlay .button{margin-top:4px}
 .demo-success{padding:12px 14px;background:#e2ecdd;color:#2f5d40;border-left:2px solid var(--green);border-radius:0 6px 6px 0;font-size:12px;line-height:1.7;margin:14px 0}
+.plan-download-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:4px 0 10px;font-size:12px;color:var(--ink)}
+.plan-download-row .button{padding:9px 16px;font-size:11.5px}
+.plan-download-row strong{font-weight:600;color:var(--pine)}
 .plan-body>*{min-width:0}
 .wellness-about summary{cursor:pointer;font-size:11px;font-weight:600;color:var(--green);list-style-position:outside}
 .wellness-about .booking-micro{margin-top:10px}
@@ -385,10 +383,12 @@ body:has(dialog[open]){overflow:hidden}
 .plan-day-total{margin-left:auto;font-size:10px;color:var(--muted);flex-shrink:0}
 .plan-activities{list-style:none;margin:0;padding:4px 8px}
 .plan-activity+.plan-activity{border-top:1px solid #efe7d6}
-.plan-activity summary{display:flex;flex-direction:column;gap:3px;padding:11px 8px;cursor:pointer;border-radius:8px;transition:background .2s}
+.plan-activity summary{display:flex;flex-direction:row;align-items:center;gap:12px;padding:11px 8px;cursor:pointer;border-radius:8px;transition:background .2s}
 .plan-activity summary:hover{background:var(--paper)}
-.plan-activity summary strong{font:600 15.5px var(--serif);color:var(--pine)}
+.activity-summary-text strong{font:600 15.5px var(--serif);color:var(--pine)}
+.plan-activity .activity-image{width:56px;height:56px;flex-shrink:0;object-fit:cover;border-radius:10px;border:1px solid #e7ddca;background:var(--cream)}
 .plan-activity summary>span{font-size:11px;color:var(--muted)}
+.activity-summary-text{display:flex;flex-direction:column;gap:3px;min-width:0}
 .plan-activity summary::-webkit-details-marker{margin-right:4px}
 .plan-activity details[open] summary{background:var(--paper)}
 .activity-detail{display:grid;grid-template-columns:130px 1fr;gap:7px 14px;margin:0;padding:8px 10px 14px;font-size:11px}
@@ -452,7 +452,7 @@ body:has(dialog[open]){overflow:hidden}
   .brand>span{font-size:19px}
   .brand>span b{font-size:21px}
   .anniversary>span{font-size:13px}
-  .mobile-menu{display:grid;width:34px;height:34px;font-size:20px;color:var(--pine)}
+  .mobile-menu{display:grid;width:40px;height:40px;font-size:20px;color:var(--pine)}
   .nav-links{display:none;position:absolute;top:var(--header-h);left:0;right:0;background:var(--cream);padding:10px 24px 18px;box-shadow:0 16px 24px #0b3d3322;flex-direction:column;align-items:stretch;gap:0}
   .nav-links.open{display:flex}
   .nav-links nav{flex-direction:column;gap:0;width:100%}
@@ -471,7 +471,7 @@ body:has(dialog[open]){overflow:hidden}
   .program-image{height:240px}
   .program-info h3{font-size:19px}
   .program-info p{font-size:10px}
-  .wellness-shell{width:min(700px,calc(100vw - 24px))}
+  .wellness-shell{width:min(700px,calc(100% - 24px))}
   .goal-grid{grid-template-columns:1fr 1fr}
   .activity-detail{grid-template-columns:96px 1fr}
   .round-link{width:32px;height:32px;font-size:16px}
@@ -489,9 +489,8 @@ body:has(dialog[open]){overflow:hidden}
   .future-grid article:first-child{padding-left:20px}
   .contact-card{padding:28px}
   .footer-top{gap:20px}
-  .footer-top>div{display:grid;grid-template-columns:1fr 1fr}
+  .footer-contact{margin-left:0}
   .footer-bottom{flex-wrap:wrap;gap:10px}
-  .footer-bottom>span:nth-child(2){order:3;width:100%}
   .plans-grid{grid-template-columns:1fr 1fr;gap:18px}
   .flip-image{height:250px}
   .flip-inner{height:500px}
@@ -552,10 +551,10 @@ body:has(dialog[open]){overflow:hidden}
   .contact-card{padding:28px}
   .footer-top{align-items:start;flex-wrap:wrap;padding-top:36px}
   .footer-brand>span{font-size:18px}
-  .footer-top p{font-size:13px}
-  .footer-top>div{display:flex;gap:22px;width:100%}
-  .footer-bottom{font-size:9px;padding-bottom:80px}
-  .environment-notice{font-size:7px;padding:5px 4px;letter-spacing:.2px}
+  .footer-nav{margin-left:0;gap:10px 22px;width:100%}
+  .footer-nav a{display:inline-block;padding-block:8px}
+  .footer-contact{max-width:100%}
+  .footer-bottom{font-size:9px}
   .chat-launcher{left:14px;bottom:32px;padding:8px 10px 8px 8px;gap:9px}
   .chat-avatar{width:36px;height:36px}
   .chat-launcher strong{font-size:11px}
@@ -604,6 +603,11 @@ body:has(dialog[open]){overflow:hidden}
 
 @media(hover:none){
   .flip-card:hover .flip-inner{transform:none}
+  /* Touch devices: keep form text ≥16px so iOS never auto-zooms the page on focus,
+     and give compact links a comfortable finger target. */
+  .field input,.field select,.field textarea,.auth-form input{font-size:16px}
+  .field input,.field textarea{min-height:46px}
+  .text-link{padding-block:10px}
 }
 
 @media(max-width:360px){
@@ -615,7 +619,7 @@ body:has(dialog[open]){overflow:hidden}
   .hero-actions .button{padding-inline:18px}
   .movement-strip{font-size:11px}
   .program-image{height:270px}
-  .footer-top>div{gap:15px}
+  .footer-nav{gap:15px}
   .calendar-grid{gap:2px}
   .booking-body{padding:18px}
   .booking-header{padding:12px 16px}
@@ -706,6 +710,19 @@ body:has(dialog[open]){overflow:hidden}
 .auth-card h1{font-size:30px;margin-bottom:8px}
 .auth-copy{font-size:12.5px;line-height:1.8;margin-bottom:18px}
 .auth-component{display:flex;justify-content:center;text-align:left}
+/* Clerk card below: its shell sizes are set inline by Clerk at 374px and would
+   force phone screens into horizontal scroll unless we let it shrink. */
+.auth-component{min-width:0}
+.auth-component .cl-rootBox,.auth-component .cl-cardBox,.auth-component .cl-card{max-width:100%;min-width:0}
+@media(max-width:560px){
+  .auth-page{padding:28px 12px}
+  .auth-card{padding:26px 16px}
+  .auth-card h1{font-size:26px}
+  /* Clerk sets widths inline/responsive only down to its 374px design size;
+     on phones give it every shrink hint so it never overflows the viewport. */
+  .auth-component{width:100%;justify-content:stretch}
+  .auth-component .cl-rootBox,.auth-component .cl-cardBox,.auth-component .cl-card{width:100%!important;max-width:100%!important}
+}
 @media(max-width:920px){
   .bootcamp-list .section-heading{grid-template-columns:1fr}
   .bootcamp-grid{grid-template-columns:1fr}
@@ -716,4 +733,33 @@ body:has(dialog[open]){overflow:hidden}
   .bootcamp-shell{max-height:calc(100vh - 30px)}
   .bootcamp-body{padding:20px}
   .bootcamp-submit-row{flex-direction:column;align-items:stretch}
+}
+
+/* ---------- About Us page ---------- */
+.about-hero{text-align:center}
+.about-hero p{margin:22px auto 0;max-width:640px;font-size:13.5px;line-height:1.85}
+.instructor-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:44px;align-items:start;margin-top:120px}
+.instructor-grid .instructor-card:nth-child(2){margin-top:-110px}
+.instructor-card{background:#fffdf8;border:1px solid var(--line);border-radius:18px;padding:0 28px 30px;text-align:center;box-shadow:0 16px 38px #123f3312}
+.instructor-frame{width:190px;height:190px;margin:-95px auto 16px;border:5px solid #fefcf8;border-radius:50%;overflow:hidden;background:var(--cream-deep);box-shadow:0 10px 26px #123f3322}
+.instructor-frame img{width:100%;height:100%;object-fit:cover;object-position:center 20%}
+.instructor-experience{display:inline-block;font-size:9px;font-weight:600;letter-spacing:2px;color:#fefcf8;background:var(--green);border-radius:999px;padding:6px 14px;margin-bottom:10px}
+.instructor-card h3{font-size:24px;letter-spacing:-.2px}
+.instructor-role{font-size:11px;font-weight:600;letter-spacing:1.6px;color:var(--gold);text-transform:uppercase;margin-top:6px}
+.instructor-description{font-size:12.5px;line-height:1.85;margin-top:14px;text-align:left}
+/* Scroll reveal - armed only after hydration so content never hides without JS. */
+.about-main.about-animate .reveal{opacity:0;transform:translateY(30px)}
+.about-main.about-animate .reveal.is-visible{opacity:1;transform:none;transition:opacity .9s ease,transform .9s ease}
+.about-main.about-animate .about-hero p.reveal.is-visible{transition-delay:.15s}
+.about-main.about-animate .instructor-card:nth-child(2).is-visible{transition-delay:.15s}
+.about-main.about-animate .instructor-card:nth-child(3).is-visible{transition-delay:.3s}
+.about-cta{margin-top:86px}
+@media(max-width:1024px){
+  .instructor-grid{grid-template-columns:1fr;max-width:520px;margin-inline:auto}
+  .instructor-grid .instructor-card:nth-child(2){margin-top:0}
+  .instructor-card{padding:0 22px 26px}
+  .about-cta{margin-top:56px}
+}
+@media(max-width:640px){
+  .instructor-frame{width:160px;height:160px;margin-top:-80px}
 }

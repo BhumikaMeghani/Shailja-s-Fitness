@@ -8,7 +8,7 @@ interface ChatWidgetProps {
   /** External navigation requests, e.g. from a program card or contact section. */
   navigateRequest: { key: string; detail?: string } | null
   onOpenChange: (open: boolean) => void
-  onBookingRequested: (service: string | null, preferences: { time?: string; day?: string } | null) => void
+  onBookingRequested: (service: string | null, preferences: { time?: string; day?: string; plan?: string } | null) => void
 }
 
 export default function ChatWidget({ data, open, navigateRequest, onOpenChange, onBookingRequested }: ChatWidgetProps) {
@@ -33,7 +33,9 @@ export default function ChatWidget({ data, open, navigateRequest, onOpenChange, 
     if (key === 'openBooking') {
       bubble('Your preferences are saved for this conversation. Choose a date and time in the booking preview. This does not confirm a real appointment.')
       onOpenChange(false)
-      onBookingRequested(stateRef.current.service ?? null, { time: stateRef.current.time, day: stateRef.current.day })
+      onBookingRequested(stateRef.current.service ?? null, {
+        time: stateRef.current.time, day: stateRef.current.day, plan: stateRef.current.plan,
+      })
       return
     }
     if (key === 'section') {

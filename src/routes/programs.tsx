@@ -3,6 +3,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import SiteHeader from '~/components/SiteHeader'
 import BookingDialog from '~/components/BookingDialog'
 import { loadBootstrap, type BootstrapData } from '~/lib/api'
+import SiteFooter from '~/components/SiteFooter'
 
 export const Route = createFileRoute('/programs')({ component: ProgramsPage })
 
@@ -134,7 +135,7 @@ const programs: Program[] = [
 
 function ProgramsPage() {
   const [data, setData] = useState<BootstrapData | null>(null)
-  const [bookingRequest, setBookingRequest] = useState<{ seq: number } | null>(null)
+  const [bookingRequest, setBookingRequest] = useState<{ seq: number; plan: string | null } | null>(null)
   const [toastMessage, setToastMessage] = useState('')
   const [toastVisible, setToastVisible] = useState(false)
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(null)
@@ -156,12 +157,10 @@ function ProgramsPage() {
     }
   }, [showToast])
 
-  const openBooking = useCallback(() => {
+  const openBooking = useCallback((plan: string | null = null) => {
     seq.current += 1
-    setBookingRequest({ seq: seq.current })
+    setBookingRequest({ seq: seq.current, plan })
   }, [])
-
-  const year = new Date().getFullYear()
 
   return (
     <>
@@ -171,7 +170,6 @@ function ProgramsPage() {
       <main id="main">
         <section className="programs-hero">
           <div className="wrap">
-            <div className="eyebrow">SIX DEDICATED PRACTICES</div>
             <h1>One journey.<br /><em>Many doorways.</em></h1>
             <p>
               From your very first beginner session to advanced and prenatal practice,
@@ -184,45 +182,26 @@ function ProgramsPage() {
         <section className="section wrap plans-section" aria-label="Program plans">
           <div className="plans-grid">
             {programs.map(program => (
-              <FlipCard key={program.name} program={program} onBook={openBooking} />
+              <FlipCard key={program.name} program={program} onBook={() => openBooking(program.name)} />
             ))}
           </div>
 
           <div className="programs-cta">
-            <button className="button" onClick={openBooking}>
+            <button className="button" onClick={() => openBooking(null)}>
               Book An Appointment <span aria-hidden="true">→</span>
             </button>
-            <p>Every plan begins with a personal conversation and a tailored intro session.</p>
           </div>
         </section>
       </main>
 
-      <footer>
-        <div className="wrap footer-top">
-          <Link to="/" className="brand footer-brand">
-            <img src="/brand.svg" width={40} height={48} alt="" />
-            <span>Shailja’s <strong>Fitness</strong></span>
-          </Link>
-          <p>Mindful movement.<br />Meaningful beginnings.</p>
-          <div>
-            <Link to="/programs">Programs</Link>
-            <Link to="/centers">Centers</Link>
-            <Link to="/" hash="#about">About Us</Link>
-            <Link to="/wall-of-art">Wall of Art</Link>
-            <Link to="/" hash="#wall-of-love">Wall of Love</Link>
-            <Link to="/contact">Contact</Link>
-          </div>
-        </div>
-        <div className="wrap footer-bottom">
-          <span>© {year} Shailja’s Fitness</span>
-          <span>Made for a more balanced you.</span>
-        </div>
-      </footer>
+      <SiteFooter />
 
       <BookingDialog
         data={data}
         onDataRefreshed={setData}
-        openRequest={bookingRequest ? { service: null, preferences: null, ...bookingRequest } : null}
+        openRequest={bookingRequest
+          ? { service: null, preferences: bookingRequest.plan ? { plan: bookingRequest.plan } : null }
+          : null}
         onOpenChange={open => { if (!open) setBookingRequest(null) }}
         onCloseChat={() => {}}
         onToast={showToast}
@@ -233,7 +212,7 @@ function ProgramsPage() {
   )
 }
 
-function FlipCard({ program, onBook }: { program: Program; onBook: () => void }) {
+function FlipCard({ program, onBook }: { program: Program; onBook: (plan: string | null) => void }) {
   const [flipped, setFlipped] = useState(false)
 
   const toggle = (event: React.MouseEvent<HTMLElement>) => {
@@ -278,7 +257,7 @@ function FlipCard({ program, onBook }: { program: Program; onBook: () => void })
               </li>
             ))}
           </ul>
-          <button className="button small" onClick={onBook}>Book An Appointment</button>
+          <button className="button small" onClick={() => onBook(program.name)}>Book An Appointment</button>
         </div>
       </div>
     </article>

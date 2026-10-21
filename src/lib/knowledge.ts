@@ -3,13 +3,19 @@
  * Update this module when the owner verifies programs, trainers, policies and offers.
  */
 
+import { YOGA_PLANS, rupees } from './plans'
+
+const PLAN_PRICES: Record<string, string> = Object.fromEntries(
+  YOGA_PLANS.map(plan => [plan.name, rupees(plan.price_paise)]),
+)
+
 export const WellnessKnowledge = {
   categories: ['Yoga', 'Zumba', 'Dance', 'Weight Loss', 'Fitness'],
   trainers: [] as string[],
   offers: [] as string[],
   policies: null as string | null,
   unknown: 'That information is awaiting confirmation from Shailja’s Fitness. We won’t guess. You can view the contact section or explore the appointment journey.',
-  online: 'Online Live Class is one of the appointment options. The platform, class format and real timings are awaiting studio confirmation. A stable internet connection and a comfortable, clear space are useful for online practice.',
+  online: 'Online practice is supported; a stable internet connection and a comfortable, clear space are useful for online sessions. Exact format and timings are awaiting studio confirmation.',
   beginner: 'If you’re new to yoga, discuss your experience and comfort level with the studio before choosing a session. Beginner-specific offerings are awaiting confirmation. No practice should cause pain; seek qualified advice when needed.',
 }
 
@@ -31,6 +37,7 @@ export interface ChatNode {
 
 export interface ChatState {
   service?: string
+  plan?: string
   interest?: string
   time?: string
   day?: string
@@ -39,6 +46,13 @@ export interface ChatState {
 export interface ChatContext {
   state: ChatState
   contact: { email: string; phone: string; address: string }
+}
+
+/** The three class formats, keyed by booking service id. */
+const CLASS_SERVICES: Record<string, string> = {
+  'Online Live Class': 'online',
+  'Studio Class': 'studio',
+  'Private Class': 'private',
 }
 
 /* Pure decision-tree engine. Each node returns a message and contextual next actions. */
@@ -60,7 +74,7 @@ export function chatNode(key: string, context: ChatContext, detail = ''): ChatNo
       ],
     }
     case 'classes': return {
-      text: 'Wonderful! What kind of yoga experience are you looking for? Specific formats still need confirmation from the studio.',
+      text: 'Wonderful! Every plan runs for 30 days and can be taken Online, in the Studio or as a Private session — the price stays the same. Which format suits you?',
       options: ['Beginner-Friendly Yoga', 'General Fitness', 'Weight Management', 'Meditation and Relaxation']
         .map(label => option(label, 'classInfo', label))
         .concat([
@@ -69,13 +83,12 @@ export function chatNode(key: string, context: ChatContext, detail = ''): ChatNo
         ]),
     }
     case 'classInfo': {
-      const service = ({ 'Online Live Class': 'online', 'Studio Class': 'studio', 'Private Class': 'private' } as Record<string, string>)[detail]
+      const service = CLASS_SERVICES[detail]
       if (service) state.service = service
       state.interest = detail
       return {
-        text: detail === 'Online Live Class' ? WellnessKnowledge.online :
-          detail === 'Beginner-Friendly Yoga' ? WellnessKnowledge.beginner :
-            `${detail}: let’s find out whether this is the right fit. The exact class content and availability are to be confirmed.`,
+        text: detail === 'Beginner-Friendly Yoga' ? WellnessKnowledge.beginner :
+          `${detail}: let’s find out whether this is the right fit. The exact class content and availability are to be confirmed.`,
         options: [option('View class details', 'details'), option('Check available timings', 'timings'),
           option('Explore pricing', 'pricing'), book, option('Back to classes', 'classes')],
       }
@@ -89,13 +102,13 @@ export function chatNode(key: string, context: ChatContext, detail = ''): ChatNo
       options: [option('Preview the booking calendar', 'openBooking'), contactOption, main],
     }
     case 'pricing': return {
-      text: 'Customer pricing and durations have not been finalized. Any configured Razorpay amount is for TEST mode only, never an actual amount due.',
+      text: 'Plan pricing (each plan runs for 30 days, same price for Online, Studio or Private sessions): Normal Yoga ₹1,500 · Therapeutic Yoga ₹2,500 · Kids Yoga ₹2,000 · Corporate Sessions ₹3,000 · Transformational Yoga ₹5,000 · Pregnancy Yoga ₹4,500.',
       options: [contactOption, book, option('Back to classes', 'classes')],
     }
     case 'locations': return {
       text: 'Where would you like to practice? Our verified address will be added before studio bookings open.',
       options: [
-        option('Studio location', 'locationInfo'), option('Online classes', 'online'),
+        option('Studio location', 'locationInfo'), option('Yoga formats', 'classes'),
         option('Corporate yoga sessions', 'corporate'), contactOption, main,
       ],
     }
@@ -106,10 +119,12 @@ export function chatNode(key: string, context: ChatContext, detail = ''): ChatNo
     case 'online':
       state.service = 'online'
       return { text: WellnessKnowledge.online, options: [book, option('Online class requirements', 'faqAnswer', 'online'), contactOption, main] }
-    case 'corporate': return {
-      text: 'Institutional and corporate offerings are not yet confirmed. Visit the institutions section for the current status.',
-      options: [option('View institutions section', 'section', 'institutions'), contactOption, main],
-    }
+    case 'corporate':
+      state.plan = 'Corporate Sessions'
+      return {
+        text: `Corporate Sessions — ${PLAN_PRICES['Corporate Sessions']} for a 30-day plan, Online, Studio or Private. Continue to choose your format.`,
+        options: [book, option('Explore pricing', 'pricing'), contactOption, main],
+      }
     case 'trainers': return {
       text: 'Meet the people who will guide your wellness journey. Verified trainer profiles are not yet available, so we won’t invent names or qualifications.',
       options: [option('View all trainers', 'trainerInfo'), option('Trainer expertise', 'trainerInfo'), option('Personalized guidance', 'guidance'), book, main],
@@ -153,14 +168,13 @@ export function chatNode(key: string, context: ChatContext, detail = ''): ChatNo
       options: [contactOption, book, option('Back to offers', 'offers')],
     }
     case 'trial': return {
-      text: 'Let’s explore your preferences. Trial eligibility and any fee must be confirmed by the studio. Which class would you prefer?',
-      options: [
-        option('Online Class', 'preferenceClass', 'online'), option('Studio Class', 'preferenceClass', 'studio'),
-        option('Private Session', 'preferenceClass', 'private'), main,
-      ],
+      text: 'Let’s explore your preferences. Trial eligibility and any fee must be confirmed by the studio. Which yoga plan would you prefer? (Format — Online, Studio or Private — is chosen in booking.)',
+      options: YOGA_PLANS
+        .map(plan => option(plan.name, 'preferenceClass', plan.name))
+        .concat([main]),
     }
     case 'preferenceClass':
-      state.service = detail
+      state.plan = detail
       return {
         text: 'What time of day works best? This is a preference, not a confirmed slot.',
         options: ['Morning', 'Afternoon', 'Evening', 'Flexible Timing'].map(label => option(label, 'preferenceTime', label)),
@@ -174,7 +188,7 @@ export function chatNode(key: string, context: ChatContext, detail = ''): ChatNo
     case 'preferenceDay':
       state.day = detail
       return {
-        text: `Your preferences:\nClass: ${{ online: 'Online Live Class', studio: 'Studio Class', private: 'Private Class' }[state.service || '']}\nTime: ${state.time}\nDay: ${state.day}\n\nNothing is booked yet. Continue to choose an actual date in the development preview.`,
+        text: `Your preferences:\nPlan: ${state.plan ?? 'Any plan'}\nTime: ${state.time}\nDay: ${state.day}\n\nNothing is booked yet. Continue to choose the class format and a date in the development preview.`,
         options: [option('Continue to booking', 'openBooking'), option('Change preferences', 'trial'), main],
       }
     case 'faqs': return {

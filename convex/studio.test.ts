@@ -36,6 +36,74 @@ test("all public operations reject missing or incorrect server credentials", asy
     .rejects.toThrow("Unauthorized");
 });
 
+test("Clerk linking preserves id-only records, legacy accounts, sessions and bookings", async () => {
+  const t = convexTest(schema, modules);
+  await t.mutation(api.migrate.importSqlite, source);
+  const linkId = await t.run(ctx => ctx.db.insert("clerk_accounts", { id: "clerk:user_existing" }));
+  const args = { server_key, clerk_user_id: "user_existing", email: user.email, new_user_id: "unused" };
+  expect(await t.mutation(api.studio.linkClerkAccount, args)).toEqual({ id: user.id, email: user.email });
+  expect(await t.mutation(api.studio.linkClerkAccount, { ...args, new_user_id: "also-unused" }))
+    .toEqual({ id: user.id, email: user.email });
+  expect(await t.run(ctx => ctx.db.get("clerk_accounts", linkId)))
+    .toMatchObject({ id: "clerk:user_existing", user_id: user.id });
+  expect(await t.run(ctx => ctx.db.query("clerk_accounts").take(10))).toHaveLength(1);
+  expect(await t.run(ctx => ctx.db.query("users").take(10))).toHaveLength(1);
+  expect(await t.query(api.studio.getUser, { server_key, field: "id", value: user.id })).toEqual(user);
+  expect(await t.query(api.studio.getBooking, { server_key, id: record.id, user_id: user.id })).toEqual(record);
+  expect(await t.query(api.studio.getSession, { server_key, token_hash: "hash", now: 200 }))
+    .toEqual(source.sessions[0]);
+});
+
+test("new Clerk accounts persist once and distinct identities remain isolated", async () => {
+  const t = convexTest(schema, modules);
+  const args = { server_key, clerk_user_id: "user_new", email: "NEW@Example.com", new_user_id: "new" };
+  expect(await t.mutation(api.studio.linkClerkAccount, args)).toEqual({ id: "new", email: "new@example.com" });
+  // Stable Clerk ID wins even if its email later changes to another account's.
+  await t.mutation(api.studio.register, { server_key, ...user });
+  expect(await t.mutation(api.studio.linkClerkAccount, { ...args, email: user.email }))
+    .toEqual({ id: "new", email: "new@example.com" });
+  await t.mutation(api.studio.linkClerkAccount, {
+    server_key, clerk_user_id: "user_other", email: "other@example.com", new_user_id: "other",
+  });
+  expect(await t.run(ctx => ctx.db.query("users").take(10))).toHaveLength(3);
+  expect(await t.run(ctx => ctx.db.query("clerk_accounts").take(10))).toHaveLength(2);
+  expect(await t.query(api.studio.getUser, { server_key, field: "id", value: "new" }))
+    .toMatchObject({ password_hash: "!clerk-only" });
+});
+
+test("Clerk linking rejects unauthorized calls, conflicting links and ID collisions", async () => {
+  const t = convexTest(schema, modules);
+  const args = { server_key, clerk_user_id: "user_one", email: user.email, new_user_id: "new" };
+  await expect(t.mutation(api.studio.linkClerkAccount, { ...args, server_key: "bad" }))
+    .rejects.toThrow("Unauthorized");
+  await t.mutation(api.studio.register, { server_key, ...user });
+  await t.mutation(api.studio.linkClerkAccount, args);
+  await expect(t.mutation(api.studio.linkClerkAccount, { ...args, clerk_user_id: "user_two" }))
+    .rejects.toThrow("already linked");
+  await expect(t.mutation(api.studio.linkClerkAccount, {
+    ...args, clerk_user_id: "user_two", email: "new@example.com", new_user_id: user.id,
+  })).rejects.toThrow("already linked");
+  await t.mutation(api.studio.register, {
+    server_key, id: "unlinked", email: "unlinked@example.com", password_hash: "preserved",
+  });
+  await expect(t.mutation(api.studio.linkClerkAccount, {
+    ...args, clerk_user_id: "user_two", email: "new@example.com", new_user_id: "unlinked",
+  })).rejects.toThrow("Account ID is already in use");
+  await expect(t.mutation(api.studio.linkClerkAccount, { ...args, clerk_user_id: "" }))
+    .rejects.toThrow("Invalid account");
+  expect(await t.run(ctx => ctx.db.query("clerk_accounts").take(10))).toHaveLength(1);
+});
+
+test("a dangling Clerk link fails closed rather than claiming another account", async () => {
+  const t = convexTest(schema, modules);
+  await t.mutation(api.studio.register, { server_key, ...user });
+  await t.run(ctx => ctx.db.insert("clerk_accounts", { id: "clerk:user_missing", user_id: "deleted" }));
+  await expect(t.mutation(api.studio.linkClerkAccount, {
+    server_key, clerk_user_id: "user_missing", email: user.email, new_user_id: "unused",
+  })).rejects.toThrow("Linked account not found");
+  expect(await t.run(ctx => ctx.db.query("users").take(10))).toHaveLength(1);
+});
+
 test("migration preserves every legacy field, is idempotent, and refuses a different source", async () => {
   const t = convexTest(schema, modules);
   const expected = { users: 1, sessions: 1, attempts: 1, bookings: 1, webhook_events: 1 };

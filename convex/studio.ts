@@ -109,6 +109,50 @@ export const register = mutation({
   },
 });
 
+// Only the trusted server may call this, after verifying the Clerk identity and
+// its email. Resolve/create the account and link in one atomic transaction.
+export const linkClerkAccount = mutation({
+  args: { ...key, clerk_user_id: v.string(), email: v.string(), new_user_id: v.string() },
+  returns: v.object({ id: v.string(), email: v.string() }),
+  handler: async (ctx, args) => {
+    authorize(args.server_key);
+    if (!args.clerk_user_id || !args.new_user_id ||
+        !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(args.email)) {
+      throw new ConvexError("Invalid account details.");
+    }
+    const id = `clerk:${args.clerk_user_id}`;
+    const link = await ctx.db.query("clerk_accounts")
+      .withIndex("by_logical_id", q => q.eq("id", id)).unique();
+    if (link?.user_id !== undefined) {
+      const account = await ctx.db.query("users")
+        .withIndex("by_logical_id", q => q.eq("id", link.user_id!)).unique();
+      // Never silently reassign a linked identity using its current email.
+      if (!account) throw new ConvexError("Linked account not found.");
+      return { id: account.id, email: account.email };
+    }
+    const email = args.email.trim().toLowerCase();
+    const account = await ctx.db.query("users")
+      .withIndex("by_email", q => q.eq("email", email)).unique();
+    const user_id = account?.id ?? args.new_user_id;
+    const otherLink = await ctx.db.query("clerk_accounts")
+      .withIndex("by_user_id", q => q.eq("user_id", user_id)).unique();
+    if (otherLink && otherLink.id !== id) {
+      throw new ConvexError("This account is already linked to another sign-in.");
+    }
+    if (!account) {
+      if (await ctx.db.query("users")
+        .withIndex("by_logical_id", q => q.eq("id", user_id)).unique()) {
+        throw new ConvexError("Account ID is already in use.");
+      }
+      // Explicitly disabled local password; verifyWerkzeugHash rejects this.
+      await ctx.db.insert("users", { id: user_id, email, password_hash: "!clerk-only" });
+    }
+    if (link) await ctx.db.patch("clerk_accounts", link._id, { user_id });
+    else await ctx.db.insert("clerk_accounts", { id, user_id });
+    return { id: user_id, email: account?.email ?? email };
+  },
+});
+
 export const limited = mutation({
   args: { ...key, bucket: v.string(), maximum: v.number(), window: v.number() },
   returns: v.boolean(),

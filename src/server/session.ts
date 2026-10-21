@@ -4,7 +4,7 @@
  */
 import { randomBytes } from 'node:crypto'
 import { production } from './env'
-import { api, read, write, type SessionRow } from './db'
+import { api, read, write, DatabaseFunctionUnavailable, type SessionRow } from './db'
 import { sha256Hex } from './password'
 
 export const SESSION_COOKIE = 'studio_session'
@@ -38,9 +38,21 @@ export async function currentSession(request: Request): Promise<SessionRow | nul
 export async function currentSessionContext(request: Request) {
   const token = parseCookie(request.headers.get('cookie'), SESSION_COOKIE)
   if (!token) return null
-  return read(api.studio.getSessionContext, {
-    token_hash: sha256Hex(token), now: Math.floor(Date.now() / 1000),
-  })
+  try {
+    return await read(api.studio.getSessionContext, {
+      token_hash: sha256Hex(token), now: Math.floor(Date.now() / 1000),
+    })
+  } catch (error) {
+    if (!(error instanceof DatabaseFunctionUnavailable)) throw error
+    // Existing deployments must keep working before the optimized query is
+    // deployed. Use the original, fresh, server-authorized reads in that case.
+    const session = await currentSession(request)
+    if (!session) return null
+    const account = session.user_id
+      ? await read(api.studio.getUser, { field: 'id', value: session.user_id })
+      : null
+    return { session, user: account ? { email: account.email } : null }
+  }
 }
 
 export async function newSession(user_id: string | null, request: Request): Promise<{ token: string; csrf: string }> {

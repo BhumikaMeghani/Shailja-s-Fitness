@@ -33,10 +33,17 @@ vi.mock('../src/server/db', async importOriginal => {
 })
 vi.mock('../src/server/razorpay', () => ({ razorpay: vi.fn() }))
 vi.mock('../src/server/wellness', () => ({ loadBpCatalog: vi.fn() }))
+vi.mock('@clerk/tanstack-react-start/server', () => ({
+  auth: vi.fn(),
+  clerkClient: () => ({ users: { getUser: clerkGetUser } }),
+}))
+const { clerkGetUser } = vi.hoisted(() => ({ clerkGetUser: vi.fn() }))
 
 import { Route as bootstrap } from '../src/routes/api/bootstrap'
 import { Route as availability } from '../src/routes/api/availability'
 import { Route as auth } from '../src/routes/api/auth.$action'
+import { Route as clerkSession } from '../src/routes/api/auth.session'
+import { auth as clerkAuth } from '@clerk/tanstack-react-start/server'
 import { Route as demo } from '../src/routes/api/bookings.demo'
 import { Route as status } from '../src/routes/api/bookings.$bookingId'
 import { Route as order } from '../src/routes/api/payments.order'
@@ -48,7 +55,7 @@ import { loadBpCatalog } from '../src/server/wellness'
 import { hashPassword, verifyWerkzeugHash } from '../src/server/password'
 import { razorpay } from '../src/server/razorpay'
 import { sampleSlots, istDateKey, nowIst } from '../src/server/slots'
-import { DatabaseUnavailable, read } from '../src/server/db'
+import { DatabaseUnavailable, DatabaseFunctionUnavailable, read } from '../src/server/db'
 import { apiHandler } from '../src/server/http'
 
 type Context = { request: Request; params: Record<string, string> }
@@ -99,6 +106,72 @@ beforeEach(() => {
   vi.mocked(loadBpCatalog).mockReset()
   vi.mocked(loadBpCatalog).mockImplementation(route =>
     t.query(api.wellness.getCatalog, { route, version: CONTENT_VERSION }))
+  vi.mocked(clerkAuth).mockReset()
+  clerkGetUser.mockReset()
+})
+
+function verifiedClerkUser(email = 'clerk@example.com', verified = true) {
+  clerkGetUser.mockResolvedValue({
+    primaryEmailAddressId: 'email_primary',
+    emailAddresses: [{
+      id: 'email_primary', emailAddress: email,
+      verification: { status: verified ? 'verified' : 'unverified' },
+    }],
+  })
+}
+
+test('verified Clerk sign-in links an existing record and keeps booking ownership across sign-ins', async () => {
+  const client = new Client()
+  await client.register('clerk@example.com')
+  const original = await t.query(api.studio.getUser, { server_key, field: 'email', value: 'clerk@example.com' })
+  await t.run(ctx => ctx.db.insert('clerk_accounts', { id: 'clerk:user_fixture' }))
+  vi.mocked(clerkAuth).mockResolvedValue({ userId: 'user_fixture' } as Awaited<ReturnType<typeof clerkAuth>>)
+  verifiedClerkUser()
+  for (let index = 0; index < 2; index++) {
+    const response = await client.post(clerkSession, { clerk_user_id: 'user_attacker', user_id: 'attacker' })
+    expect(response.status).toBe(200)
+    expect(response.headers.get('set-cookie')).toContain('HttpOnly')
+    client.acceptCookie(response)
+    client.csrf = (await response.json()).csrf
+  }
+  expect(await t.run(ctx => ctx.db.query('clerk_accounts').take(10)))
+    .toEqual([expect.objectContaining({ id: 'clerk:user_fixture', user_id: original!.id })])
+  const response = await client.post(demo, selection())
+  expect(response.status).toBe(200)
+  expect(await t.run(ctx => ctx.db.query('bookings').first()))
+    .toMatchObject({ user_id: original!.id })
+  expect(await t.run(ctx => ctx.db.query('users').take(10))).toHaveLength(1)
+})
+
+test('new Clerk sign-in persists both records without enabling local password login', async () => {
+  const client = new Client()
+  await client.bootstrap()
+  vi.mocked(clerkAuth).mockResolvedValue({ userId: 'user_new' } as Awaited<ReturnType<typeof clerkAuth>>)
+  verifiedClerkUser()
+  expect((await client.post(clerkSession, {})).status).toBe(200)
+  const account = await t.query(api.studio.getUser, { server_key, field: 'email', value: 'clerk@example.com' })
+  expect(account).not.toBeNull()
+  expect(verifyWerkzeugHash(account!.password_hash, '!clerk-only')).toBe(false)
+  expect(await t.run(ctx => ctx.db.query('clerk_accounts').first()))
+    .toMatchObject({ id: 'clerk:user_new', user_id: account!.id })
+})
+
+test('Clerk session rejects missing identity, unverified email, provider failures and invalid CSRF', async () => {
+  const client = new Client()
+  await client.bootstrap()
+  vi.mocked(clerkAuth).mockResolvedValue({ userId: null } as Awaited<ReturnType<typeof clerkAuth>>)
+  expect((await client.post(clerkSession, {})).status).toBe(401)
+  expect(clerkGetUser).not.toHaveBeenCalled()
+  vi.mocked(clerkAuth).mockResolvedValue({ userId: 'user_new' } as Awaited<ReturnType<typeof clerkAuth>>)
+  verifiedClerkUser('clerk@example.com', false)
+  expect((await client.post(clerkSession, {})).status).toBe(422)
+  clerkGetUser.mockRejectedValue(new Error('provider unavailable'))
+  expect((await client.post(clerkSession, {})).status).toBe(503)
+  verifiedClerkUser()
+  client.csrf = 'wrong'
+  expect((await client.post(clerkSession, {})).status).toBe(403)
+  expect(await t.run(ctx => ctx.db.query('clerk_accounts').take(10))).toHaveLength(0)
+  expect(await t.run(ctx => ctx.db.query('users').take(10))).toHaveLength(0)
 })
 
 function selection() {
@@ -193,6 +266,32 @@ test('availability skips empty dates but reads fresh bookings and reports databa
   const failed = await request(date)
   expect(failed.status).toBe(503)
   expect((await failed.json()).slots).toBeUndefined()
+})
+
+test('bootstrap remains compatible with a backend missing the optimized session query', async () => {
+  const client = new Client()
+  await client.register('compatible@example.com')
+  vi.mocked(read).mockClear()
+  vi.mocked(read).mockRejectedValueOnce(new DatabaseFunctionUnavailable())
+  const response = await client.get(bootstrap)
+  expect(response.status).toBe(200)
+  const body = await response.json()
+  expect(body.user).toEqual({ email: 'compatible@example.com' })
+  expect(body.csrf).toBe(client.csrf)
+  expect(body.services).toHaveLength(3)
+  expect(read).toHaveBeenCalledTimes(3)
+  expect(read).toHaveBeenNthCalledWith(2, api.studio.getSession, expect.anything())
+  expect(read).toHaveBeenNthCalledWith(3, api.studio.getUser, expect.anything())
+  expect(JSON.stringify(body)).not.toContain('password_hash')
+})
+
+test('bootstrap does not disguise database outages as a compatibility fallback', async () => {
+  const client = new Client()
+  await client.bootstrap()
+  vi.mocked(read).mockClear()
+  vi.mocked(read).mockRejectedValueOnce(new DatabaseUnavailable())
+  expect((await client.get(bootstrap)).status).toBe(503)
+  expect(read).toHaveBeenCalledTimes(1)
 })
 
 test('orders return the saved gateway ID, reuse pending orders, and verify captures', async () => {

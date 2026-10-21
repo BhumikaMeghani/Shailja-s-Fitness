@@ -7,7 +7,7 @@ export default defineConfig({
       { test: { name: "convex", environment: "edge-runtime", include: ["convex/studio.test.ts", "convex/wellness.test.ts"] } },
       {
         extends: true,
-        test: { name: "react-server", environment: "node", include: ["convex/react.test.ts"] },
+        test: { name: "react-server", environment: "node", include: ["convex/react.test.ts", "src/server/*.test.ts"] },
       },
       {
         extends: true,

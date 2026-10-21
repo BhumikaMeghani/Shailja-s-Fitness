@@ -59,24 +59,48 @@ npm ci
 npm test
 npm run build
 python3 scripts/check-performance.py
+python3 scripts/check-bootstrap-compatibility.py
 ```
 
-The last command requires Python Playwright with its Chromium browser installed.
-It starts/stops the production Node server, checks mobile/desktop layouts,
+The browser checks require Python Playwright with its Chromium browser installed.
+The performance check starts/stops the production Node server, checks mobile/desktop layouts,
 responsive image selection, original-image fallback, cache headers and real
 PDF/Word downloads. It uses explicit browser API fixtures, **not a live database**.
 Screenshots, downloaded files and byte measurements go under `test-results/`
 (or `$DELTA_SCRATCH_DIR` when set).
+
+The bootstrap compatibility check uses the real web server and Convex HTTP client
+against a local older-backend fixture. It verifies that booking classes load when
+the optimized query is not deployed, and that database outages still fail closed.
+It does not access a live database.
 
 The route/backend tests use `convex-test` and cover fresh availability after
 booking, expired holds, reservation conflicts, session isolation, credentials,
 database failures, CSRF and payment verification. Availability and account data
 are not response-cached; only simultaneous browser bootstrap calls are shared.
 
-When authorized to release, deploy the Convex functions **before** the website:
-the optimized bootstrap calls the new `studio:getSessionContext` function.
-There is no schema migration. Existing production booking/availability gates
-are unchanged; sample slots have not been turned into a real studio timetable.
+When authorized to release, deploy the schema and Convex functions **before** the
+website, and verify `studio:linkClerkAccount` exists on the website's configured
+deployment before releasing the updated sign-in route. Bootstrap uses
+`studio:getSessionContext` when available and falls back
+to the existing session/user queries if that function has not been deployed yet.
+Authentication and connection failures still fail closed; they do not trigger
+this compatibility path. Account-linking writes do not fall back to the old
+email-only bridge.
+
+`clerk_accounts` records retain their existing `id` (`clerk:user_...`). The new
+optional `user_id` points to the logical `users.id`; existing id-only rows remain
+valid without a backfill. After Clerk verifies the signed-in user's primary
+email, sign-in atomically links a matching local user or creates a new local user
+and mapping. Existing passwords, sessions and bookings are preserved. New
+Clerk-only users have a disabled local password. Once linked, the Clerk identity
+keeps the same local user even if its email changes; local email changes/account
+merges require a separate explicit flow. No Clerk passwords or tokens are copied
+into Convex. This records users when they complete the booking sign-in bridge,
+not every Clerk signup via a webhook.
+
+Existing production booking/availability gates are unchanged; sample slots have
+not been turned into a real studio timetable.
 
 ## Migrated from Flask
 

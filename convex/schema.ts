@@ -7,6 +7,11 @@ import { wellnessCatalog } from "./wellnessModel";
 export const user = v.object({
   id: v.string(), email: v.string(), password_hash: v.string(),
 });
+// Preserve existing id-only records ("clerk:user_..."). Link them lazily after
+// verified sign-in; user_id is the logical users.id, not the Convex document ID.
+export const clerkAccount = v.object({
+  id: v.string(), user_id: v.optional(v.string()),
+});
 export const session = v.object({
   token_hash: v.string(), user_id: v.union(v.string(), v.null()),
   csrf: v.string(), expires: v.number(),
@@ -55,6 +60,8 @@ export const trainersApplying = v.object({
 
 export default defineSchema({
   users: defineTable(user).index("by_logical_id", ["id"]).index("by_email", ["email"]),
+  clerk_accounts: defineTable(clerkAccount)
+    .index("by_logical_id", ["id"]).index("by_user_id", ["user_id"]),
   sessions: defineTable(session).index("by_token_hash", ["token_hash"])
     .index("by_expires", ["expires"]),
   attempts: defineTable(attempt).index("by_bucket_and_created", ["bucket", "created"])

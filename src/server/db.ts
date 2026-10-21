@@ -4,7 +4,7 @@
  */
 import { ConvexHttpClient } from 'convex/browser'
 import { ConvexError, type Infer } from 'convex/values'
-import type { FunctionArgs, FunctionReference, FunctionReturnType } from 'convex/server'
+import { getFunctionName, type FunctionArgs, type FunctionReference, type FunctionReturnType } from 'convex/server'
 import { api } from '../../convex/_generated/api'
 import { booking, session, user } from '../../convex/schema'
 import { env } from './env'
@@ -18,6 +18,9 @@ export class DatabaseUnavailable extends Error {
     super('The service is temporarily unavailable. Please try again shortly.')
   }
 }
+
+/** A query hasn't reached this deployment yet, rather than a database outage. */
+export class DatabaseFunctionUnavailable extends DatabaseUnavailable {}
 
 let client: ConvexHttpClient | undefined
 function database(): ConvexHttpClient {
@@ -42,6 +45,12 @@ async function call<F extends ServerFunction>(
       ? await database().query(fn as FunctionReference<'query'>, params)
       : await database().mutation(fn as FunctionReference<'mutation'>, params)
   } catch (error) {
+    // Allow read-only callers to support rolling backend/frontend releases.
+    // Never classify domain/auth errors as missing functions or retry writes.
+    if (kind === 'query' && error instanceof Error && !(error instanceof ConvexError) &&
+        error.message.includes(`Could not find public function for '${getFunctionName(fn)}'`)) {
+      throw new DatabaseFunctionUnavailable()
+    }
     if (error instanceof ConvexError && typeof error.data === 'string' && error.data !== 'Unauthorized') {
       throw new Error(error.data)
     }

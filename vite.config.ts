@@ -13,7 +13,9 @@ const securityHeaders = {
     "default-src 'self'",
     "script-src 'self' 'unsafe-inline' https://*.razorpay.com https://*.clerk.accounts.dev https://*.clerk.com",
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: https://img.clerk.com https://*.clerk.accounts.dev",
+    // Plan exports decode locally fetched photos through blob URLs before
+    // drawing thumbnails on a canvas. This does not permit blob scripts.
+    "img-src 'self' data: blob: https://img.clerk.com https://*.clerk.accounts.dev",
     "frame-src https://*.razorpay.com https://www.google.com https://maps.google.com https://*.clerk.accounts.dev",
     "connect-src 'self' https://*.razorpay.com https://*.clerk.accounts.dev https://*.clerk.com https://clerk.telemetry.com",
     "object-src 'none'",
@@ -38,6 +40,11 @@ export default defineConfig({
     nitro({
       routeRules: {
         '/**': { headers: securityHeaders },
+        // Only content-hashed derivatives are immutable. Original image URLs
+        // remain replaceable, and private API responses are never cached.
+        '/optimized/**': {
+          headers: { ...securityHeaders, 'Cache-Control': 'public, max-age=31536000, immutable' },
+        },
         '/api/**': {
           headers: { ...securityHeaders, 'Cache-Control': 'no-store' },
         },

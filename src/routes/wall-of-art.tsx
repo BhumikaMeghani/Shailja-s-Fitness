@@ -4,6 +4,7 @@ import SiteHeader from '~/components/SiteHeader'
 import BookingDialog from '~/components/BookingDialog'
 import { loadBootstrap, type BootstrapData } from '~/lib/api'
 import SiteFooter from '~/components/SiteFooter'
+import OptimizedImage from '~/components/OptimizedImage'
 
 export const Route = createFileRoute('/wall-of-art')({
   component: WallOfArtPage,
@@ -88,13 +89,13 @@ function ReviewFrame({
   return (
     <figure className={`art-frame reveal ${className}`}>
       <div className="review-slot">
-        <img
+        <OptimizedImage
           key={review.src}
           src={review.src}
           alt={`Google review from ${review.name}`}
           width={review.width}
           height={review.height}
-          loading="eager"
+          sizes="(max-width: 760px) 90vw, 560px"
         />
       </div>
       <figcaption className="review-name">

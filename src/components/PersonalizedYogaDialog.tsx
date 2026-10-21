@@ -22,7 +22,7 @@ import {
   type WellnessPlanResult,
 } from '~/lib/wellness/types'
 import { poseImageFor } from '~/lib/wellness/yogaImages'
-import { downloadPlanDocx, downloadPlanPdf } from '~/lib/wellness/downloadPlan'
+import OptimizedImage from '~/components/OptimizedImage'
 
 interface PersonalizedYogaDialogProps {
   openRequest: { seq: number } | null
@@ -175,6 +175,7 @@ export default function PersonalizedYogaDialog({ openRequest, onOpenChange }: Pe
     if (!result || !isPlan(result) || exporting) return
     setExporting(type)
     try {
+      const { downloadPlanPdf, downloadPlanDocx } = await import('~/lib/wellness/downloadPlan')
       if (type === 'pdf') await downloadPlanPdf(result, name)
       else await downloadPlanDocx(result, name)
     } catch {
@@ -430,13 +431,14 @@ export default function PersonalizedYogaDialog({ openRequest, onOpenChange }: Pe
                                 <li key={entry.activity.id} className="plan-activity">
                                   <details>
                                     <summary>
-                                      <img
+                                      <OptimizedImage
                                         className="activity-image"
                                         src={poseImageFor(entry.activity).src}
                                         alt={poseImageFor(entry.activity).alt}
                                         width={64}
                                         height={64}
                                         loading="lazy"
+                                        sizes="64px"
                                       />
                                       <span className="activity-summary-text">
                                         <strong>{entry.activity.name}</strong>

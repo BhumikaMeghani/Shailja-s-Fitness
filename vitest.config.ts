@@ -15,7 +15,7 @@ export default defineConfig({
       },
       {
         extends: true,
-        test: { name: "auth-ui", environment: "jsdom", include: ["src/components/*.test.tsx"] },
+        test: { name: "auth-ui", environment: "jsdom", include: ["src/components/*.test.tsx", "src/lib/api.test.ts"] },
       },
     ],
   },

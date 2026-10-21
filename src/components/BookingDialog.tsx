@@ -53,6 +53,7 @@ export default function BookingDialog({ data, onDataRefreshed, openRequest, onOp
   const dialogRef = useRef<HTMLDialogElement>(null)
   const returnFocusRef = useRef<HTMLElement | null>(null)
   const requestVersionRef = useRef(0)
+  const slotsAbortRef = useRef<AbortController | null>(null)
   const busyRef = useRef(false)
 
   const [step, setStep] = useState<'class' | 'calendar' | 'review' | 'auth' | 'payment' | 'result'>('class')
@@ -155,6 +156,9 @@ export default function BookingDialog({ data, onDataRefreshed, openRequest, onOp
   }
 
   const onDialogClose = () => {
+    slotsAbortRef.current?.abort()
+    requestVersionRef.current++
+    setSlotsLoading(false)
     onOpenChange(false)
     returnFocusRef.current?.focus()
   }
@@ -199,23 +203,28 @@ export default function BookingDialog({ data, onDataRefreshed, openRequest, onOp
 
   // ---- Availability -------------------------------------------------------
   const loadSlots = async (serviceId: string, date: string) => {
+    slotsAbortRef.current?.abort()
+    const controller = new AbortController()
+    slotsAbortRef.current = controller
     const version = ++requestVersionRef.current
+    setSlots(null)
+    setError('')
     setSlotsLoading(true)
     setSlotsFailed(false)
     try {
       const availability = await api<{ slots: { starts_at: string; available: boolean }[]; development: boolean; message?: string }>(
         `/api/availability?service=${serviceId}&date=${date}`,
+        undefined, controller.signal,
       )
-      if (version !== requestVersionRef.current) return
-      if (!availability.slots.some(slot => slot.starts_at === selection.starts_at && slot.available)) {
-        setSelection(current => ({ ...current, starts_at: null }))
-      }
+      if (controller.signal.aborted || version !== requestVersionRef.current) return
+      setSelection(current => availability.slots.some(slot => slot.starts_at === current.starts_at && slot.available)
+        ? current : { ...current, starts_at: null })
       setSlots(availability.slots)
       setSlotsMessage(availability.slots.length
         ? ''
         : availability.message || 'No sample times on this date. Try another day within the next 60 days; Sundays have no sample slots.')
     } catch (loadError) {
-      if (version !== requestVersionRef.current) return
+      if (controller.signal.aborted || version !== requestVersionRef.current) return
       setSlotsFailed(true)
       setSlotsMessage('')
       setError(loadError instanceof Error ? loadError.message : 'Could not load availability.')
@@ -225,8 +234,12 @@ export default function BookingDialog({ data, onDataRefreshed, openRequest, onOp
   }
 
   useEffect(() => {
-    if (step === 'calendar' && data && selection.service && selection.date && !slotsLoading && !slotsFailed) {
+    if (step === 'calendar' && data && selection.service && selection.date) {
       void loadSlots(selection.service, selection.date)
+    }
+    return () => {
+      slotsAbortRef.current?.abort()
+      requestVersionRef.current++
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, selection.service, selection.date])
@@ -500,6 +513,10 @@ export default function BookingDialog({ data, onDataRefreshed, openRequest, onOp
                       aria-label={new Date(`${key}T12:00:00`).toLocaleDateString('en-IN', { dateStyle: 'full' })}
                       aria-pressed={key === selection.date}
                       onClick={() => {
+                        if (key === selection.date && selection.service) {
+                          void loadSlots(selection.service, key)
+                          return
+                        }
                         setSlots(null)
                         setSlotsFailed(false)
                         setSelection(current => ({ ...current, date: key, starts_at: null }))

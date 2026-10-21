@@ -8,6 +8,7 @@ import PersonalizedYogaDialog from '~/components/PersonalizedYogaDialog'
 import Lotus from '~/components/Lotus'
 import { loadBootstrap, type BootstrapData } from '~/lib/api'
 import SiteFooter from '~/components/SiteFooter'
+import OptimizedImage from '~/components/OptimizedImage'
 
 interface BookingRequest {
   service?: string | null
@@ -66,11 +67,13 @@ function LandingPage() {
 
       <main id="main">
         <section className="hero">
-          <img
+          <OptimizedImage
             className="hero-bg"
             src="/images/hero-om.jpg"
             alt="A woman meditating on a terrace at golden hour, an Om mandala glowing beside her"
             fetchPriority="high"
+            loading="eager"
+            sizes="100vw"
             width={1671}
             height={941}
           />

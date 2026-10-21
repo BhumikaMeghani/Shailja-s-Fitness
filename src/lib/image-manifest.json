@@ -1,0 +1,1496 @@
+{
+  "/images/hero-om.jpg": {
+    "width": 2000,
+    "height": 1126,
+    "originalSha256": "66b4216bda782e9fc3c221682ec46a7a17de4a9baa3be7fe4f32d7a051ada4cf",
+    "variants": [
+      {
+        "src": "/optimized/images/hero-om-480-24ecbffaa788.webp",
+        "width": 480,
+        "bytes": 33328
+      },
+      {
+        "src": "/optimized/images/hero-om-960-405ecc0ee92a.webp",
+        "width": 960,
+        "bytes": 88646
+      },
+      {
+        "src": "/optimized/images/hero-om-2000-460a8df994b5.webp",
+        "width": 2000,
+        "bytes": 207494
+      }
+    ]
+  },
+  "/images/instructors/manoj.png": {
+    "width": 960,
+    "height": 1280,
+    "originalSha256": "161f76692525754436153b3009bcfc6379be7c175a08a85273ddafc01990fd72",
+    "variants": [
+      {
+        "src": "/optimized/images/instructors/manoj-320-c2084c553b7a.webp",
+        "width": 320,
+        "bytes": 10818
+      },
+      {
+        "src": "/optimized/images/instructors/manoj-640-b23b0b81c93b.webp",
+        "width": 640,
+        "bytes": 26582
+      },
+      {
+        "src": "/optimized/images/instructors/manoj-960-1c50e0ca4a01.webp",
+        "width": 960,
+        "bytes": 48090
+      }
+    ]
+  },
+  "/images/instructors/pankaj.png": {
+    "width": 1600,
+    "height": 1600,
+    "originalSha256": "afd2302b430604c998aead748c0ffb59292723055e737939b017f4a535b8f101",
+    "variants": [
+      {
+        "src": "/optimized/images/instructors/pankaj-320-f4c8fe12eeae.webp",
+        "width": 320,
+        "bytes": 10878
+      },
+      {
+        "src": "/optimized/images/instructors/pankaj-640-4eed5221114c.webp",
+        "width": 640,
+        "bytes": 32708
+      },
+      {
+        "src": "/optimized/images/instructors/pankaj-960-e8df6f8ec4b9.webp",
+        "width": 960,
+        "bytes": 63388
+      }
+    ]
+  },
+  "/images/instructors/shailja.png": {
+    "width": 355,
+    "height": 527,
+    "originalSha256": "8601e1495bff20a122b20bca2cd126261662cad4ee6c37d13c6f2bc4f9593cec",
+    "variants": [
+      {
+        "src": "/optimized/images/instructors/shailja-320-88d5522746c5.webp",
+        "width": 320,
+        "bytes": 35072
+      },
+      {
+        "src": "/optimized/images/instructors/shailja-355-5bdc00234e7d.webp",
+        "width": 355,
+        "bytes": 41904
+      }
+    ]
+  },
+  "/images/programs/corporate-sessions.png": {
+    "width": 740,
+    "height": 420,
+    "originalSha256": "4d19fd6d49a4df7b7a63373dd42b7d403af5039396cb174d4b9f3c3c4620e499",
+    "variants": [
+      {
+        "src": "/optimized/images/programs/corporate-sessions-480-4f207067ea3d.webp",
+        "width": 480,
+        "bytes": 25980
+      },
+      {
+        "src": "/optimized/images/programs/corporate-sessions-740-20c46994ab2f.webp",
+        "width": 740,
+        "bytes": 49636
+      }
+    ]
+  },
+  "/images/programs/kids-yoga.png": {
+    "width": 1024,
+    "height": 572,
+    "originalSha256": "a4b7cedca7b5c62314f7bb1933f5d00db4577959b80593406a7b21bb719e6a66",
+    "variants": [
+      {
+        "src": "/optimized/images/programs/kids-yoga-480-ed1e97d3c526.webp",
+        "width": 480,
+        "bytes": 46640
+      },
+      {
+        "src": "/optimized/images/programs/kids-yoga-960-1c9da2bd777e.webp",
+        "width": 960,
+        "bytes": 123248
+      },
+      {
+        "src": "/optimized/images/programs/kids-yoga-1024-633a89b36851.webp",
+        "width": 1024,
+        "bytes": 130996
+      }
+    ]
+  },
+  "/images/programs/normal-yoga.png": {
+    "width": 1024,
+    "height": 572,
+    "originalSha256": "957a41038036e720f0fe857f797d6b145ca2aaa8df0ab7344bcc6b3013845bc8",
+    "variants": [
+      {
+        "src": "/optimized/images/programs/normal-yoga-480-b228c5c2f1f9.webp",
+        "width": 480,
+        "bytes": 41082
+      },
+      {
+        "src": "/optimized/images/programs/normal-yoga-960-c590ab5d3dd3.webp",
+        "width": 960,
+        "bytes": 112220
+      },
+      {
+        "src": "/optimized/images/programs/normal-yoga-1024-4f0e9e19a071.webp",
+        "width": 1024,
+        "bytes": 115828
+      }
+    ]
+  },
+  "/images/programs/pregnancy-yoga.png": {
+    "width": 1024,
+    "height": 572,
+    "originalSha256": "2801290dcd2e5c9151985bb2dbe1b921e9434c148fd2d08d72732d552a2824d4",
+    "variants": [
+      {
+        "src": "/optimized/images/programs/pregnancy-yoga-480-2266fe8d366e.webp",
+        "width": 480,
+        "bytes": 16440
+      },
+      {
+        "src": "/optimized/images/programs/pregnancy-yoga-960-e417d784734c.webp",
+        "width": 960,
+        "bytes": 39808
+      },
+      {
+        "src": "/optimized/images/programs/pregnancy-yoga-1024-814740c0ca36.webp",
+        "width": 1024,
+        "bytes": 43780
+      }
+    ]
+  },
+  "/images/programs/therapeutic-yoga.png": {
+    "width": 1024,
+    "height": 572,
+    "originalSha256": "7260970393d82b1204d4630ca041b8aa37ff88cc7e55644312b6dae09d47e4ca",
+    "variants": [
+      {
+        "src": "/optimized/images/programs/therapeutic-yoga-480-054b2354e98d.webp",
+        "width": 480,
+        "bytes": 13604
+      },
+      {
+        "src": "/optimized/images/programs/therapeutic-yoga-960-7540894c43a4.webp",
+        "width": 960,
+        "bytes": 33946
+      },
+      {
+        "src": "/optimized/images/programs/therapeutic-yoga-1024-ac54ea821403.webp",
+        "width": 1024,
+        "bytes": 38930
+      }
+    ]
+  },
+  "/images/programs/transformational-yoga.png": {
+    "width": 1024,
+    "height": 572,
+    "originalSha256": "2b9341c48fa45f8ca938285cf397b55df1d125dba4d767091f5ab2dba748c317",
+    "variants": [
+      {
+        "src": "/optimized/images/programs/transformational-yoga-480-e845646aa946.webp",
+        "width": 480,
+        "bytes": 16176
+      },
+      {
+        "src": "/optimized/images/programs/transformational-yoga-960-bc28afbe42e0.webp",
+        "width": 960,
+        "bytes": 37668
+      },
+      {
+        "src": "/optimized/images/programs/transformational-yoga-1024-ac063282627e.webp",
+        "width": 1024,
+        "bytes": 41658
+      }
+    ]
+  },
+  "/images/reviews/jyoti-bairagi.png": {
+    "width": 542,
+    "height": 347,
+    "originalSha256": "d40d90871143913da202b4ba56882fb6b6c1184de7a9f8b626ed2c2f6f8d2960",
+    "variants": [
+      {
+        "src": "/optimized/images/reviews/jyoti-bairagi-542-e4ee81dfd1f7.webp",
+        "width": 542,
+        "bytes": 21064
+      }
+    ]
+  },
+  "/images/reviews/kanak-panchal.png": {
+    "width": 597,
+    "height": 330,
+    "originalSha256": "e8120999aefc901b364fb79986e7ce8749140128c340eac798c1e22efe3c81e0",
+    "variants": [
+      {
+        "src": "/optimized/images/reviews/kanak-panchal-597-4fb00d44f0c2.webp",
+        "width": 597,
+        "bytes": 11808
+      }
+    ]
+  },
+  "/images/reviews/mrnalinee-sawaliya.jpg": {
+    "width": 587,
+    "height": 461,
+    "originalSha256": "f085fe90a991af941ba20df3fb388c841d6f22186a55306ee8140eda6607216c",
+    "variants": [
+      {
+        "src": "/optimized/images/reviews/mrnalinee-sawaliya-587-ef8b19c5e034.webp",
+        "width": 587,
+        "bytes": 34654
+      }
+    ]
+  },
+  "/images/reviews/poonam-manwani.png": {
+    "width": 572,
+    "height": 222,
+    "originalSha256": "f9db46868759413c15c39bc5684bcd537620d55955e622bc27f036e6208cb1d9",
+    "variants": [
+      {
+        "src": "/optimized/images/reviews/poonam-manwani-572-2290634d101e.webp",
+        "width": 572,
+        "bytes": 10914
+      }
+    ]
+  },
+  "/images/reviews/rahul-b.png": {
+    "width": 556,
+    "height": 282,
+    "originalSha256": "996c92fb61c590b068c01646e68418af6f02702d216b706577481a6943dca59f",
+    "variants": [
+      {
+        "src": "/optimized/images/reviews/rahul-b-556-d473f5c8bcd1.webp",
+        "width": 556,
+        "bytes": 14862
+      }
+    ]
+  },
+  "/yoga-poses/y01.jpg": {
+    "width": 960,
+    "height": 1280,
+    "originalSha256": "5b171d84a27dc3854819aacd551e5a70697e6ac4c041acda01f5017f23a57f58",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y01-128-5bd9da8c5f1f.webp",
+        "width": 128,
+        "bytes": 9808
+      },
+      {
+        "src": "/optimized/yoga-poses/y01-320-540239c3d93c.webp",
+        "width": 320,
+        "bytes": 58518
+      }
+    ]
+  },
+  "/yoga-poses/y02.jpg": {
+    "width": 960,
+    "height": 1445,
+    "originalSha256": "691f4c337e2cef42dbab6f33133a52d34a854cd88a43e7b47ffb28cbf124946b",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y02-128-a0dd1c0a1b61.webp",
+        "width": 128,
+        "bytes": 3138
+      },
+      {
+        "src": "/optimized/yoga-poses/y02-320-d9b1f14f050f.webp",
+        "width": 320,
+        "bytes": 11396
+      }
+    ]
+  },
+  "/yoga-poses/y03.jpg": {
+    "width": 800,
+    "height": 677,
+    "originalSha256": "5651bcae7657c0e2c5e47d3737429c2766466316ecd6d19844773b88dc837f96",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y03-128-b4421e0a471d.webp",
+        "width": 128,
+        "bytes": 4726
+      },
+      {
+        "src": "/optimized/yoga-poses/y03-320-971b3c8cc42f.webp",
+        "width": 320,
+        "bytes": 28932
+      }
+    ]
+  },
+  "/yoga-poses/y04.jpg": {
+    "width": 960,
+    "height": 720,
+    "originalSha256": "744a2320167ce03af5b93d2769dd51fd2a665038e416e49f7dc709fd8594d449",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y04-128-9477881b6f04.webp",
+        "width": 128,
+        "bytes": 3454
+      },
+      {
+        "src": "/optimized/yoga-poses/y04-320-17ceaad0dedc.webp",
+        "width": 320,
+        "bytes": 18544
+      }
+    ]
+  },
+  "/yoga-poses/y05.jpg": {
+    "width": 960,
+    "height": 1280,
+    "originalSha256": "c89f00a852f93abffe2e123f845db9ea741450e2ec05a39e8270d805d52b3a5b",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y05-128-31e07d7573c0.webp",
+        "width": 128,
+        "bytes": 5302
+      },
+      {
+        "src": "/optimized/yoga-poses/y05-320-bb94df6c2a91.webp",
+        "width": 320,
+        "bytes": 29504
+      }
+    ]
+  },
+  "/yoga-poses/y06.jpg": {
+    "width": 960,
+    "height": 1420,
+    "originalSha256": "297e44400631e14fb5154506f78daf1fca1b6f19415a88225de85e27907bffc2",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y06-128-0b367e7fd4ce.webp",
+        "width": 128,
+        "bytes": 2518
+      },
+      {
+        "src": "/optimized/yoga-poses/y06-320-967418d05fa0.webp",
+        "width": 320,
+        "bytes": 18796
+      }
+    ]
+  },
+  "/yoga-poses/y07.jpg": {
+    "width": 960,
+    "height": 1434,
+    "originalSha256": "31805c1986aa467e9de4041379e71e9ac0c4b719a46e8d431964d9d5200f3f4d",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y07-128-b1d79acb0b56.webp",
+        "width": 128,
+        "bytes": 4720
+      },
+      {
+        "src": "/optimized/yoga-poses/y07-320-34a08b2a0a09.webp",
+        "width": 320,
+        "bytes": 20444
+      }
+    ]
+  },
+  "/yoga-poses/y08.jpg": {
+    "width": 960,
+    "height": 1311,
+    "originalSha256": "4af7547f560bfe1e16ef4c29ca331ab4199c10b64425148ff52ad4d995a9169d",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y08-128-aa6f5cd70b53.webp",
+        "width": 128,
+        "bytes": 5490
+      },
+      {
+        "src": "/optimized/yoga-poses/y08-320-c6b42908820e.webp",
+        "width": 320,
+        "bytes": 34262
+      }
+    ]
+  },
+  "/yoga-poses/y09.jpg": {
+    "width": 800,
+    "height": 1026,
+    "originalSha256": "94e0f9fcd14442ddeac7ce0b25a2f7916e14b03d3af624a97fba87ca12a4d4c7",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y09-128-f4833dadfd31.webp",
+        "width": 128,
+        "bytes": 2142
+      },
+      {
+        "src": "/optimized/yoga-poses/y09-320-60cd27bdbfae.webp",
+        "width": 320,
+        "bytes": 9070
+      }
+    ]
+  },
+  "/yoga-poses/y10.jpg": {
+    "width": 960,
+    "height": 667,
+    "originalSha256": "c6cc6cd567ea69e325fc7f73a2e565ea7e2b925caf8eccd1de3aca25349025f6",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y10-128-9af9dff54b3b.webp",
+        "width": 128,
+        "bytes": 3496
+      },
+      {
+        "src": "/optimized/yoga-poses/y10-320-253034608849.webp",
+        "width": 320,
+        "bytes": 14464
+      }
+    ]
+  },
+  "/yoga-poses/y11.jpg": {
+    "width": 960,
+    "height": 641,
+    "originalSha256": "f8b82a82ca46bbb132b3f4d2bdb9d7a299db2577a14742681f6f949b9f140521",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y11-128-6e5c212810af.webp",
+        "width": 128,
+        "bytes": 2102
+      },
+      {
+        "src": "/optimized/yoga-poses/y11-320-391828848a9c.webp",
+        "width": 320,
+        "bytes": 7442
+      }
+    ]
+  },
+  "/yoga-poses/y12.jpg": {
+    "width": 960,
+    "height": 529,
+    "originalSha256": "d75e94d0f50c9cca866278ba504c83cc32c617276f730074ac34e4c19622164b",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y12-128-3c1c3f7184d1.webp",
+        "width": 128,
+        "bytes": 2536
+      },
+      {
+        "src": "/optimized/yoga-poses/y12-320-ccfbc1d3b6b0.webp",
+        "width": 320,
+        "bytes": 12420
+      }
+    ]
+  },
+  "/yoga-poses/y13.jpg": {
+    "width": 800,
+    "height": 1000,
+    "originalSha256": "85927b79c69b88b328109355b5d44180405d0e8463df7be578407ef06a607a2a",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y13-128-26ca3edee44a.webp",
+        "width": 128,
+        "bytes": 1426
+      },
+      {
+        "src": "/optimized/yoga-poses/y13-320-c4b5382ddb5d.webp",
+        "width": 320,
+        "bytes": 4370
+      }
+    ]
+  },
+  "/yoga-poses/y14.jpg": {
+    "width": 960,
+    "height": 2685,
+    "originalSha256": "809becb01afcd27a338dba0743a5945642647a9a8900b76e76f2fc497f8d0580",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y14-128-6a25ea966fb3.webp",
+        "width": 128,
+        "bytes": 5200
+      },
+      {
+        "src": "/optimized/yoga-poses/y14-320-3f4c62ebc299.webp",
+        "width": 320,
+        "bytes": 26094
+      }
+    ]
+  },
+  "/yoga-poses/y15.jpg": {
+    "width": 960,
+    "height": 1440,
+    "originalSha256": "c01d9cdaf70b7b1d6a58a781b76b6a0dcf78b4e3e92ad8e808faf664c30a4afb",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y15-128-109002e3f0a8.webp",
+        "width": 128,
+        "bytes": 2146
+      },
+      {
+        "src": "/optimized/yoga-poses/y15-320-8847dc83fca3.webp",
+        "width": 320,
+        "bytes": 6578
+      }
+    ]
+  },
+  "/yoga-poses/y16.jpg": {
+    "width": 960,
+    "height": 641,
+    "originalSha256": "a0bab8bbe9b16af3a7cc8e1638970ce69b0e10f38bbbbec56950f55aa9840ae6",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y16-128-97d5842ef112.webp",
+        "width": 128,
+        "bytes": 4058
+      },
+      {
+        "src": "/optimized/yoga-poses/y16-320-a0f7d8279d33.webp",
+        "width": 320,
+        "bytes": 17582
+      }
+    ]
+  },
+  "/yoga-poses/y17.jpg": {
+    "width": 960,
+    "height": 337,
+    "originalSha256": "d0cc32a5235d37b390d75ba535d58ab9ff95988eed7df9298e8305b623c62c1a",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y17-128-bd0201fb20bc.webp",
+        "width": 128,
+        "bytes": 1288
+      },
+      {
+        "src": "/optimized/yoga-poses/y17-320-a613205ed7eb.webp",
+        "width": 320,
+        "bytes": 5684
+      }
+    ]
+  },
+  "/yoga-poses/y18.jpg": {
+    "width": 960,
+    "height": 640,
+    "originalSha256": "b3c739e7e31e58f8e510630595dd1930da2a4ca0b971cf4e94f14f7f6d531aeb",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y18-128-79ba40ab3c7d.webp",
+        "width": 128,
+        "bytes": 1040
+      },
+      {
+        "src": "/optimized/yoga-poses/y18-320-1417745c25dc.webp",
+        "width": 320,
+        "bytes": 3512
+      }
+    ]
+  },
+  "/yoga-poses/y19.jpg": {
+    "width": 960,
+    "height": 640,
+    "originalSha256": "ff20733b6392805f1a8bb075915a20668d6730cd236b9099d258f04ae4aebc80",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y19-128-4e70fce113ee.webp",
+        "width": 128,
+        "bytes": 2090
+      },
+      {
+        "src": "/optimized/yoga-poses/y19-320-d18fb5012b0d.webp",
+        "width": 320,
+        "bytes": 8092
+      }
+    ]
+  },
+  "/yoga-poses/y20.jpg": {
+    "width": 960,
+    "height": 850,
+    "originalSha256": "a28ec4aa6fafebba3025e2a02cd1b0bab03806cfeb447a0572409e485c20c1ff",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y20-128-0948882c944a.webp",
+        "width": 128,
+        "bytes": 1956
+      },
+      {
+        "src": "/optimized/yoga-poses/y20-320-b9b585112f5a.webp",
+        "width": 320,
+        "bytes": 13204
+      }
+    ]
+  },
+  "/yoga-poses/y21.jpg": {
+    "width": 960,
+    "height": 960,
+    "originalSha256": "e60b0572e5c982a65b103714c36065cb84914ebb03cd31070ff742ac4ec68a4f",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y21-128-0afb9446be84.webp",
+        "width": 128,
+        "bytes": 4582
+      },
+      {
+        "src": "/optimized/yoga-poses/y21-320-88518cf4e1e4.webp",
+        "width": 320,
+        "bytes": 20494
+      }
+    ]
+  },
+  "/yoga-poses/y22.jpg": {
+    "width": 800,
+    "height": 671,
+    "originalSha256": "2c7d0488aec1f5a59b9caedfa39810792c23c949de06435506e83a2fe08d97a3",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y22-128-1a8816a51c58.webp",
+        "width": 128,
+        "bytes": 4028
+      },
+      {
+        "src": "/optimized/yoga-poses/y22-320-0482a5072085.webp",
+        "width": 320,
+        "bytes": 14916
+      }
+    ]
+  },
+  "/yoga-poses/y23.jpg": {
+    "width": 960,
+    "height": 647,
+    "originalSha256": "6b2f5bf8539219551c66095a16dda43a53ffbb9794bcb465a0af36dcc0df7cb8",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y23-128-3790467128fc.webp",
+        "width": 128,
+        "bytes": 1746
+      },
+      {
+        "src": "/optimized/yoga-poses/y23-320-49411f335e40.webp",
+        "width": 320,
+        "bytes": 7752
+      }
+    ]
+  },
+  "/yoga-poses/y24.jpg": {
+    "width": 960,
+    "height": 638,
+    "originalSha256": "5fec4d4af4640969ece58265b7e812e70f774bd8547344ca3b3de4196cc0db29",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y24-128-757d54c2ef81.webp",
+        "width": 128,
+        "bytes": 3772
+      },
+      {
+        "src": "/optimized/yoga-poses/y24-320-43c7cd06beb8.webp",
+        "width": 320,
+        "bytes": 16030
+      }
+    ]
+  },
+  "/yoga-poses/y25.jpg": {
+    "width": 960,
+    "height": 641,
+    "originalSha256": "e7fe83ebfbdfd944eef4b7598132406469a722cd8fec1a1b3d5f589e7588692f",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y25-128-58bd6e04edfc.webp",
+        "width": 128,
+        "bytes": 4096
+      },
+      {
+        "src": "/optimized/yoga-poses/y25-320-40fcf798e349.webp",
+        "width": 320,
+        "bytes": 16352
+      }
+    ]
+  },
+  "/yoga-poses/y26.jpg": {
+    "width": 960,
+    "height": 1415,
+    "originalSha256": "e0e6c6faed10ab2bc4c7fd8c5b1f1ddbc8b482370c426990b8b954231adef848",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y26-128-2b5529df96dd.webp",
+        "width": 128,
+        "bytes": 3506
+      },
+      {
+        "src": "/optimized/yoga-poses/y26-320-12bf09cb865c.webp",
+        "width": 320,
+        "bytes": 15960
+      }
+    ]
+  },
+  "/yoga-poses/y27.jpg": {
+    "width": 640,
+    "height": 457,
+    "originalSha256": "ca4d97b5181acc622533ce32792bc6504de30f93597585e5472c32979ae6c00f",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y27-128-95056a08d198.webp",
+        "width": 128,
+        "bytes": 2668
+      },
+      {
+        "src": "/optimized/yoga-poses/y27-320-34074340f7c1.webp",
+        "width": 320,
+        "bytes": 12888
+      }
+    ]
+  },
+  "/yoga-poses/y28.jpg": {
+    "width": 960,
+    "height": 873,
+    "originalSha256": "69592cb7aa3fd4730128bd364a3254656e3827bf930b71db9ac4d8e796ab5d01",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y28-128-83613d2d8dda.webp",
+        "width": 128,
+        "bytes": 2572
+      },
+      {
+        "src": "/optimized/yoga-poses/y28-320-5a0071c1c6be.webp",
+        "width": 320,
+        "bytes": 9490
+      }
+    ]
+  },
+  "/yoga-poses/y29.jpg": {
+    "width": 960,
+    "height": 715,
+    "originalSha256": "56500e3db26eb37bbac4dd9e4d8b1d5711e1bc0bf39e6d9b3e02833c200b1ca2",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y29-128-8cfe59217c76.webp",
+        "width": 128,
+        "bytes": 2214
+      },
+      {
+        "src": "/optimized/yoga-poses/y29-320-da2ffcad63e0.webp",
+        "width": 320,
+        "bytes": 8012
+      }
+    ]
+  },
+  "/yoga-poses/y30.jpg": {
+    "width": 960,
+    "height": 1166,
+    "originalSha256": "50292238f3ceecb45f1385917288df936bdfd6d412f54465b7e476fef11b5c05",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y30-128-86bc046cde2c.webp",
+        "width": 128,
+        "bytes": 3198
+      },
+      {
+        "src": "/optimized/yoga-poses/y30-320-44489af2c064.webp",
+        "width": 320,
+        "bytes": 12360
+      }
+    ]
+  },
+  "/yoga-poses/y31.jpg": {
+    "width": 960,
+    "height": 677,
+    "originalSha256": "ca40d909800a85ae97f994c19c9d631056bd47984b5c8d1560745e7f85224d0e",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y31-128-b8fc4fb92dc3.webp",
+        "width": 128,
+        "bytes": 2606
+      },
+      {
+        "src": "/optimized/yoga-poses/y31-320-667f29d3ca43.webp",
+        "width": 320,
+        "bytes": 10442
+      }
+    ]
+  },
+  "/yoga-poses/y32.jpg": {
+    "width": 960,
+    "height": 640,
+    "originalSha256": "da659a8c1d04d4e23df8fa6604b7d6ff1ef3ec91c07e01d571225a62469688f2",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y32-128-6723ff5d48d9.webp",
+        "width": 128,
+        "bytes": 4076
+      },
+      {
+        "src": "/optimized/yoga-poses/y32-320-3d2a5579a3e0.webp",
+        "width": 320,
+        "bytes": 22134
+      }
+    ]
+  },
+  "/yoga-poses/y33.jpg": {
+    "width": 960,
+    "height": 730,
+    "originalSha256": "11fcff8aab360850bfa5bc3093e2a23edae5639f6524a981519d968ad588af02",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y33-128-e388ab37af9e.webp",
+        "width": 128,
+        "bytes": 5872
+      },
+      {
+        "src": "/optimized/yoga-poses/y33-320-3da8b770d7c4.webp",
+        "width": 320,
+        "bytes": 35184
+      }
+    ]
+  },
+  "/yoga-poses/y34.jpg": {
+    "width": 800,
+    "height": 987,
+    "originalSha256": "313d50bc38931f7d03f6706f8021e418c3e34592739888eaa1b91c30789cf54f",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y34-128-caf77c9c6c38.webp",
+        "width": 128,
+        "bytes": 6356
+      },
+      {
+        "src": "/optimized/yoga-poses/y34-320-09507960f0f6.webp",
+        "width": 320,
+        "bytes": 37118
+      }
+    ]
+  },
+  "/yoga-poses/y35.jpg": {
+    "width": 960,
+    "height": 412,
+    "originalSha256": "67936b8aff09a68d5af0c1fca7ff1801d879a222dec54d2e068b1d2211f3289b",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y35-128-40cca5bfc800.webp",
+        "width": 128,
+        "bytes": 1606
+      },
+      {
+        "src": "/optimized/yoga-poses/y35-320-864426d1b898.webp",
+        "width": 320,
+        "bytes": 5766
+      }
+    ]
+  },
+  "/yoga-poses/y36.jpg": {
+    "width": 960,
+    "height": 1438,
+    "originalSha256": "e2ccac0ab205a1d760a390ca46a07f696872a8ad1812089804cb05acdc088d71",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y36-128-dd96d9cccac8.webp",
+        "width": 128,
+        "bytes": 5288
+      },
+      {
+        "src": "/optimized/yoga-poses/y36-320-bf1c4f361817.webp",
+        "width": 320,
+        "bytes": 20248
+      }
+    ]
+  },
+  "/yoga-poses/y37.jpg": {
+    "width": 960,
+    "height": 641,
+    "originalSha256": "369f9d500a38da87612e07dd6de9a820d363e0c32a3a441f917b2f8b099c8e76",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y37-128-704951a941ac.webp",
+        "width": 128,
+        "bytes": 3402
+      },
+      {
+        "src": "/optimized/yoga-poses/y37-320-b1ba2c153af8.webp",
+        "width": 320,
+        "bytes": 12522
+      }
+    ]
+  },
+  "/yoga-poses/y38.jpg": {
+    "width": 935,
+    "height": 1400,
+    "originalSha256": "6c6078e0cdb8a6aeda0135aee9067e0b10c18ff4d10d90870f7eb3804eaa9e0a",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y38-128-ae27ece7d1ac.webp",
+        "width": 128,
+        "bytes": 9902
+      },
+      {
+        "src": "/optimized/yoga-poses/y38-320-20c800d7d738.webp",
+        "width": 320,
+        "bytes": 43134
+      }
+    ]
+  },
+  "/yoga-poses/y39.jpg": {
+    "width": 960,
+    "height": 641,
+    "originalSha256": "ad7be11755a886c62ee78736ed8b512cca6d221a24d10f86a8a225632258d6cf",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y39-128-6ffe9d4f0f5d.webp",
+        "width": 128,
+        "bytes": 1792
+      },
+      {
+        "src": "/optimized/yoga-poses/y39-320-0c822bdf8bc5.webp",
+        "width": 320,
+        "bytes": 5556
+      }
+    ]
+  },
+  "/yoga-poses/y40.jpg": {
+    "width": 960,
+    "height": 720,
+    "originalSha256": "fedf1ff32a4bdfd2aad71ec6e4d31b38240813b8b7331e2ba3a29332a1f3bb76",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y40-128-79c195acd78c.webp",
+        "width": 128,
+        "bytes": 3510
+      },
+      {
+        "src": "/optimized/yoga-poses/y40-320-047572c4a63b.webp",
+        "width": 320,
+        "bytes": 20030
+      }
+    ]
+  },
+  "/yoga-poses/y41.jpg": {
+    "width": 800,
+    "height": 271,
+    "originalSha256": "070eca3c1d30f5d8c7a217d85e8a69fca408a8a8c3b5d97ccbc61cd44dc1d29f",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y41-128-c24b8d18d23c.webp",
+        "width": 128,
+        "bytes": 1168
+      },
+      {
+        "src": "/optimized/yoga-poses/y41-320-73f2449bc819.webp",
+        "width": 320,
+        "bytes": 3554
+      }
+    ]
+  },
+  "/yoga-poses/y42.jpg": {
+    "width": 960,
+    "height": 556,
+    "originalSha256": "f8c612eeb878af712d228e53ee2eca73de37ee40edbb1b4d42b60b02109cc2b7",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y42-128-843edaca4281.webp",
+        "width": 128,
+        "bytes": 2544
+      },
+      {
+        "src": "/optimized/yoga-poses/y42-320-3fb29003dd49.webp",
+        "width": 320,
+        "bytes": 12344
+      }
+    ]
+  },
+  "/yoga-poses/y43.jpg": {
+    "width": 800,
+    "height": 448,
+    "originalSha256": "788d033bd43449eea5abb4c52acfa143dceb451eb7b337da540cbc060a460bd4",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y43-128-4092b7a348bf.webp",
+        "width": 128,
+        "bytes": 1752
+      },
+      {
+        "src": "/optimized/yoga-poses/y43-320-4def548b9d13.webp",
+        "width": 320,
+        "bytes": 5716
+      }
+    ]
+  },
+  "/yoga-poses/y44.jpg": {
+    "width": 800,
+    "height": 1067,
+    "originalSha256": "ad1fbcef7d95b85ed11c92fff31a20b081497bd99d334b469a765c025ab18b0b",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y44-128-4227e54d9628.webp",
+        "width": 128,
+        "bytes": 3954
+      },
+      {
+        "src": "/optimized/yoga-poses/y44-320-d93ac8c560ed.webp",
+        "width": 320,
+        "bytes": 13660
+      }
+    ]
+  },
+  "/yoga-poses/y45.jpg": {
+    "width": 960,
+    "height": 528,
+    "originalSha256": "1ba059d23a9bc46ad7177f195060d4b9aa0552bd1041613ee24171edb48c8636",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y45-128-a2662e7ab02e.webp",
+        "width": 128,
+        "bytes": 1534
+      },
+      {
+        "src": "/optimized/yoga-poses/y45-320-eaf61183d9a8.webp",
+        "width": 320,
+        "bytes": 7300
+      }
+    ]
+  },
+  "/yoga-poses/y46.jpg": {
+    "width": 960,
+    "height": 638,
+    "originalSha256": "8869518edb9eb74a19e202344574e9aa0473d49ec18a8e7890b5007a30d1903d",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y46-128-1dde948a96fb.webp",
+        "width": 128,
+        "bytes": 3144
+      },
+      {
+        "src": "/optimized/yoga-poses/y46-320-8b7d4edf02db.webp",
+        "width": 320,
+        "bytes": 10610
+      }
+    ]
+  },
+  "/yoga-poses/y47.jpg": {
+    "width": 960,
+    "height": 639,
+    "originalSha256": "22c4da32a53348f663e23b0f2f7513beff8bdb9977233d137ff474fc7582a52f",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y47-128-ab8651c407db.webp",
+        "width": 128,
+        "bytes": 2224
+      },
+      {
+        "src": "/optimized/yoga-poses/y47-320-e8f70072dafe.webp",
+        "width": 320,
+        "bytes": 6146
+      }
+    ]
+  },
+  "/yoga-poses/y48.jpg": {
+    "width": 960,
+    "height": 1438,
+    "originalSha256": "b5a9610f67e8f2b1ab89d6392b491fde570fd4f93db23ae2dd4201441b5bf8eb",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y48-128-106433753fc6.webp",
+        "width": 128,
+        "bytes": 4086
+      },
+      {
+        "src": "/optimized/yoga-poses/y48-320-e697ebff16b4.webp",
+        "width": 320,
+        "bytes": 15772
+      }
+    ]
+  },
+  "/yoga-poses/y49.jpg": {
+    "width": 960,
+    "height": 553,
+    "originalSha256": "5a5bbb24f0091c0e3048f5b067b66ee284c35ca123c7b403bcb5d6c7a80bea10",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y49-128-3e6a49b4b941.webp",
+        "width": 128,
+        "bytes": 2540
+      },
+      {
+        "src": "/optimized/yoga-poses/y49-320-cea13a9c37b1.webp",
+        "width": 320,
+        "bytes": 14080
+      }
+    ]
+  },
+  "/yoga-poses/y50.jpg": {
+    "width": 800,
+    "height": 600,
+    "originalSha256": "626346ef972656952b7b557cc26f7011b5802279c59ab26908ac7f30ab33feab",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y50-128-467ec136e3e6.webp",
+        "width": 128,
+        "bytes": 4306
+      },
+      {
+        "src": "/optimized/yoga-poses/y50-320-98228f1d1bcf.webp",
+        "width": 320,
+        "bytes": 19066
+      }
+    ]
+  },
+  "/yoga-poses/y51.jpg": {
+    "width": 800,
+    "height": 583,
+    "originalSha256": "d38adc5073bd71900dae46841935a13838631cc651be0e12090d60a2511220cc",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y51-128-344039c28bc7.webp",
+        "width": 128,
+        "bytes": 1764
+      },
+      {
+        "src": "/optimized/yoga-poses/y51-320-93fdc7b27fd5.webp",
+        "width": 320,
+        "bytes": 5516
+      }
+    ]
+  },
+  "/yoga-poses/y52.jpg": {
+    "width": 960,
+    "height": 720,
+    "originalSha256": "f965328793ac57437f7210822b3f9db475c0dbd9cb7a68c6eb9ab3f54895b21e",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y52-128-7437bc036f08.webp",
+        "width": 128,
+        "bytes": 3342
+      },
+      {
+        "src": "/optimized/yoga-poses/y52-320-6476f769dd9c.webp",
+        "width": 320,
+        "bytes": 19340
+      }
+    ]
+  },
+  "/yoga-poses/y53.jpg": {
+    "width": 800,
+    "height": 585,
+    "originalSha256": "e87bcde0b02b3e0a14bd2c34638c67511b4b24cc16a4410dad44beb4a6a019bb",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y53-128-ee0bdfc7a033.webp",
+        "width": 128,
+        "bytes": 2784
+      },
+      {
+        "src": "/optimized/yoga-poses/y53-320-add2a3580afd.webp",
+        "width": 320,
+        "bytes": 10178
+      }
+    ]
+  },
+  "/yoga-poses/y54.jpg": {
+    "width": 960,
+    "height": 641,
+    "originalSha256": "b0dac91c4fed89b8fe88de5088c53e7f7c92fbaac33a33f203487b80c22146c1",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y54-128-d8ffb11ec95e.webp",
+        "width": 128,
+        "bytes": 3596
+      },
+      {
+        "src": "/optimized/yoga-poses/y54-320-2fe8e9e235fe.webp",
+        "width": 320,
+        "bytes": 12414
+      }
+    ]
+  },
+  "/yoga-poses/y55.jpg": {
+    "width": 960,
+    "height": 1244,
+    "originalSha256": "a497f67482109d5b24de0d19f3b9202cf89363325d8b1ed4e754e82f84a6d8c5",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y55-128-247c3b25b64f.webp",
+        "width": 128,
+        "bytes": 5360
+      },
+      {
+        "src": "/optimized/yoga-poses/y55-320-e2325abd088a.webp",
+        "width": 320,
+        "bytes": 21784
+      }
+    ]
+  },
+  "/yoga-poses/y56.jpg": {
+    "width": 800,
+    "height": 1067,
+    "originalSha256": "75427f662ad428da26f74d7e97d44cf3ae51e00db3cfdfddb0693ac271f5992f",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y56-128-3b1f3831fab3.webp",
+        "width": 128,
+        "bytes": 5378
+      },
+      {
+        "src": "/optimized/yoga-poses/y56-320-b5b15c6b8d4e.webp",
+        "width": 320,
+        "bytes": 27748
+      }
+    ]
+  },
+  "/yoga-poses/y57.jpg": {
+    "width": 960,
+    "height": 1438,
+    "originalSha256": "f6e030257b7baf37a0bf1234cb2e2e11522c633e90760ab9baefb85a49953bad",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y57-128-73bfd12853c7.webp",
+        "width": 128,
+        "bytes": 4426
+      },
+      {
+        "src": "/optimized/yoga-poses/y57-320-7ab8c0b69a7a.webp",
+        "width": 320,
+        "bytes": 22310
+      }
+    ]
+  },
+  "/yoga-poses/y58.jpg": {
+    "width": 960,
+    "height": 1280,
+    "originalSha256": "dbd56f8c7de8127f730ce3e2b924ff6bc41ffba376f49f3852eca88d7c20ba73",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y58-128-759341f3f1d0.webp",
+        "width": 128,
+        "bytes": 4864
+      },
+      {
+        "src": "/optimized/yoga-poses/y58-320-7ab2f35e3948.webp",
+        "width": 320,
+        "bytes": 23944
+      }
+    ]
+  },
+  "/yoga-poses/y59.jpg": {
+    "width": 960,
+    "height": 1516,
+    "originalSha256": "f7a4d7a0de5cd186873b3c5d5aba63d04dc327e2ac178f852dfbc890204504c3",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y59-128-fc4a1d055e3f.webp",
+        "width": 128,
+        "bytes": 5858
+      },
+      {
+        "src": "/optimized/yoga-poses/y59-320-06462b394993.webp",
+        "width": 320,
+        "bytes": 25958
+      }
+    ]
+  },
+  "/yoga-poses/y60.jpg": {
+    "width": 800,
+    "height": 531,
+    "originalSha256": "32714010d85b191148eb35c686ba1c23000604c7e09bca1d47469f9bcabec298",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y60-128-17cbbc38edfa.webp",
+        "width": 128,
+        "bytes": 4138
+      },
+      {
+        "src": "/optimized/yoga-poses/y60-320-174a76600aa0.webp",
+        "width": 320,
+        "bytes": 17818
+      }
+    ]
+  },
+  "/yoga-poses/y61.jpg": {
+    "width": 800,
+    "height": 534,
+    "originalSha256": "77d58b60a5c28d58e8bc2f5d9b598878d1171e0dd05b05f16fe29c1801fcdb88",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y61-128-f90cc9fac952.webp",
+        "width": 128,
+        "bytes": 3948
+      },
+      {
+        "src": "/optimized/yoga-poses/y61-320-285faa3d401c.webp",
+        "width": 320,
+        "bytes": 17502
+      }
+    ]
+  },
+  "/yoga-poses/y62.jpg": {
+    "width": 960,
+    "height": 1279,
+    "originalSha256": "5750e3ecc659f33dc847af3ba048f8c3e8be09bef851b49b4b8638e291010d8b",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y62-128-5488322e48ed.webp",
+        "width": 128,
+        "bytes": 7498
+      },
+      {
+        "src": "/optimized/yoga-poses/y62-320-20b68d8cd29d.webp",
+        "width": 320,
+        "bytes": 37718
+      }
+    ]
+  },
+  "/yoga-poses/y63.jpg": {
+    "width": 800,
+    "height": 600,
+    "originalSha256": "bf83b84aa1bc7a64116c56939e6e345ccbb0796efc4361d855e4a3038c7b4df2",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y63-128-5dcbbb59f0dc.webp",
+        "width": 128,
+        "bytes": 3514
+      },
+      {
+        "src": "/optimized/yoga-poses/y63-320-cb1899e646e3.webp",
+        "width": 320,
+        "bytes": 18698
+      }
+    ]
+  },
+  "/yoga-poses/y64.jpg": {
+    "width": 960,
+    "height": 638,
+    "originalSha256": "8be9fef1b2ee6063ef250594f06603c74ca4b7cdb0511ed5c0b064b94bdaf45f",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y64-128-7d5e37be9238.webp",
+        "width": 128,
+        "bytes": 3816
+      },
+      {
+        "src": "/optimized/yoga-poses/y64-320-3b071a8fe1b2.webp",
+        "width": 320,
+        "bytes": 16666
+      }
+    ]
+  },
+  "/yoga-poses/y65.jpg": {
+    "width": 960,
+    "height": 720,
+    "originalSha256": "d45dcfaa4b4b17751b588687ae6002f3ad3e8b5d742598374bf9cbc8d3f25754",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y65-128-7b2cafcacd17.webp",
+        "width": 128,
+        "bytes": 6026
+      },
+      {
+        "src": "/optimized/yoga-poses/y65-320-f9520fa1e2d5.webp",
+        "width": 320,
+        "bytes": 30898
+      }
+    ]
+  },
+  "/yoga-poses/y66.jpg": {
+    "width": 960,
+    "height": 638,
+    "originalSha256": "92d36010cb1ea90461f45fbb58c4ad742e2677ec684b56987c5c27e432df460f",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y66-128-efc4f803f934.webp",
+        "width": 128,
+        "bytes": 3292
+      },
+      {
+        "src": "/optimized/yoga-poses/y66-320-121c1ce4882f.webp",
+        "width": 320,
+        "bytes": 14126
+      }
+    ]
+  },
+  "/yoga-poses/y67.jpg": {
+    "width": 960,
+    "height": 641,
+    "originalSha256": "e0200b695c118fe46bb16f6688f741c2e917399479b7a86cb1fa696a89cc8725",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y67-128-65bb85823301.webp",
+        "width": 128,
+        "bytes": 3884
+      },
+      {
+        "src": "/optimized/yoga-poses/y67-320-aaabe96f80b4.webp",
+        "width": 320,
+        "bytes": 17098
+      }
+    ]
+  },
+  "/yoga-poses/y68.jpg": {
+    "width": 960,
+    "height": 640,
+    "originalSha256": "ee5d3995fadf941eb9f721b7b2913d6367a92262405f2fd4affa86f358489055",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y68-128-f5b047d6e0b7.webp",
+        "width": 128,
+        "bytes": 4362
+      },
+      {
+        "src": "/optimized/yoga-poses/y68-320-d1aec33d1e43.webp",
+        "width": 320,
+        "bytes": 22904
+      }
+    ]
+  },
+  "/yoga-poses/y69.jpg": {
+    "width": 960,
+    "height": 493,
+    "originalSha256": "aacec5823d2e8d1e461073cf76d2f078a3be0a86dff9070f7246b0a176c3eacd",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y69-128-82941b8f5e8d.webp",
+        "width": 128,
+        "bytes": 1404
+      },
+      {
+        "src": "/optimized/yoga-poses/y69-320-94d51018fca5.webp",
+        "width": 320,
+        "bytes": 4278
+      }
+    ]
+  },
+  "/yoga-poses/y70.jpg": {
+    "width": 960,
+    "height": 638,
+    "originalSha256": "b4e96858610e11452f887d235c1ac0ca8cc109aa7ab2403a2ba9bbcb4f3ca555",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y70-128-34c7d95076d7.webp",
+        "width": 128,
+        "bytes": 4470
+      },
+      {
+        "src": "/optimized/yoga-poses/y70-320-39e1073104a0.webp",
+        "width": 320,
+        "bytes": 21480
+      }
+    ]
+  },
+  "/yoga-poses/y71.jpg": {
+    "width": 800,
+    "height": 450,
+    "originalSha256": "493cadb919325ff830b01b30cc6f1c61610400d1dc5b0fea9728e6b7a51c8079",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y71-128-48065c244f7a.webp",
+        "width": 128,
+        "bytes": 1134
+      },
+      {
+        "src": "/optimized/yoga-poses/y71-320-144edb415632.webp",
+        "width": 320,
+        "bytes": 5934
+      }
+    ]
+  },
+  "/yoga-poses/y72.jpg": {
+    "width": 960,
+    "height": 650,
+    "originalSha256": "1f60fc3a588024ae2bca3cc2779ff19a08202f9c8690d4e652528c3231fc40d2",
+    "variants": [
+      {
+        "src": "/optimized/yoga-poses/y72-128-e0dc3404099d.webp",
+        "width": 128,
+        "bytes": 3094
+      },
+      {
+        "src": "/optimized/yoga-poses/y72-320-0b5ec2d2a23c.webp",
+        "width": 320,
+        "bytes": 14242
+      }
+    ]
+  }
+}

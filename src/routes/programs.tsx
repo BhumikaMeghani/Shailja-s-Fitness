@@ -4,6 +4,7 @@ import SiteHeader from '~/components/SiteHeader'
 import BookingDialog from '~/components/BookingDialog'
 import { loadBootstrap, type BootstrapData } from '~/lib/api'
 import SiteFooter from '~/components/SiteFooter'
+import OptimizedImage from '~/components/OptimizedImage'
 
 export const Route = createFileRoute('/programs')({ component: ProgramsPage })
 
@@ -237,7 +238,7 @@ function FlipCard({ program, onBook }: { program: Program; onBook: (plan: string
       <div className="flip-inner" tabIndex={0} aria-label={`${program.name} plan details`}>
         <div className="flip-face flip-front">
           <div className="flip-image">
-            <img src={program.image} alt={program.alt} loading="lazy" width={800} height={1000} />
+            <OptimizedImage src={program.image} alt={program.alt} sizes="(max-width: 760px) 100vw, 50vw" width={800} height={1000} />
           </div>
           <div className="flip-meta">
             <h3>{program.name}</h3>

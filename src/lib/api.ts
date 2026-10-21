@@ -45,9 +45,10 @@ export function setCsrf(value: string): void {
   csrf = value
 }
 
-export async function api<T>(path: string, body?: Record<string, unknown>): Promise<T> {
+export async function api<T>(path: string, body?: Record<string, unknown>, signal?: AbortSignal): Promise<T> {
   const response = await fetch(path, {
     method: body === undefined ? 'GET' : 'POST',
+    signal,
     credentials: 'same-origin',
     headers: body === undefined ? {} : { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf },
     body: body === undefined ? undefined : JSON.stringify(body),
@@ -60,8 +61,18 @@ export async function api<T>(path: string, body?: Record<string, unknown>): Prom
   return data as T
 }
 
-export async function loadBootstrap(): Promise<BootstrapData> {
+async function fetchBootstrap(): Promise<BootstrapData> {
   const data = await api<BootstrapData>('/api/bootstrap')
   setCsrf(data.csrf)
   return data
+}
+
+let bootstrapInFlight: Promise<BootstrapData> | undefined
+
+/** Share simultaneous browser requests, not completed responses or SSR user data. */
+export function loadBootstrap(): Promise<BootstrapData> {
+  if (typeof window === 'undefined') return fetchBootstrap()
+  return bootstrapInFlight ??= fetchBootstrap().finally(() => {
+    bootstrapInFlight = undefined
+  })
 }

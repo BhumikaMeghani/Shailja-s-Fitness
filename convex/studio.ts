@@ -45,6 +45,25 @@ export const getSession = query({
   },
 });
 
+// Bootstrap needs both records. Resolve them in one transaction/HTTP round trip;
+// return only the email, never the user's password hash.
+export const getSessionContext = query({
+  args: { ...key, token_hash: v.string(), now: v.number() },
+  returns: v.union(v.object({
+    session: sessionValidator,
+    user: v.union(v.object({ email: v.string() }), v.null()),
+  }), v.null()),
+  handler: async (ctx, args) => {
+    authorize(args.server_key);
+    const row = await ctx.db.query("sessions")
+      .withIndex("by_token_hash", q => q.eq("token_hash", args.token_hash)).unique();
+    if (!row || row.expires <= args.now) return null;
+    const account = row.user_id === null ? null : await ctx.db.query("users")
+      .withIndex("by_logical_id", q => q.eq("id", row.user_id!)).unique();
+    return { session: plain(row), user: account ? { email: account.email } : null };
+  },
+});
+
 export const rotateSession = mutation({
   args: { ...key, old_hash: v.string(), record: sessionValidator },
   returns: v.null(),
@@ -115,12 +134,15 @@ export const taken = query({
   returns: v.array(v.string()),
   handler: async (ctx, args) => {
     authorize(args.server_key);
-    const result: string[] = [];
-    for (const slot of args.slots) {
+    // Bound fan-out while allowing a caller to check an entire day's times.
+    if (args.slots.length > 64) throw new ConvexError("Check at most 64 slots at once.");
+    const slots = [...new Set(args.slots)];
+    const results = await Promise.all(slots.map(async slot => {
       const rows = await atSlot(ctx, slot);
-      if (rows.some(row => occupied(row, args.now))) result.push(slot);
-    }
-    return result;
+      return rows.some(row => occupied(row, args.now));
+    }));
+    const taken = new Set(slots.filter((_, index) => results[index]));
+    return args.slots.filter(slot => taken.has(slot));
   },
 });
 

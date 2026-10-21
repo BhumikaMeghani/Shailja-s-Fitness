@@ -25,8 +25,8 @@ vi.mock('../src/server/db', async importOriginal => {
   const original = await importOriginal<typeof import('../src/server/db')>()
   return {
     ...original,
-    read: (fn: Parameters<typeof t.query>[0], args: Record<string, unknown>) =>
-      t.query(fn, { ...args, server_key }),
+    read: vi.fn((fn: Parameters<typeof t.query>[0], args: Record<string, unknown>) =>
+      t.query(fn, { ...args, server_key })),
     write: (fn: Parameters<typeof t.mutation>[0], args: Record<string, unknown>) =>
       t.mutation(fn, { ...args, server_key }),
   }
@@ -35,6 +35,7 @@ vi.mock('../src/server/razorpay', () => ({ razorpay: vi.fn() }))
 vi.mock('../src/server/wellness', () => ({ loadBpCatalog: vi.fn() }))
 
 import { Route as bootstrap } from '../src/routes/api/bootstrap'
+import { Route as availability } from '../src/routes/api/availability'
 import { Route as auth } from '../src/routes/api/auth.$action'
 import { Route as demo } from '../src/routes/api/bookings.demo'
 import { Route as status } from '../src/routes/api/bookings.$bookingId'
@@ -47,7 +48,7 @@ import { loadBpCatalog } from '../src/server/wellness'
 import { hashPassword, verifyWerkzeugHash } from '../src/server/password'
 import { razorpay } from '../src/server/razorpay'
 import { sampleSlots, istDateKey, nowIst } from '../src/server/slots'
-import { DatabaseUnavailable } from '../src/server/db'
+import { DatabaseUnavailable, read } from '../src/server/db'
 import { apiHandler } from '../src/server/http'
 
 type Context = { request: Request; params: Record<string, string> }
@@ -94,6 +95,7 @@ beforeEach(() => {
   process.env.STUDIO_SERVER_KEY = server_key
   t = convexTest(schema, modules)
   vi.mocked(razorpay).mockReset()
+  vi.mocked(read).mockClear()
   vi.mocked(loadBpCatalog).mockReset()
   vi.mocked(loadBpCatalog).mockImplementation(route =>
     t.query(api.wellness.getCatalog, { route, version: CONTENT_VERSION }))
@@ -156,6 +158,41 @@ test('concurrent demo bookings have one winner and status is owner-only', async 
   expect((await winner.get(status, { bookingId: booking })).status).toBe(200)
   expect((await loser.get(status, { bookingId: booking })).status).toBe(404)
   expect((await (await winner.post(demo, payload)).json()).booking).toBe(booking)
+})
+
+test('bootstrap uses one fresh account/session query and does not share users', async () => {
+  const a = new Client(), b = new Client()
+  await a.register('a@example.com')
+  await b.register('b@example.com')
+  for (const [client, email] of [[a, 'a@example.com'], [b, 'b@example.com']] as const) {
+    vi.mocked(read).mockClear()
+    const response = await client.get(bootstrap)
+    expect((await response.json()).user).toEqual({ email })
+    expect(read).toHaveBeenCalledTimes(1)
+    expect(read).toHaveBeenCalledWith(api.studio.getSessionContext, expect.anything())
+  }
+})
+
+test('availability skips empty dates but reads fresh bookings and reports database failure', async () => {
+  const payload = selection()
+  const request = (date: string) => handler(availability, 'GET')({
+    request: new Request(`http://localhost/api/availability?service=online&date=${date}`), params: {},
+  })
+  const sunday = nowIst()
+  do { sunday.setDate(sunday.getDate() + 1) } while (sunday.getDay() !== 0)
+  vi.mocked(read).mockClear()
+  expect((await (await request(istDateKey(sunday))).json()).slots).toEqual([])
+  expect(read).not.toHaveBeenCalled()
+  const date = payload.starts_at.slice(0, 10)
+  expect((await (await request(date)).json()).slots[0].available).toBe(true)
+  const client = new Client()
+  await client.register()
+  expect((await client.post(demo, payload)).status).toBe(200)
+  expect((await (await request(date)).json()).slots[0].available).toBe(false)
+  vi.mocked(read).mockRejectedValueOnce(new DatabaseUnavailable())
+  const failed = await request(date)
+  expect(failed.status).toBe(503)
+  expect((await failed.json()).slots).toBeUndefined()
 })
 
 test('orders return the saved gateway ID, reuse pending orders, and verify captures', async () => {

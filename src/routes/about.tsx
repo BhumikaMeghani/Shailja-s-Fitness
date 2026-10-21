@@ -9,6 +9,7 @@ import TrainerEnquiryDialog, {
 } from '~/components/TrainerEnquiryDialog'
 import { api, loadBootstrap, type BootstrapData } from '~/lib/api'
 import SiteFooter from '~/components/SiteFooter'
+import OptimizedImage from '~/components/OptimizedImage'
 
 export const Route = createFileRoute('/about')({ component: AboutPage })
 
@@ -221,7 +222,7 @@ function AboutBody({ signedIn, clerkReady }: BodyProps) {
             {instructors.map(instructor => (
               <article className="instructor-card reveal" key={instructor.name}>
                 <div className="instructor-frame">
-                  <img src={instructor.image} alt={`Portrait of ${instructor.name}`} />
+                  <OptimizedImage src={instructor.image} alt={`Portrait of ${instructor.name}`} sizes="(max-width: 640px) 80vw, 320px" />
                 </div>
                 <span className="instructor-experience">{instructor.experience}</span>
                 <h3>{instructor.name}</h3>

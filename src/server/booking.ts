@@ -11,6 +11,7 @@ export function development(): boolean {
 
 export async function availabilitySlots(serviceId: string, day: string) {
   const slots = sampleSlots(serviceId, day)
+  if (!slots.length) return []
   const taken = new Set(await read(api.studio.taken, {
     slots, now: Math.floor(Date.now() / 1000),
   }))

@@ -1,16 +1,15 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { env, contact, services } from '~/server/env'
-import { api, read } from '~/server/db'
 import { apiHandler } from '~/server/http'
 import { development } from '~/server/booking'
-import { currentSession, newSession, sessionCookieHeader } from '~/server/session'
+import { currentSessionContext, newSession, sessionCookieHeader } from '~/server/session'
 import { istDateKey, nowIst } from '~/server/slots'
 
 export const Route = createFileRoute('/api/bootstrap')({
   server: {
     handlers: {
       GET: apiHandler(async ({ request }) => {
-        const current = await currentSession(request)
+        const current = await currentSessionContext(request)
         let token: string | null = null
         let csrf: string
         let user: { email: string } | null = null
@@ -19,11 +18,8 @@ export const Route = createFileRoute('/api/bootstrap')({
           token = fresh.token
           csrf = fresh.csrf
         } else {
-          csrf = current.csrf
-          const row = current.user_id
-            ? await read(api.studio.getUser, { field: 'id', value: current.user_id })
-            : null
-          user = row ? { email: row.email } : null
+          csrf = current.session.csrf
+          user = current.user
         }
         const payload = {
           csrf,

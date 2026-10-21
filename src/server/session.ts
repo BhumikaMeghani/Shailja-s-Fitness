@@ -34,6 +34,15 @@ export async function currentSession(request: Request): Promise<SessionRow | nul
   })
 }
 
+/** Fresh account/session data in a single Convex call; never cached across requests. */
+export async function currentSessionContext(request: Request) {
+  const token = parseCookie(request.headers.get('cookie'), SESSION_COOKIE)
+  if (!token) return null
+  return read(api.studio.getSessionContext, {
+    token_hash: sha256Hex(token), now: Math.floor(Date.now() / 1000),
+  })
+}
+
 export async function newSession(user_id: string | null, request: Request): Promise<{ token: string; csrf: string }> {
   const token = Buffer.from(randomBytes(32)).toString('base64url')
   const csrf = Buffer.from(randomBytes(32)).toString('base64url')

@@ -93,3 +93,52 @@ test("webhook receipt and confirmation commit atomically and payment IDs cannot 
     server_key, id: "second", payment: { ...payment, order_id: "order_second" },
   })).rejects.toThrow("another booking");
 });
+
+test("batched availability preserves status, expiry boundaries, order and duplicates", async () => {
+  const t = convexTest(schema, modules);
+  const cases = [
+    { status: "demo", expires: null, taken: true },
+    { status: "confirmed", expires: null, taken: true },
+    { status: "pending", expires: 1, taken: true },
+    { status: "held", expires: 199, taken: false },
+    { status: "held", expires: 200, taken: true },
+    { status: "held", expires: 201, taken: true },
+    { status: "held", expires: null, taken: true },
+    { status: "expired", expires: null, taken: false },
+  ] as const;
+  const slots = cases.map((_, index) => `slot-${index}`);
+  await t.run(async ctx => {
+    for (const [index, value] of cases.entries()) {
+      await ctx.db.insert("bookings", {
+        ...record, id: `booking-${index}`, starts_at: slots[index],
+        status: value.status, expires: value.expires,
+      });
+    }
+  });
+  expect(await t.query(api.studio.taken, { server_key, slots: [...slots, "empty", slots[0]], now: 200 }))
+    .toEqual([...slots.filter((_, index) => cases[index].taken), slots[0]]);
+  expect(await t.query(api.studio.taken, { server_key, slots: [], now: 200 })).toEqual([]);
+  await expect(t.query(api.studio.taken, { server_key: "bad", slots, now: 200 }))
+    .rejects.toThrow("Unauthorized");
+  await expect(t.query(api.studio.taken, { server_key, slots: Array(65).fill("slot"), now: 200 }))
+    .rejects.toThrow("at most 64");
+});
+
+test("session context is fresh, credentials are required, and only email is returned", async () => {
+  const t = convexTest(schema, modules);
+  await t.mutation(api.migrate.importSqlite, source);
+  expect(await t.query(api.studio.getSessionContext, { server_key, token_hash: "hash", now: 200 }))
+    .toEqual({ session: source.sessions[0], user: { email: user.email } });
+  for (const token_hash of ["unknown", "hash"]) {
+    expect(await t.query(api.studio.getSessionContext, { server_key, token_hash, now: 9999999999 }))
+      .toBeNull();
+  }
+  await expect(t.query(api.studio.getSessionContext, { server_key: "bad", token_hash: "hash", now: 200 }))
+    .rejects.toThrow("Unauthorized");
+  await t.run(async ctx => {
+    const account = await ctx.db.query("users").withIndex("by_logical_id", q => q.eq("id", user.id)).unique();
+    await ctx.db.delete("users", account!._id);
+  });
+  expect(await t.query(api.studio.getSessionContext, { server_key, token_hash: "hash", now: 200 }))
+    .toEqual({ session: source.sessions[0], user: null });
+});

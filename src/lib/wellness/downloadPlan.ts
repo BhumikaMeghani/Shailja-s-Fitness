@@ -18,6 +18,7 @@ import {
 import { GOAL_LABELS } from '~/lib/wellness/goals'
 import { calculatePlanPrice, formatInr } from '~/lib/wellness/pricing'
 import { poseImageFor } from '~/lib/wellness/yogaImages'
+import imageManifest from '~/lib/image-manifest.json'
 import type { FoodSelection, WellnessPlan } from '~/lib/wellness/types'
 
 const IMAGE_MAX_PIXELS = 240
@@ -31,34 +32,45 @@ const fileSafeName = (name: string) =>
 
 /** Load (and downscale) a pose thumbnail as JPEG for embedding. */
 async function loadImageThumbnail(src: string): Promise<{ blob: Uint8Array; width: number; height: number } | null> {
-  try {
-    const response = await fetch(src)
-    if (!response.ok) return null
-    const raw = await response.blob()
-    const bitmap = await new Promise<HTMLImageElement | null>(resolve => {
-      const image = new Image()
-      image.crossOrigin = 'anonymous'
-      image.onload = () => resolve(image)
-      image.onerror = () => resolve(null)
-      image.src = URL.createObjectURL(raw)
-    })
-    if (!bitmap || !bitmap.width || !bitmap.height) return null
-    const scale = Math.min(1, IMAGE_MAX_PIXELS / Math.max(bitmap.width, bitmap.height))
-    const width = Math.max(1, Math.round(bitmap.width * scale))
-    const height = Math.max(1, Math.round(bitmap.height * scale))
-    const canvas = document.createElement('canvas')
-    canvas.width = width
-    canvas.height = height
-    const context = canvas.getContext('2d')
-    if (!context) return null
-    context.drawImage(bitmap, 0, 0, width, height)
-    const jpeg = canvas.toDataURL('image/jpeg', 0.72)
-    const bytes = Uint8Array.from(atob(jpeg.split(',')[1]), char => char.charCodeAt(0))
-    URL.revokeObjectURL(bitmap.src)
-    return { blob: bytes, width, height }
-  } catch {
-    return null
+  const variants = (imageManifest as Record<string, { variants: { src: string; width: number }[] }>)[src]?.variants
+  const optimized = variants?.find(image => image.width >= IMAGE_MAX_PIXELS) ?? variants?.at(-1)
+  // Retry the original on HTTP, network or decoding failure (including browsers
+  // without WebP support). Only omit the image if neither source is usable.
+  for (const candidate of optimized ? [optimized.src, src] : [src]) {
+    let objectUrl: string | undefined
+    try {
+      const response = await fetch(candidate)
+      if (!response.ok) continue
+      const raw = await response.blob()
+      const url = URL.createObjectURL(raw)
+      objectUrl = url
+      const bitmap = await new Promise<HTMLImageElement | null>(resolve => {
+        const image = new Image()
+        image.crossOrigin = 'anonymous'
+        image.onload = () => resolve(image)
+        image.onerror = () => resolve(null)
+        image.src = url
+      })
+      if (!bitmap || !bitmap.width || !bitmap.height) continue
+      const scale = Math.min(1, IMAGE_MAX_PIXELS / Math.max(bitmap.width, bitmap.height))
+      const width = Math.max(1, Math.round(bitmap.width * scale))
+      const height = Math.max(1, Math.round(bitmap.height * scale))
+      const canvas = document.createElement('canvas')
+      canvas.width = width
+      canvas.height = height
+      const context = canvas.getContext('2d')
+      if (!context) return null
+      context.drawImage(bitmap, 0, 0, width, height)
+      const jpeg = canvas.toDataURL('image/jpeg', 0.72)
+      const bytes = Uint8Array.from(atob(jpeg.split(',')[1]), char => char.charCodeAt(0))
+      return { blob: bytes, width, height }
+    } catch {
+      // Try the next source; plan text is still exportable if both fail.
+    } finally {
+      if (objectUrl) URL.revokeObjectURL(objectUrl)
+    }
   }
+  return null
 }
 
 /* ------------------------------------------------------------------ */

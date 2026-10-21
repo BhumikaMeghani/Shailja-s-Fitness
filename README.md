@@ -43,6 +43,41 @@ bun run start       # serves .output/server/index.mjs on port 3000 via Bun
 Termininate TLS at a properly configured reverse proxy; secure cookies are enabled
 automatically when `APP_ENV` is anything other than `development`.
 
+## Performance checks and image maintenance
+
+Original photos in `public/images/` and `public/yoga-poses/` are preserved.
+The site uses responsive WebP copies from `public/optimized/`, falling back to
+the originals if needed. After changing a source photo, regenerate the copies
+and manifest with `python3 scripts/optimize-images.py` (requires Pillow >= 12).
+Commit the generated copies and `src/lib/image-manifest.json` together. No image
+processing dependency is needed on the production server.
+
+Validation:
+
+```sh
+npm ci
+npm test
+npm run build
+python3 scripts/check-performance.py
+```
+
+The last command requires Python Playwright with its Chromium browser installed.
+It starts/stops the production Node server, checks mobile/desktop layouts,
+responsive image selection, original-image fallback, cache headers and real
+PDF/Word downloads. It uses explicit browser API fixtures, **not a live database**.
+Screenshots, downloaded files and byte measurements go under `test-results/`
+(or `$DELTA_SCRATCH_DIR` when set).
+
+The route/backend tests use `convex-test` and cover fresh availability after
+booking, expired holds, reservation conflicts, session isolation, credentials,
+database failures, CSRF and payment verification. Availability and account data
+are not response-cached; only simultaneous browser bootstrap calls are shared.
+
+When authorized to release, deploy the Convex functions **before** the website:
+the optimized bootstrap calls the new `studio:getSessionContext` function.
+There is no schema migration. Existing production booking/availability gates
+are unchanged; sample slots have not been turned into a real studio timetable.
+
 ## Migrated from Flask
 
 | Flask (`app.py`) | TanStack Start equivalent |

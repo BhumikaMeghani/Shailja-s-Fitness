@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import BookingDialog from './BookingDialog'
 import type { BootstrapData, BookingResult } from '~/lib/api'
 
@@ -64,6 +64,50 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.unstubAllGlobals() })
 
 describe('booking dialog verification', () => {
+  it('loads a new date while the old one is pending and ignores its late response', async () => {
+    let resolveOld!: (value: unknown) => void
+    let oldSignal: AbortSignal | undefined
+    mocks.api.mockImplementation((path: string, _body: unknown, signal: AbortSignal) => {
+      if (path.includes('date=2026-10-22')) {
+        oldSignal = signal
+        return new Promise(resolve => { resolveOld = resolve })
+      }
+      return Promise.resolve({
+        slots: [{ starts_at: '2026-10-23T18:00:00+05:30', available: true }], development: true,
+      })
+    })
+    render(<BookingDialog data={boot} onDataRefreshed={vi.fn()} openRequest={{}}
+      onOpenChange={vi.fn()} onCloseChat={vi.fn()} onToast={vi.fn()} />)
+    fireEvent.click(screen.getByText('Online Live Class').closest('button')!)
+    fireEvent.click(screen.getByRole('button', { name: /22 October/ }))
+    expect(screen.getByText('Checking availability…')).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: /23 October/ }))
+    expect(oldSignal?.aborted).toBe(true)
+    await screen.findByRole('button', { name: /06:00/ })
+    await act(async () => resolveOld({
+      slots: [{ starts_at: '2026-10-22T07:00:00+05:30', available: true }], development: true,
+    }))
+    expect(screen.queryByRole('button', { name: /07:00/ })).toBeNull()
+    expect(screen.getByRole('button', { name: /06:00/ })).toBeTruthy()
+    // Clicking the same date revalidates instead of clearing results forever.
+    fireEvent.click(screen.getByRole('button', { name: /23 October/ }))
+    await screen.findByRole('button', { name: /06:00/ })
+    expect(mocks.api).toHaveBeenCalledTimes(3)
+  })
+
+  it('allows another date and a retry after a failed availability request', async () => {
+    mocks.api.mockRejectedValueOnce(new Error('Database unavailable'))
+    render(<BookingDialog data={boot} onDataRefreshed={vi.fn()} openRequest={{}}
+      onOpenChange={vi.fn()} onCloseChat={vi.fn()} onToast={vi.fn()} />)
+    fireEvent.click(screen.getByText('Online Live Class').closest('button')!)
+    fireEvent.click(screen.getByRole('button', { name: /22 October/ }))
+    await screen.findByText('Database unavailable')
+    fireEvent.click(screen.getByRole('button', { name: /Try again/ }))
+    await screen.findByRole('button', { name: /07:00/ })
+    fireEvent.click(screen.getByRole('button', { name: /23 October/ }))
+    await waitFor(() => expect(mocks.api).toHaveBeenCalledTimes(3))
+  })
+
   it('shows only the three class options and completes a plan booking with the right summary', async () => {
     render(<BookingDialog
       data={boot}

@@ -37,7 +37,10 @@ export const env = {
   RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET || '',
   RAZORPAY_WEBHOOK_SECRET: process.env.RAZORPAY_WEBHOOK_SECRET || '',
 
-  DEVELOPMENT_AVAILABILITY: (process.env.DEVELOPMENT_AVAILABILITY || 'true').toLowerCase() === 'true',
+  /** Sample-availability opt-in. Unset defaults to true only in development;
+   * other environments must state DEVELOPMENT_AVAILABILITY=true on purpose. */
+  DEVELOPMENT_AVAILABILITY: (process.env.DEVELOPMENT_AVAILABILITY ??
+    ((process.env.APP_ENV || 'development') === 'development' ? 'true' : 'false')).toLowerCase() === 'true',
 
   STUDIO_EMAIL: process.env.STUDIO_EMAIL || '',
   STUDIO_PHONE: process.env.STUDIO_PHONE || '',

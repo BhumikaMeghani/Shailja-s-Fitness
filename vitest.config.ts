@@ -11,6 +11,10 @@ export default defineConfig({
       },
       {
         extends: true,
+        test: { name: "server-env", environment: "node", include: ["src/server/*.test.ts"] },
+      },
+      {
+        extends: true,
         test: { name: "wellness-engine", environment: "node", include: ["src/lib/wellness/*.test.ts"] },
       },
       {

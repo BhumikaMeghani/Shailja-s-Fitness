@@ -43,6 +43,13 @@ bun run start       # serves .output/server/index.mjs on port 3000 via Bun
 Termininate TLS at a properly configured reverse proxy; secure cookies are enabled
 automatically when `APP_ENV` is anything other than `development`.
 
+Sample availability and demo/test bookings are opt-in through `DEVELOPMENT_AVAILABILITY`
+(unset defaults to `true` only in development). On a deployed `APP_ENV=production`
+server, set `DEVELOPMENT_AVAILABILITY=true` to show the preview calendar; leave it
+unset to keep real-looking sample times off the public site. Existing production
+booking/availability gates are unchanged; sample slots are still labelled
+previews, not a real studio timetable.
+
 ## Performance checks and image maintenance
 
 Original photos in `public/images/` and `public/yoga-poses/` are preserved.
@@ -98,9 +105,6 @@ keeps the same local user even if its email changes; local email changes/account
 merges require a separate explicit flow. No Clerk passwords or tokens are copied
 into Convex. This records users when they complete the booking sign-in bridge,
 not every Clerk signup via a webhook.
-
-Existing production booking/availability gates are unchanged; sample slots have
-not been turned into a real studio timetable.
 
 ## Migrated from Flask
 

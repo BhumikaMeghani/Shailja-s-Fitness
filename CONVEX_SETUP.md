@@ -28,7 +28,8 @@ The development launcher uses the URL in the Convex CLI's `.env.local`. If no
 authenticated CLI. This fallback is development-only and does not print or
 persist the key. Production must receive `CONVEX_URL`, `CONVEX_SERVER_KEY` and
 the other production settings through the hosting provider's private environment.
-Never name the secret `VITE_CONVEX_SERVER_KEY`.
+Never name the secret `VITE_CONVEX_SERVER_KEY`. To show the sample availability
+calendar on a deployed server, also set `DEVELOPMENT_AVAILABILITY=true` there.
 
 ## Data and guarantees
 

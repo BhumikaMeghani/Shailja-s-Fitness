@@ -1,12 +1,15 @@
 /** Trusted selection validation stays here; Convex owns atomic persistence. */
 import { randomBytes } from 'node:crypto'
 import { api, read, write, type BookingRow } from './db'
-import { services, production, env } from './env'
+import { services, env } from './env'
 import { PLAN_DURATION_DAYS, planByName } from '../lib/plans'
 import { sampleSlots } from './slots'
 
+/** Sample availability and demo/test bookings are opt-in through
+ * DEVELOPMENT_AVAILABILITY, so a deployed preview can enable them while
+ * APP_ENV stays production (secure cookies, SECRET_KEY check). */
 export function development(): boolean {
-  return !production && env.DEVELOPMENT_AVAILABILITY
+  return env.DEVELOPMENT_AVAILABILITY
 }
 
 export async function availabilitySlots(serviceId: string, day: string) {
